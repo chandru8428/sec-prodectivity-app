@@ -14,10 +14,8 @@ frontend/dist/
 .env.local
 .env.production
 
-# Firebase (legacy — no longer used)
+# Firebase
 .firebaserc
-firebase.json
-src/firebase.js
 
 # OS files
 .DS_Store
@@ -29,3 +27,7 @@ backend/__pycache__/
 backend/config/__pycache__/
 builder/__pycache__/
 builder/migrations/__pycache__/
+
+# Secrets
+scripts/serviceAccountKey.json
+
