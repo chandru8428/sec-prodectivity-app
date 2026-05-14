@@ -15,7 +15,7 @@ frontend/dist/
 .env.production
 
 # Firebase
-.firebaserc
+# .firebaserc and firebase.json are committed (needed for hosting)
 
 # OS files
 .DS_Store
