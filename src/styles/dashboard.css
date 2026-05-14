@@ -1,0 +1,586 @@
+/* ============================================
+   DASHBOARD STYLES - Premium Warm Theme
+   ============================================ */
+
+.dashboard-welcome {
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard-welcome h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #A86E11;
+  margin-bottom: var(--space-xs);
+}
+
+.dashboard-welcome h1 span {
+  color: #D89B29;
+}
+
+.dashboard-welcome p {
+  color: #666666;
+  font-size: var(--text-body);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+/* Dashboard Two Column */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+}
+
+/* Upcoming Exams List */
+.exam-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.exam-timeline-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline);
+  transition: all 200ms ease;
+}
+
+.exam-timeline-item:hover {
+  background: var(--color-surface-container-high);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.exam-date-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(216,155,41,0.15), rgba(168,110,17,0.08));
+  box-shadow: 0 4px 12px rgba(216,155,41,0.15);
+}
+
+.exam-date-badge .date-day {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #A86E11;
+  line-height: 1;
+}
+
+.exam-date-badge .date-month {
+  font-size: 10px;
+  font-weight: 600;
+  color: #B8860B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exam-timeline-info {
+  flex: 1;
+}
+
+.exam-timeline-info .exam-subject {
+  font-weight: 600;
+  color: #A86E11;
+  margin-bottom: 2px;
+  font-size: var(--text-body-sm);
+}
+
+.exam-timeline-info .exam-time {
+  font-size: var(--text-label);
+  color: #666666;
+}
+
+/* Attendance Mini Cards */
+.attendance-mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.attendance-mini-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline);
+  transition: all 200ms ease;
+}
+
+.attendance-mini-item:hover {
+  background: var(--color-surface-container-high);
+}
+
+.attendance-mini-item .subject-name {
+  flex: 1;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: #A86E11;
+}
+
+.attendance-mini-item .attendance-percent {
+  font-size: var(--text-body-sm);
+  font-weight: 700;
+  min-width: 45px;
+  text-align: right;
+}
+
+.attendance-mini-item .progress-bar {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border-radius: 16px;
+  background: var(--color-surface-container);
+  cursor: pointer;
+  transition: all 200ms ease;
+  text-decoration: none;
+  border: 1px solid var(--color-outline);
+  font-family: inherit;
+}
+
+.quick-action-btn:hover {
+  background: var(--color-surface-container-high);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.quick-action-btn .action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(216,155,41,0.1);
+  color: #D89B29;
+}
+
+.quick-action-btn .action-label {
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: #666666;
+  text-align: center;
+}
+
+/* =====================================================
+   DASHBOARD RESPONSIVE STYLES
+   ===================================================== */
+
+/* CRITICAL MOBILE FIXES FOR DASHBOARD */
+@media (max-width: 768px) {
+  /* Fix main dashboard grid */
+  .grid.gap-6 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .grid.gap-6 > * {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .stats-grid > * {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix quick actions grid */
+  .quick-actions-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 8px;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .quick-actions-grid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .quick-actions-grid > * {
+    flex: 0 0 auto;
+    width: 80px;
+    box-sizing: border-box;
+  }
+  
+  /* Fix exam cards */
+  .exam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .exam-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix hero exam card */
+  .hero-exam-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix attendance mini items */
+  .attendance-mini {
+    width: 100%;
+  }
+  
+  .attendance-mini-item {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Tablet / Small Laptop (769px - 1024px) */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+  
+  .dashboard-welcome h1 {
+    font-size: 1.75rem;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .grid.gap-6 {
+    grid-template-columns: 1fr 300px;
+  }
+}
+
+/* Large Mobile (481px - 768px) */
+@media (max-width: 768px) {
+  .dashboard-welcome {
+    margin-bottom: var(--space-lg);
+  }
+  
+  .dashboard-welcome h1 {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-welcome p {
+    font-size: 14px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .stat-card {
+    padding: 14px;
+  }
+  
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+  
+  .quick-action-btn {
+    padding: 12px;
+  }
+  
+  .quick-action-btn .action-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .quick-action-btn .action-label {
+    font-size: 12px;
+  }
+  
+  .grid.gap-6 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid.gap-6 > *:first-child {
+    order: -1;
+  }
+}
+
+/* Mobile (320px - 480px) */
+@media (max-width: 480px) {
+  .dashboard-welcome {
+    margin-bottom: var(--space-md);
+  }
+  
+  .dashboard-welcome h1 {
+    font-size: 1.25rem;
+  }
+  
+  .dashboard-welcome p {
+    font-size: 13px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+  }
+  
+  .stat-label {
+    font-size: 10px;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .quick-action-btn {
+    padding: 10px 8px;
+    min-height: 70px;
+  }
+  
+  .quick-action-btn .action-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .quick-action-btn .action-label {
+    font-size: 11px;
+  }
+}
+
+/* =====================================================
+   PREMIUM MOBILE DASHBOARD ENHANCEMENTS
+   ===================================================== */
+
+/* Hero exam card mobile optimization */
+@media (max-width: 768px) {
+  .hero-exam-card {
+    margin-bottom: var(--space-4);
+    border-radius: 20px;
+    padding: 20px;
+  }
+  
+  .hero-exam-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+  
+  /* Countdown timer mobile - make it more compact */
+  .countdown {
+    gap: 8px;
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+  
+  .countdown-unit {
+    gap: 4px;
+  }
+  
+  .countdown-value.hero {
+    min-width: 45px;
+    height: 50px;
+    font-size: 1.25rem;
+    border-radius: 12px;
+  }
+  
+  .countdown-label {
+    font-size: 9px;
+    padding: 3px 6px;
+    border-radius: 8px;
+  }
+  
+  .countdown-sep {
+    font-size: 1.25rem;
+    margin-top: 12px;
+  }
+  
+  /* Quick actions - horizontal scroll on mobile */
+  .quick-actions {
+    margin-top: var(--space-4);
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.1rem;
+    margin-bottom: var(--space-3);
+  }
+  
+  .quick-actions-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .quick-actions-grid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .quick-action-btn {
+    flex: 0 0 auto;
+    width: 80px;
+    min-height: 80px;
+    padding: 12px 8px;
+    border-radius: 16px;
+  }
+  
+  /* Exam list mobile */
+  .exam-list {
+    margin-top: var(--space-4);
+  }
+  
+  .exam-card {
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .exam-subject {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .exam-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  
+  .exam-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* Sticky mobile greeting */
+  .dashboard-welcome {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface) 100%);
+    padding: var(--space-2) 0;
+    z-index: 10;
+    margin-bottom: var(--space-3);
+  }
+  
+  .dashboard-welcome h1 {
+    font-size: 1.25rem;
+  }
+  
+  /* Stats cards - horizontal scroll on very small screens */
+  @media (max-width: 400px) {
+    .stats-grid {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .stat-card {
+      flex: 0 0 auto;
+      width: 140px;
+      min-height: 80px;
+    }
+  }
+  
+  /* Smooth scroll behavior */
+  .dashboard-page {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Touch feedback improvements */
+@media (max-width: 768px) {
+  .stat-card:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+  
+  .quick-action-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+  
+  .exam-card:active {
+    transform: scale(0.98);
+  }
+}

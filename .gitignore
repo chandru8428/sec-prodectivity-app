@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+
+# Vite cache
+.vite/
+
+# ⚠️  Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Firebase (legacy — no longer used)
+.firebaserc
+firebase.json
+src/firebase.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Django / Python
+backend/db.sqlite3
+backend/__pycache__/
+backend/config/__pycache__/
+builder/__pycache__/
+builder/migrations/__pycache__/

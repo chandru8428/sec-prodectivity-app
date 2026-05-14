@@ -1,0 +1,1874 @@
+/* Tool-Specific Page Styles */
+
+/* === EXAM TIMETABLE === */
+.timetable-controls { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl); flex-wrap: wrap; }
+.timetable-table-wrap { overflow-x: auto; border-radius: var(--radius-lg); background: rgba(26, 25, 25, 0.5); backdrop-filter: blur(8px); }
+.countdown-badge { font-variant-numeric: tabular-nums; }
+.exam-finished { opacity: 0.5; filter: grayscale(0.8); }
+.exam-finished:hover { opacity: 0.8; filter: grayscale(0.3); }
+
+/* === TIMETABLE MAKER === */
+.maker-config { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); margin-bottom: var(--space-xl); }
+.maker-config .glass-card-static { padding: var(--space-lg); }
+.tags-container { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); }
+.tag-item { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: var(--radius-full); background: var(--surface-container-highest); font-size: var(--text-body-sm); color: var(--on-surface-variant); }
+.tag-item .tag-remove { cursor: pointer; color: var(--outline); display: flex; }
+.tag-item .tag-remove:hover { color: var(--error); }
+.tag-input-wrap { display: flex; gap: var(--space-sm); }
+.tag-input-wrap input { flex: 1; }
+.timetable-grid { border-radius: var(--radius-lg); overflow: hidden; background: rgba(26, 25, 25, 0.4); }
+.timetable-grid table { width: 100%; border-collapse: collapse; }
+.timetable-grid th { padding: 12px 8px; text-align: center; font-size: var(--text-label); font-weight: var(--font-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--on-surface-variant); background: var(--surface-container-low); }
+.timetable-grid td { padding: 10px 8px; text-align: center; font-size: var(--text-body-sm); color: var(--on-surface-variant); border-top: 1px solid rgba(73,72,71,0.1); min-width: 100px; }
+.timetable-grid td.filled { color: var(--on-surface); font-weight: var(--font-label); }
+.timetable-grid .period-label { font-weight: var(--font-title); color: var(--on-surface); background: var(--surface-container-low); }
+.subject-color-1 { background: rgba(224,142,254,0.12); }
+.subject-color-2 { background: rgba(186,146,250,0.12); }
+.subject-color-3 { background: rgba(96,165,250,0.12); }
+.subject-color-4 { background: rgba(74,222,128,0.12); }
+.subject-color-5 { background: rgba(251,191,36,0.12); }
+.subject-color-6 { background: rgba(255,146,138,0.12); }
+.subject-color-7 { background: rgba(245,120,112,0.12); }
+.subject-color-8 { background: rgba(206,126,236,0.12); }
+.export-actions { display: flex; gap: var(--space-md); margin-top: var(--space-lg); }
+
+/* === GPA CALCULATOR === */
+.gpa-layout { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-xl); }
+.subjects-form { display: flex; flex-direction: column; gap: var(--space-sm); }
+.subject-row { display: grid; grid-template-columns: 2fr 80px 80px 80px 80px auto; gap: var(--space-sm); align-items: center; padding: var(--space-sm) var(--space-md); background: var(--surface-container); border-radius: var(--radius-md); }
+.subject-row input, .subject-row select { padding: 8px 10px; font-size: var(--text-body-sm); background: var(--surface-container-high); }
+.subject-row .grade-display { font-weight: var(--font-headline); text-align: center; }
+.subject-row .remove-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); color: var(--outline); cursor: pointer; transition: all var(--transition-fast); background: none; border: none; }
+.subject-row .remove-btn:hover { color: var(--error); background: rgba(255,110,132,0.1); }
+.gpa-result-card { text-align: center; }
+.gpa-big-number { font-size: 4rem; font-weight: 800; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin: var(--space-md) 0; }
+.gpa-sidebar { display: flex; flex-direction: column; gap: var(--space-lg); }
+.grade-ref-table { width: 100%; }
+.grade-ref-table td { padding: 6px 8px; font-size: var(--text-body-sm); }
+.grade-ref-table td:first-child { font-weight: var(--font-title); }
+.grade-ref-table tr:hover { background: var(--surface-container-high); }
+.chart-container { position: relative; height: 250px; }
+.target-calc { display: flex; flex-direction: column; gap: var(--space-md); }
+.target-result { font-size: var(--text-title); font-weight: var(--font-headline); color: var(--primary); text-align: center; padding: var(--space-md); background: rgba(224,142,254,0.08); border-radius: var(--radius-md); }
+.subjects-header { display: grid; grid-template-columns: 2fr 80px 80px 80px 80px auto; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); }
+.subjects-header span { font-size: var(--text-label); font-weight: var(--font-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--outline); }
+
+/* === Q&A BOARD === */
+.qna-layout { display: grid; grid-template-columns: 1fr 300px; gap: var(--space-xl); }
+.qna-filters { display: flex; gap: var(--space-sm); margin-bottom: var(--space-lg); flex-wrap: wrap; align-items: center; }
+.qna-filters .search-input { flex: 1; min-width: 200px; }
+.post-list { display: flex; flex-direction: column; gap: var(--space-md); }
+.post-card { padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--surface-container); transition: all var(--transition-fast); cursor: pointer; }
+.post-card:hover { background: var(--surface-container-high); }
+.post-card-header { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md); }
+.post-card-header .post-type { flex-shrink: 0; }
+.post-card-header .post-meta { display: flex; align-items: center; gap: var(--space-sm); margin-left: auto; font-size: var(--text-label); color: var(--outline); }
+.post-card h3 { font-size: var(--text-body); font-weight: var(--font-title); color: var(--on-surface); margin-bottom: var(--space-sm); }
+.post-card p { font-size: var(--text-body-sm); color: var(--on-surface-variant); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.post-tags { display: flex; gap: var(--space-sm); margin-top: var(--space-md); }
+.post-footer { display: flex; align-items: center; gap: var(--space-lg); margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid rgba(73,72,71,0.1); }
+.vote-controls { display: flex; align-items: center; gap: var(--space-sm); }
+.vote-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); color: var(--on-surface-variant); cursor: pointer; transition: all var(--transition-fast); background: none; border: none; }
+.vote-btn:hover { background: rgba(224,142,254,0.1); color: var(--primary); }
+.vote-count { font-weight: var(--font-title); color: var(--on-surface); font-size: var(--text-body-sm); }
+.post-author { display: flex; align-items: center; gap: var(--space-sm); margin-left: auto; }
+.post-author .avatar { width: 24px; height: 24px; font-size: 10px; }
+.post-author span { font-size: var(--text-label); color: var(--on-surface-variant); }
+.trending-sidebar { display: flex; flex-direction: column; gap: var(--space-md); }
+.trending-topic { padding: var(--space-md); border-radius: var(--radius-md); background: var(--surface-container); transition: all var(--transition-fast); cursor: pointer; }
+.trending-topic:hover { background: var(--surface-container-high); }
+.trending-topic .topic-name { font-size: var(--text-body-sm); font-weight: var(--font-label); color: var(--on-surface); }
+.trending-topic .topic-count { font-size: var(--text-label); color: var(--outline); }
+
+/* === ATTENDANCE TRACKER === */
+.attendance-header-row { display: flex; align-items: center; gap: var(--space-xl); margin-bottom: var(--space-xl); }
+.overall-ring { flex-shrink: 0; }
+.attendance-stats { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+.attendance-subjects { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); }
+.subject-attendance-card { padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--surface-container); }
+.subject-attendance-card .subject-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+.subject-attendance-card .subject-name { font-weight: var(--font-title); color: var(--on-surface); font-size: var(--text-body-sm); }
+.subject-attendance-card .subject-percent { font-size: var(--text-title); font-weight: var(--font-display); }
+.subject-attendance-card .classes-info { font-size: var(--text-label); color: var(--outline); margin-top: var(--space-sm); }
+.skip-info { margin-top: var(--space-sm); font-size: var(--text-body-sm); padding: 6px 10px; border-radius: var(--radius-sm); }
+.skip-info.safe { background: rgba(74,222,128,0.08); color: var(--success); }
+.skip-info.danger { background: rgba(255,110,132,0.08); color: var(--error); }
+.attendance-calendar { margin-top: var(--space-xl); }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); font-size: var(--text-label); }
+.calendar-day.present { background: rgba(74,222,128,0.2); color: var(--success); }
+.calendar-day.absent { background: rgba(255,110,132,0.2); color: var(--error); }
+.calendar-day.holiday { background: var(--surface-container-highest); color: var(--outline); }
+.calendar-day.header { font-weight: var(--font-title); color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: var(--tracking-label); }
+.alert-banner { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) var(--space-lg); border-radius: var(--radius-lg); background: rgba(255,110,132,0.08); border-left: 3px solid var(--error); margin-bottom: var(--space-xl); }
+.alert-banner .alert-icon { color: var(--error); flex-shrink: 0; }
+.alert-banner .alert-text { font-size: var(--text-body-sm); color: var(--error); }
+
+/* === RECORD BOOK PDF === */
+.wizard-steps {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.wizard-steps::-webkit-scrollbar { display: none; }
+.wizard-step {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 12px var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.wizard-step.active { background: rgba(224,142,254,0.1); }
+.wizard-step.completed { background: rgba(74,222,128,0.08); }
+.wizard-step .step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-title);
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  flex-shrink: 0;
+}
+.wizard-step.active .step-number { background: var(--primary); color: var(--on-primary); }
+.wizard-step.completed .step-number { background: var(--success); color: white; }
+.wizard-step .step-label { font-size: var(--text-body-sm); color: var(--on-surface-variant); overflow: hidden; text-overflow: ellipsis; }
+.wizard-step.active .step-label { color: var(--primary); font-weight: var(--font-label); }
+.wizard-content { min-height: 320px; }
+
+/* Step 1 — GitHub Input */
+.github-input-group {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-end;
+  max-width: 540px;
+}
+.github-input-group .form-group { flex: 1; }
+.github-input-group .btn { flex-shrink: 0; white-space: nowrap; }
+
+/* Validation status — avatar + text row */
+.validation-status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  font-size: var(--text-body-sm);
+  flex-wrap: wrap;
+}
+.validation-status.valid { color: var(--success); }
+.validation-status.invalid { color: var(--error); }
+
+/* Step 2 — Repo-map table */
+.repo-map-table { width: 100%; table-layout: auto; }
+.repo-map-table td { padding: 10px 12px; word-break: break-word; }
+.repo-map-table .status-found { color: var(--success); font-weight: 600; }
+.repo-map-table .status-missing { color: var(--error); font-weight: 600; }
+
+/* Step 3 — Experiment checklist */
+.experiment-checklist { display: flex; flex-direction: column; gap: var(--space-sm); }
+.experiment-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--surface-container);
+  transition: background var(--transition-fast);
+}
+.experiment-check:hover { background: var(--surface-container-high); }
+.experiment-check label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--text-body-sm);
+  color: var(--on-surface-variant);
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.experiment-check label strong { color: var(--on-surface); }
+
+/* Step 4 — PDF Preview */
+.pdf-preview {
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.generate-progress { width: 100%; max-width: 400px; margin: var(--space-lg) 0; }
+
+/* Wizard nav row */
+.wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+/* ============================================================
+   STEP WIZARD (Timetable Maker)
+   ============================================================ */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid rgba(73,72,71,0.25);
+  transition: all 0.3s;
+}
+
+.step-label {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.step-item.active .step-circle {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: rgba(224,142,254,0.5);
+  box-shadow: 0 0 16px rgba(224,142,254,0.4);
+}
+
+.step-item.active .step-label { color: var(--primary); font-weight: 700; }
+
+.step-item.done .step-circle {
+  background: rgba(74,222,128,0.2);
+  color: var(--success);
+  border-color: rgba(74,222,128,0.4);
+}
+
+.step-item.done .step-label { color: var(--success); }
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(73,72,71,0.2);
+  margin-bottom: 20px;
+  transition: background 0.3s;
+  min-width: 40px;
+}
+
+.step-line.done { background: linear-gradient(90deg, rgba(74,222,128,0.5), rgba(74,222,128,0.5)); }
+
+/* ============================================================
+   UPLOAD ZONE (unified for admin upload and timetable maker)
+   ============================================================ */
+.upload-zone {
+  border: 2px dashed rgba(255,255,255,0.12);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(0,0,0,0.15);
+}
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: rgba(224,142,254,0.5);
+  background: rgba(224,142,254,0.04);
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   NEW TIMETABLE GRID (Step 4 output)
+   ============================================================ */
+.timetable-header {
+  display: grid;
+  grid-template-columns: 100px repeat(4, 1fr);
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.timetable-header > div {
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  background: var(--surface-container-low);
+  border-radius: 4px;
+}
+
+.timetable-row {
+  display: grid;
+  grid-template-columns: 100px repeat(4, 1fr);
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.timetable-row > div {
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--surface-container-low);
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timetable-day {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--on-surface);
+  text-align: center;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.subject-block {
+  border-radius: 6px;
+  padding: 6px 8px;
+  width: 100%;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   BADGE EXTRAS (secondary + wider color set)
+   ============================================================ */
+.badge-secondary {
+  background: rgba(148,163,184,0.15);
+  color: #94a3b8;
+}
+
+/* Override for proper contrast on danger badge: increase visibility */
+.badge-danger {
+  background: rgba(239,68,68,0.2);
+  color: #f87171;
+  animation: none;
+}
+
+/* Pulse animation for today */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ============================================================
+   TABLE WRAPPER (shared for admin uploads preview table)
+   ============================================================ */
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  background: var(--surface-container-low);
+  white-space: nowrap;
+}
+
+.table-wrapper td {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  border-top: 1px solid rgba(73,72,71,0.08);
+}
+
+.table-wrapper tr:hover td {
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+}
+
+/* ============================================================
+   FORM UTILITIES NEEDED BY PAGES
+   ============================================================ */
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-container-highest);
+  color: var(--on-surface);
+  border: 1px solid rgba(73,72,71,0.2);
+  font-size: var(--text-body-sm);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: rgba(224,142,254,0.4);
+}
+
+.glass-card-sm {
+  background: rgba(26,25,25,0.6);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  border-top: 1px solid rgba(255,255,255,0.04);
+  transition: box-shadow 0.2s;
+}
+
+/* ============================================================
+   EXAM TIMETABLE — extra styles for redesigned student view
+   ============================================================ */
+.exam-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ============================================
+   PREMIUM COUNTDOWN TIMER STYLES
+   ============================================ */
+
+/* Main countdown container - VERY VISIBLE */
+.countdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 48px;
+  background: linear-gradient(135deg, #FFF8E7 0%, #FEF3D9 100%);
+  border-radius: 24px;
+  margin: 24px 0;
+  box-shadow: 
+    0 8px 32px rgba(216, 155, 41, 0.15),
+    0 0 0 2px rgba(216, 155, 41, 0.2) inset;
+  border: 2px solid rgba(216, 155, 41, 0.3);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Individual countdown unit */
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 60px;
+}
+
+/* Large hero countdown - SUPER VISIBLE GOLD */
+.countdown-value.hero {
+  min-width: 90px;
+  height: 100px;
+  font-size: 3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #D89B29 0%, #A86E11 100%);
+  color: white;
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 0 #8B5A00,
+    0 12px 24px rgba(168, 110, 17, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -4px 0 rgba(168, 110, 17, 0.3);
+  position: relative;
+  overflow: visible;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: -2px;
+  text-shadow: 0 2px 4px rgba(168, 110, 17, 0.3);
+  border: none;
+  transform: translateY(0);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.countdown-value.hero:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 0 #8B5A00,
+    0 16px 32px rgba(168, 110, 17, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -4px 0 rgba(168, 110, 17, 0.3);
+}
+
+/* Shine effect */
+.countdown-value.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+  border-radius: 20px 20px 50% 50%;
+}
+
+/* Countdown label - VERY VISIBLE */
+.countdown-label {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: white;
+  text-transform: uppercase;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #A86E11, #8B5A00);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(168, 110, 17, 0.3);
+}
+
+/* Separator colon - BIG AND BOLD */
+.countdown-sep {
+  color: #A86E11;
+  font-weight: 900;
+  font-size: 2.5rem;
+  line-height: 0.8;
+  padding-bottom: 0;
+  align-self: flex-start;
+  margin-top: 25px;
+  text-shadow: 0 2px 8px rgba(168, 110, 17, 0.4);
+}
+
+/* Smaller inline countdown */
+.countdown-sm .countdown-value {
+  font-size: 1.75rem;
+  min-width: 56px;
+  height: 56px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #D89B29 0%, #A86E11 100%);
+  color: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 #8B5A00, 0 6px 16px rgba(168, 110, 17, 0.3);
+  font-weight: 800;
+}
+
+.countdown-sm .countdown-label {
+  font-size: 11px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #A86E11, #8B5A00);
+  color: white;
+}
+
+/* hidden utility */
+.hidden { display: none !important; }
+
+/* =====================================================
+   PAGE RESPONSIVE STYLES
+   ===================================================== */
+
+/* CRITICAL PAGE MOBILE FIXES */
+@media (max-width: 768px) {
+  /* Fix page sections */
+  .page-section {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix section spacing */
+  .section {
+    padding: var(--space-4) 0;
+  }
+  
+  /* Fix grid layouts */
+  .grid-2, .grid-3, .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Fix tables */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    margin: 0 calc(-1 * var(--space-3));
+    padding: 0 var(--space-3);
+  }
+  
+  /* Fix progress rings */
+  .progress-ring {
+    width: 80px;
+    height: 80px;
+  }
+  
+  /* Fix spacing utilities */
+  .mb-4 { margin-bottom: var(--space-3); }
+  .mb-6 { margin-bottom: var(--space-4); }
+  .mt-4 { margin-top: var(--space-3); }
+  .mt-6 { margin-top: var(--space-4); }
+  .p-4 { padding: var(--space-3); }
+  .p-6 { padding: var(--space-4); }
+  
+  /* Fix exam card list */
+  .exam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .exam-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix post list */
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .post-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix wizard */
+  .wizard-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .wizard-step {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix subject row */
+  .subject-row {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Fix tag inputs */
+  .tag-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .tag-input-wrap input,
+  .tag-input-wrap button {
+    width: 100%;
+  }
+  
+  /* Fix calendar grid */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    width: 100%;
+  }
+  
+  /* Fix export actions */
+  .export-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .export-actions .btn {
+    width: 100%;
+  }
+  
+  /* Fix attendance stats */
+  .attendance-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  /* Fix attendance subjects */
+  .attendance-subjects {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  /* Fix trending sidebar */
+  .trending-sidebar {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding: var(--space-3) 0;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix maker config */
+  .maker-config {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    width: 100%;
+  }
+  
+  /* Fix qna layout */
+  .qna-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    width: 100%;
+  }
+}
+
+/* GPA Calculator - Tablet */
+@media (max-width: 1024px) {
+  .gpa-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .gpa-big-number {
+    font-size: 3rem;
+  }
+  
+  .subject-row {
+    grid-template-columns: 1fr 60px 60px 60px auto;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  
+  .subjects-header span {
+    font-size: 10px;
+  }
+}
+
+/* GPA Calculator - Mobile */
+@media (max-width: 480px) {
+  .subject-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .subjects-header {
+    display: none;
+  }
+  
+  .grade-ref-table {
+    font-size: 12px;
+  }
+  
+  .target-calc {
+    padding: 12px;
+  }
+}
+
+/* Q&A Board - Tablet */
+@media (max-width: 1024px) {
+  .qna-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .trending-sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  .trending-topic {
+    min-width: 200px;
+  }
+}
+
+/* Q&A Board - Mobile */
+@media (max-width: 480px) {
+  .qna-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .post-card {
+    padding: 12px;
+  }
+  
+  .post-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .vote-controls {
+    order: -1;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Attendance Tracker - Tablet */
+@media (max-width: 1024px) {
+  .attendance-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-lg);
+  }
+  
+  .attendance-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .attendance-subjects {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Attendance Tracker - Mobile */
+@media (max-width: 480px) {
+  .attendance-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .subject-attendance-card {
+    padding: 12px;
+  }
+  
+  .calendar-grid {
+    gap: 2px;
+  }
+  
+  .calendar-day {
+    font-size: 10px;
+    padding: 4px;
+  }
+  
+  .alert-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+  }
+}
+
+/* Timetable Maker - Tablet */
+@media (max-width: 1024px) {
+  .maker-config {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .timetable-grid {
+    overflow-x: auto;
+  }
+  
+  .timetable-grid table {
+    min-width: 600px;
+  }
+}
+
+/* Timetable Maker - Mobile */
+@media (max-width: 480px) {
+  .maker-config {
+    gap: var(--space-md);
+  }
+  
+  .tags-container {
+    gap: 6px;
+  }
+  
+  .tag-input-wrap {
+    flex-direction: column;
+  }
+  
+  .export-actions {
+    flex-direction: column;
+  }
+  
+  .export-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Exam Timetable - Tablet */
+@media (max-width: 1024px) {
+  .timetable-controls {
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+  
+  .timetable-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+/* Exam Timetable - Mobile */
+@media (max-width: 480px) {
+  .timetable-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .countdown-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .exam-type-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+}
+
+/* Record Book PDF - Tablet (768px) */
+@media (max-width: 768px) {
+  .wizard-content {
+    min-height: 240px;
+    padding: var(--space-md) !important;
+  }
+
+  /* Wizard steps: compact horizontal scroll row */
+  .wizard-steps {
+    gap: 6px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .wizard-step {
+    flex: 0 0 auto;
+    min-width: 44px;
+    padding: 10px 10px;
+    border-radius: var(--radius-md);
+  }
+
+  /* On mobile hide label, show only number for non-active steps */
+  .wizard-step .step-label {
+    display: none;
+  }
+  .wizard-step.active .step-label {
+    display: block;
+    font-size: 12px;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .wizard-step.active {
+    flex: 1;
+  }
+
+  /* GitHub input: stack vertically */
+  .github-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 100%;
+  }
+  .github-input-group .btn {
+    width: 100%;
+  }
+
+  /* Repo map: convert table to card list on small screens */
+  .repo-map-table thead {
+    display: none;
+  }
+  .repo-map-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-md);
+    background: var(--surface-container);
+    border: 1px solid rgba(73,72,71,0.1);
+  }
+  .repo-map-table tbody td {
+    display: flex;
+    align-items: flex-start;
+    padding: 2px 0;
+    font-size: 13px;
+    border: none;
+  }
+  /* Add data-label pseudo content for context */
+  .repo-map-table tbody td:nth-child(1) {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--on-surface);
+  }
+  .repo-map-table tbody td:nth-child(2) { font-size: 12px; }
+  .repo-map-table tbody td:nth-child(3) { font-size: 13px; font-weight: 600; }
+  .repo-map-table tbody td:nth-child(4),
+  .repo-map-table tbody td:nth-child(5) { font-size: 12px; color: var(--outline); }
+  /* Truncate long URLs */
+  .repo-map-table tbody td a {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+
+  /* Experiment checklist */
+  .experiment-check {
+    padding: 10px 12px;
+  }
+  .experiment-check label {
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  /* PDF preview */
+  .pdf-preview {
+    padding: var(--space-lg);
+    min-height: 180px;
+  }
+  .pdf-preview h3 { font-size: 1rem; }
+
+  /* Nav buttons: full-width stack when both present */
+  .wizard-nav {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .wizard-nav .btn {
+    flex: 1;
+  }
+}
+
+/* Record Book PDF - Small mobile (360px) */
+@media (max-width: 400px) {
+  .wizard-step .step-number {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  .wizard-step.active .step-label {
+    font-size: 11px;
+    max-width: 70px;
+  }
+  .experiment-check label strong { font-size: 12px; }
+  .experiment-check label span { font-size: 11px; }
+}
+
+/* Fix common responsive issues */
+@media (max-width: 768px) {
+  .flex.flex-col.gap-6 {
+    gap: var(--space-4);
+  }
+  
+  .grid.gap-6 {
+    gap: var(--space-4);
+  }
+  
+  .skeleton {
+    height: 60px !important;
+  }
+  
+  .text-right {
+    text-align: left;
+  }
+  
+  .mb-4 {
+    margin-bottom: var(--space-3);
+  }
+  
+  .mb-6 {
+    margin-bottom: var(--space-4);
+  }
+  
+  .text-muted {
+    font-size: 12px;
+  }
+  
+  .exam-list .exam-card {
+    margin-bottom: var(--space-3);
+  }
+}
+
+/* =====================================================
+   PREMIUM MOBILE CARD STYLES
+   ===================================================== */
+
+/* Mobile card improvements */
+@media (max-width: 768px) {
+  .glass-card, .glass-card-static {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 
+      0 2px 8px rgba(168, 110, 17, 0.08),
+      0 4px 16px rgba(168, 110, 17, 0.04);
+  }
+  
+  .hero-exam-card {
+    border-radius: 20px;
+    padding: 20px;
+  }
+  
+  /* Premium touch feedback */
+  .glass-card:active, .glass-card-static:active {
+    transform: scale(0.98);
+    transition: transform 0.15s ease;
+  }
+  
+  /* Smooth card transitions */
+  .exam-card, .post-card, .subject-attendance-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .exam-card:active, .post-card:active {
+    transform: scale(0.98);
+  }
+  
+  /* Improved spacing rhythm */
+  .page-section {
+    margin-bottom: var(--space-5);
+  }
+  
+  /* Better text hierarchy on mobile */
+  .text-body {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .text-body-sm {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  /* Premium chip/badges for mobile */
+  .badge {
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+  }
+  
+  /* Better form feel on mobile */
+  .form-input, .form-select, textarea {
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Improved button ergonomics */
+  .btn {
+    border-radius: 12px;
+    min-height: 48px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  
+  .btn:active {
+    transform: scale(0.96);
+  }
+  
+  /* Premium scroll behavior */
+  .table-wrap, .scrollable {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Horizontal scroll containers */
+  .chips-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .chips-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .chip-item {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  
+  .chip-item.active {
+    background: linear-gradient(135deg, #D89B29, #A86E11);
+    color: white;
+  }
+  
+  /* Premium skeleton loaders */
+  .skeleton {
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--surface-container) 25%, var(--surface-container-high) 50%, var(--surface-container) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  /* Sticky mobile header */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Bottom safe area */
+  .page-content {
+    padding-bottom: calc(var(--space-4) + 70px);
+  }
+  
+  /* Improved modals/drawers on mobile */
+  .modal-content, .drawer-content {
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  /* Floating action button */
+  .fab {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #D89B29, #A86E11);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(168, 110, 17, 0.4);
+    z-index: 999;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .fab:active {
+    transform: scale(0.95);
+  }
+  
+  .fab svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 380px) {
+  .glass-card, .glass-card-static {
+    padding: 14px;
+    border-radius: 14px;
+  }
+  
+  .badge {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+  
+  .btn {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
+/* =====================================================
+   EXAM TIMETABLE MOBILE OPTIMIZATION
+   ===================================================== */
+@media (max-width: 768px) {
+  .timetable-controls {
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  
+  .timetable-controls .form-select {
+    width: 100%;
+  }
+  
+  .timetable-table-wrap {
+    border-radius: 16px;
+    margin: 0 calc(-1 * var(--space-3));
+    padding: 0 var(--space-3);
+    overflow-x: auto;
+  }
+  
+  .timetable-table-wrap table {
+    min-width: 600px;
+  }
+  
+  /* Exam filter chips */
+  .exam-filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: var(--space-4);
+  }
+  
+  .exam-filters::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .exam-filter-chip {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .exam-filter-chip.active {
+    background: linear-gradient(135deg, #D89B29, #A86E11);
+    color: white;
+  }
+  
+  /* Exam card mobile */
+  .exam-item {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .exam-item .exam-subject {
+    font-size: 15px;
+    font-weight: 600;
+    color: #A86E11;
+  }
+  
+  .exam-item .exam-date {
+    font-size: 13px;
+    color: var(--on-surface-variant);
+  }
+  
+  .exam-item .days-left-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+/* =====================================================
+   GPA CALCULATOR MOBILE OPTIMIZATION
+   ===================================================== */
+@media (max-width: 768px) {
+  .gpa-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .gpa-big-number {
+    font-size: 3.5rem;
+  }
+  
+  /* Semester tabs - horizontal scroll */
+  .semester-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+    margin-bottom: var(--space-4);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .semester-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .semester-tab {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .semester-tab.active {
+    background: linear-gradient(135deg, #D89B29, #A86E11);
+    color: white;
+  }
+  
+  /* Subject form - full width inputs */
+  .subjects-form {
+    gap: var(--space-3);
+  }
+  
+  .subject-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+  
+  .subject-row input,
+  .subject-row select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  
+  .subject-row .remove-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+  
+  /* GPA result card */
+  .gpa-result-card {
+    border-radius: 20px;
+    padding: var(--space-5);
+    margin-top: var(--space-4);
+  }
+  
+  .gpa-sidebar {
+    order: -1;
+    margin-bottom: var(--space-4);
+  }
+  
+  /* Grade reference table */
+  .grade-ref-table {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  
+  .grade-ref-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+/* =====================================================
+   Q&A BOARD MOBILE OPTIMIZATION
+   ===================================================== */
+@media (max-width: 768px) {
+  .qna-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Search and filters */
+  .qna-filters {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .qna-filters .search-input {
+    width: 100%;
+  }
+  
+  .qna-filters .filter-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .qna-filters .filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Post card */
+  .post-card {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .post-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #A86E11;
+    margin-bottom: 8px;
+  }
+  
+  .post-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--on-surface-variant);
+  }
+  
+  /* Post tags */
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  
+  .post-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    background: var(--surface-container);
+  }
+  
+  /* Vote controls */
+  .post-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .vote-controls {
+    order: -1;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  /* Trending sidebar - horizontal scroll */
+  .trending-sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding: var(--space-3) 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .trending-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .trending-topic {
+    flex: 0 0 auto;
+    width: 160px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+  
+  /* FAB for new post */
+  .qna-fab {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #D89B29, #A86E11);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(168, 110, 17, 0.4);
+    z-index: 999;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .qna-fab svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* =====================================================
+   ATTENDANCE PAGE MOBILE OPTIMIZATION
+   ===================================================== */
+@media (max-width: 768px) {
+  .attendance-header-row {
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  
+  .overall-ring {
+    align-self: center;
+  }
+  
+  /* Attendance stats */
+  .attendance-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .attendance-stat-item {
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .attendance-stat-item .stat-label {
+    font-size: 13px;
+    color: var(--on-surface-variant);
+  }
+  
+  .attendance-stat-item .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #A86E11;
+  }
+  
+  /* Subject cards */
+  .attendance-subjects {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .subject-attendance-card {
+    border-radius: 16px;
+    padding: 16px;
+  }
+  
+  .subject-attendance-card .subject-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #A86E11;
+  }
+  
+  .subject-attendance-card .subject-percent {
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  
+  .subject-attendance-card .classes-info {
+    font-size: 12px;
+  }
+  
+  /* Calendar */
+  .attendance-calendar {
+    margin-top: var(--space-4);
+  }
+  
+  .calendar-grid {
+    gap: 4px;
+  }
+  
+  .calendar-day {
+    aspect-ratio: 1;
+    font-size: 10px;
+    border-radius: 8px;
+  }
+  
+  /* Alert banner */
+  .alert-banner {
+    border-radius: 14px;
+    padding: 14px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  /* Skip info */
+  .skip-info {
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* =====================================================
+   RECORD BOOK MOBILE OPTIMIZATION
+   ===================================================== */
+@media (max-width: 768px) {
+  .wizard-steps {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .wizard-step {
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .wizard-step.active {
+    border: 2px solid #D89B29;
+  }
+  
+  .wizard-content {
+    min-height: auto;
+    padding: var(--space-4);
+    border-radius: 16px;
+  }
+  
+  /* GitHub input */
+  .github-input-group {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .github-input-group .form-input {
+    width: 100%;
+    font-size: 14px;
+    word-break: break-all;
+  }
+  
+  /* Validation status */
+  .validation-status {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+  
+  /* Experiment checklist */
+  .experiment-check {
+    border-radius: 12px;
+    padding: 12px;
+  }
+  
+  .experiment-check label {
+    font-size: 14px;
+    gap: 10px;
+  }
+  
+  /* PDF preview */
+  .pdf-preview {
+    border-radius: 16px;
+    padding: var(--space-4);
+    min-height: 200px;
+  }
+  
+  /* Floating action buttons */
+  .record-actions {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 999;
+  }
+  
+  .record-actions .btn {
+    border-radius: 24px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 16px rgba(168, 110, 17, 0.3);
+  }
+}
+
+/* =====================================================
+   TIMETABLE MAKER MOBILE OPTIMIZATION
+   ===================================================== */
+@media (max-width: 768px) {
+  .maker-config {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  /* Tags container */
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .tag-item {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+  }
+  
+  .tag-input-wrap {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .tag-input-wrap input,
+  .tag-input-wrap button {
+    width: 100%;
+  }
+  
+  /* Timetable grid */
+  .timetable-grid {
+    border-radius: 16px;
+    overflow-x: auto;
+    margin: 0 calc(-1 * var(--space-3));
+    padding: 0 var(--space-3);
+  }
+  
+  .timetable-grid table {
+    min-width: 500px;
+  }
+  
+  .timetable-grid th,
+  .timetable-grid td {
+    padding: 10px 6px;
+    font-size: 11px;
+  }
+  
+  /* Export actions */
+  .export-actions {
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    bottom: 90px;
+    left: 0;
+    right: 0;
+    padding: var(--space-4);
+    background: var(--surface);
+    z-index: 100;
+  }
+  
+  .export-actions .btn {
+    width: 100%;
+    border-radius: 14px;
+  }
+}

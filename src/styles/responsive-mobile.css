@@ -1,0 +1,1044 @@
+/* =====================================================
+   RESPONSIVE MOBILE POLISH
+   These overrides are intentionally scoped to 1024px and below
+   so the existing desktop layout remains unchanged.
+   ===================================================== */
+
+/* Responsive base: keep the injected mobile nav hidden on desktop while preserving desktop layout. */
+.mobile-bottom-nav,
+.sidebar-backdrop,
+.sidebar-close-btn {
+  display: none;
+}
+
+/* Responsive media: reduce motion on touch devices and battery-sensitive mobile browsers. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Small laptop responsive changes: protect content from inline desktop grids becoming cramped. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-content {
+    min-width: 0;
+  }
+
+  .page-content {
+    overflow-x: hidden;
+  }
+
+  .page-content > .grid[style*="grid-template-columns:1fr 380px"],
+  .page-content > .grid[style*="grid-template-columns:1fr 360px"],
+  .page-content > .grid[style*="grid-template-columns:1fr 340px"],
+  .page-content > .grid[style*="grid-template-columns:400px 1fr"],
+  .page-content > .grid[style*="grid-template-columns:380px 1fr"],
+  .page-content > .grid[style*="grid-template-columns:minmax(0, 1.15fr)"] {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px) !important;
+    gap: var(--space-5) !important;
+  }
+
+  .stat-card,
+  .glass-card,
+  .glass-card-static {
+    min-width: 0;
+  }
+}
+
+/* Narrow tablet responsive changes: switch app chrome to a drawer and stack desktop columns. */
+@media (max-width: 900px) {
+  .page-content > .grid[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-content [style*="position:sticky"] {
+    position: static !important;
+    top: auto !important;
+  }
+}
+
+/* Tablet and mobile responsive shell: off-canvas sidebar, safe scrolling, and compact header. */
+@media (max-width: 768px) {
+  html,
+  body,
+  #app,
+  #page-root {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body {
+    height: auto;
+    min-height: 100svh;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.nav-lock {
+    overflow: hidden;
+  }
+
+  .app-layout {
+    display: block;
+    min-height: 100svh;
+  }
+
+  .main-content {
+    width: 100%;
+    min-width: 0;
+    min-height: 100svh;
+    margin-left: 0 !important;
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+
+  .top-bar {
+    height: auto;
+    min-height: 64px;
+    padding: max(10px, env(safe-area-inset-top)) 16px 10px !important;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(168, 110, 17, 0.06);
+  }
+
+  .top-bar > .flex:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 12px;
+  }
+
+  .top-bar > .flex:last-child {
+    flex: 0 0 auto;
+    gap: 8px;
+  }
+
+  .top-bar [style*="font-size:26px"] {
+    max-width: 58vw;
+    overflow: hidden;
+    font-size: clamp(1.1rem, 4.8vw, 1.45rem) !important;
+    line-height: 1.15;
+    letter-spacing: 0 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #mobile-menu-btn {
+    display: inline-flex !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 !important;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(216, 155, 41, 0.18) !important;
+    background: #fff !important;
+    color: #A86E11 !important;
+    font-size: 1.25rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sidebar {
+    width: min(86vw, 320px) !important;
+    max-width: 320px;
+    height: 100dvh;
+    transform: translate3d(-105%, 0, 0);
+    z-index: 1000 !important;
+    transition: transform 220ms cubic-bezier(0.2, 0, 0, 1), box-shadow 220ms ease;
+    will-change: transform;
+  }
+
+  .sidebar.mobile-open {
+    transform: translate3d(0, 0, 0);
+    box-shadow: 24px 0 60px rgba(31, 31, 31, 0.24);
+  }
+
+  .sidebar-logo {
+    padding: calc(16px + env(safe-area-inset-top)) 18px 16px;
+  }
+
+  .sidebar-nav {
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-item {
+    min-height: 48px;
+    padding: 13px 14px !important;
+    font-size: 0.94rem;
+  }
+
+  .sidebar-footer {
+    padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .sidebar-close-btn {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    z-index: 2;
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(216, 155, 41, 0.16);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #A86E11;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sidebar-close-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: block;
+    background: rgba(31, 31, 31, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 180ms ease, visibility 180ms ease;
+  }
+
+  .sidebar-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .page-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 18px 16px calc(96px + env(safe-area-inset-bottom)) !important;
+    overflow-x: hidden;
+    overflow-y: visible;
+    touch-action: pan-y;
+  }
+
+  .page-header {
+    margin-bottom: 18px;
+  }
+
+  .page-title,
+  h1.text-display,
+  .text-display {
+    font-size: clamp(1.45rem, 7vw, 2rem) !important;
+    line-height: 1.12;
+    letter-spacing: 0 !important;
+  }
+
+  .page-subtitle,
+  .text-body,
+  p {
+    font-size: clamp(0.875rem, 3.5vw, 0.96rem);
+  }
+
+  .grid,
+  .grid-2,
+  .grid-3,
+  .grid-4,
+  .maker-config,
+  .gpa-layout,
+  .qna-layout,
+  .attendance-subjects,
+  .attendance-stats {
+    min-width: 0;
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-content > .grid,
+  .page-content .grid[style*="grid-template-columns"] {
+    width: 100%;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .flex.items-center.justify-between,
+  .post-card-header,
+  .attendance-header-row,
+  .subject-attendance-card .subject-header {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .glass-card,
+  .glass-card-static,
+  .stat-card,
+  .post-card,
+  .subject-attendance-card,
+  .exam-card,
+  .hero-exam-card {
+    width: 100%;
+    min-width: 0;
+    border-radius: 16px !important;
+    overflow-wrap: anywhere;
+  }
+
+  .glass-card:hover,
+  .stat-card:hover,
+  .post-card:hover,
+  .quick-action-card:hover {
+    transform: none !important;
+  }
+
+  .stat-card {
+    padding: 14px !important;
+  }
+
+  #stat-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .stat-card .stat-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 10px;
+  }
+
+  .stat-card .stat-value,
+  .stat-value {
+    font-size: clamp(1.35rem, 6vw, 1.85rem) !important;
+  }
+
+  .countdown {
+    gap: 8px !important;
+    padding: 14px 10px !important;
+  }
+
+  .countdown-value.hero {
+    min-width: clamp(42px, 18vw, 64px) !important;
+    height: clamp(48px, 18vw, 64px) !important;
+    font-size: clamp(1.15rem, 6vw, 1.65rem) !important;
+    border-radius: 14px !important;
+  }
+
+  .countdown-sep {
+    display: none;
+  }
+
+  .quick-action-card {
+    min-height: 68px;
+  }
+
+  .qna-filters,
+  .timetable-controls,
+  .tag-input-wrap,
+  .github-input-group,
+  #attendance-form,
+  #add-subject-gpa .grid,
+  .target-calc,
+  .export-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .chip,
+  .badge {
+    white-space: nowrap;
+  }
+
+  .sem-btn {
+    flex: 0 0 auto;
+  }
+
+  .glass-card .flex.gap-2,
+  .chips-scroll,
+  .trending-sidebar {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .glass-card .flex.gap-2::-webkit-scrollbar,
+  .chips-scroll::-webkit-scrollbar,
+  .trending-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea,
+  input,
+  select,
+  textarea {
+    min-height: 46px;
+    font-size: 16px !important;
+  }
+
+  .btn,
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  .btn {
+    min-height: 44px;
+    white-space: normal;
+  }
+
+  img,
+  svg,
+  canvas,
+  video {
+    max-width: 100%;
+  }
+
+  .table-wrapper,
+  .table-wrap,
+  .timetable-table-wrap,
+  .timetable-grid,
+  #exp-table-wrap,
+  .record-preview {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: visible;
+    overscroll-behavior-inline: contain;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  .table-wrapper table,
+  .table-wrap table,
+  .timetable-table-wrap table,
+  .timetable-grid table,
+  #exp-editor,
+  .data-table {
+    width: max-content;
+    min-width: 640px;
+  }
+
+  .calendar-grid {
+    min-width: 0;
+    gap: 3px !important;
+  }
+
+  .calendar-day,
+  .calendar-day-header {
+    min-width: 0;
+    font-size: clamp(0.65rem, 2.7vw, 0.78rem) !important;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 950;
+    display: block;
+    min-height: calc(68px + env(safe-area-inset-bottom));
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(216, 155, 41, 0.18);
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 -12px 34px rgba(168, 110, 17, 0.12);
+  }
+
+  .mobile-bottom-nav-items {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    width: min(100%, 520px);
+    margin: 0 auto;
+  }
+
+  .mobile-bottom-nav-item {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 52px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    padding: 7px 4px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: #666666;
+    font: 700 0.68rem/1 var(--font-family);
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-bottom-nav-item svg {
+    width: 21px;
+    height: 21px;
+    stroke-width: 2;
+    flex-shrink: 0;
+  }
+
+  .mobile-bottom-nav-item span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-bottom-nav-item.active {
+    background: rgba(216, 155, 41, 0.12);
+    color: #A86E11;
+  }
+
+  .mobile-bottom-nav-item:active {
+    transform: scale(0.96);
+  }
+}
+
+/* Mobile responsive changes: tune spacing and one-handed controls for 320px-480px screens. */
+@media (max-width: 480px) {
+  .top-bar {
+    min-height: 58px;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .top-bar .badge-admin,
+  .top-bar .text-label-sm {
+    display: none !important;
+  }
+
+  .top-bar [style*="font-size:26px"] {
+    max-width: 52vw;
+    font-size: clamp(1rem, 5.5vw, 1.24rem) !important;
+  }
+
+  .top-bar .user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 11px !important;
+  }
+
+  .page-content {
+    padding: 14px 12px calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .page-header {
+    margin-bottom: 14px;
+  }
+
+  .glass-card,
+  .glass-card-static {
+    padding: 14px !important;
+  }
+
+  #stat-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .stat-card .stat-label,
+  .stat-card .stat-change {
+    font-size: 0.72rem !important;
+  }
+
+  .hero-exam-card [id="hero-meta"] {
+    gap: 8px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .post-card-header .post-meta,
+  .post-author {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .calendar-day {
+    border-radius: 8px !important;
+  }
+
+  .mobile-bottom-nav {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .mobile-bottom-nav-items {
+    gap: 2px;
+  }
+
+  .mobile-bottom-nav-item {
+    min-height: 50px;
+    border-radius: 12px;
+    font-size: 0.62rem;
+  }
+}
+
+/* Extra-small responsive changes: prevent labels and badges from forcing horizontal scroll at 320px. */
+@media (max-width: 380px) {
+  #stat-cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  .badge,
+  .chip {
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .mobile-bottom-nav-item span {
+    font-size: 0.58rem;
+  }
+}
+
+/* Premium mobile layer: adds depth, tactile motion, and app-like polish without changing desktop. */
+@media (max-width: 768px) {
+  :root {
+    --mobile-ease: cubic-bezier(0.2, 0, 0, 1);
+    --mobile-shadow-soft: 0 10px 30px rgba(168, 110, 17, 0.08);
+    --mobile-shadow-lift: 0 18px 44px rgba(168, 110, 17, 0.14);
+    --mobile-glass: rgba(255, 255, 255, 0.78);
+    --mobile-glass-border: rgba(255, 255, 255, 0.72);
+  }
+
+  /* Premium scroll: keep vertical page scrolling native while horizontal regions stay smooth. */
+  .page-content {
+    scroll-behavior: smooth;
+    overscroll-behavior-y: auto;
+    touch-action: pan-y;
+  }
+
+  .sidebar-nav {
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+
+  .table-wrapper,
+  .table-wrap,
+  .timetable-table-wrap,
+  #exp-table-wrap {
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Premium page transition: lightweight transform/opacity reveal for route changes. */
+  .page-content {
+    animation: mobile-page-in 320ms var(--mobile-ease) both;
+  }
+
+  @keyframes mobile-page-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 10px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Premium content reveal: staggers major sections while keeping layout dimensions stable. */
+  .page-content > * {
+    animation: mobile-section-in 360ms var(--mobile-ease) both;
+  }
+
+  .page-content > *:nth-child(2) { animation-delay: 45ms; }
+  .page-content > *:nth-child(3) { animation-delay: 90ms; }
+  .page-content > *:nth-child(4) { animation-delay: 135ms; }
+
+  @keyframes mobile-section-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 8px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Premium shell: sticky translucent header with layered depth and stable safe-area spacing. */
+  .top-bar {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)) !important;
+    border-bottom: 1px solid rgba(216, 155, 41, 0.13) !important;
+    -webkit-backdrop-filter: saturate(140%) blur(22px) !important;
+    backdrop-filter: saturate(140%) blur(22px) !important;
+  }
+
+  /* Premium focus: visible but elegant keyboard and assistive-tech focus states. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 3px solid rgba(216, 155, 41, 0.34) !important;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(216, 155, 41, 0.1) !important;
+  }
+
+  /* Premium buttons: subtle sheen, stronger touch target, and GPU-safe press feedback. */
+  .btn,
+  .chip,
+  .mobile-bottom-nav-item,
+  .nav-item,
+  .quick-action-card,
+  .fab,
+  .qna-fab {
+    transition:
+      transform 180ms var(--mobile-ease),
+      box-shadow 240ms var(--mobile-ease),
+      background-color 240ms var(--mobile-ease),
+      color 180ms var(--mobile-ease),
+      border-color 180ms var(--mobile-ease);
+    will-change: transform;
+  }
+
+  .btn-primary,
+  .fab,
+  .qna-fab {
+    box-shadow:
+      0 10px 24px rgba(168, 110, 17, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.26);
+  }
+
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.24), transparent 78%);
+    opacity: 0;
+    transform: translate3d(-18%, 0, 0);
+    transition: opacity 220ms ease, transform 360ms var(--mobile-ease);
+    pointer-events: none;
+  }
+
+  .btn-primary:active::after {
+    opacity: 1;
+    transform: translate3d(18%, 0, 0);
+  }
+
+  .btn:active,
+  .chip:active,
+  .quick-action-card:active,
+  .nav-item:active,
+  .fab:active,
+  .qna-fab:active {
+    transform: scale(0.975) translate3d(0, 1px, 0) !important;
+  }
+
+  /* Premium cards: soft glass surfaces and intentional hierarchy on mobile only. */
+  .glass-card,
+  .glass-card-static,
+  .stat-card,
+  .post-card,
+  .subject-attendance-card,
+  .exam-card,
+  .hero-exam-card,
+  .alert,
+  .alert-banner {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(253, 251, 247, 0.84)) !important;
+    border: 1px solid rgba(216, 155, 41, 0.14) !important;
+    box-shadow: var(--mobile-shadow-soft) !important;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .glass-card,
+  .glass-card-static,
+  .stat-card,
+  .post-card,
+  .subject-attendance-card,
+  .exam-card,
+  .hero-exam-card {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .glass-card::after,
+  .glass-card-static::after,
+  .stat-card::after,
+  .post-card::after,
+  .subject-attendance-card::after,
+  .exam-card::after,
+  .hero-exam-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(216, 155, 41, 0.11), transparent 45%);
+    opacity: 0;
+    transition: opacity 260ms var(--mobile-ease);
+    pointer-events: none;
+  }
+
+  .glass-card:active::after,
+  .glass-card-static:active::after,
+  .stat-card:active::after,
+  .post-card:active::after,
+  .subject-attendance-card:active::after,
+  .exam-card:active::after,
+  .hero-exam-card:active::after {
+    opacity: 1;
+  }
+
+  .glass-card:active,
+  .glass-card-static:active,
+  .stat-card:active,
+  .post-card:active,
+  .subject-attendance-card:active,
+  .exam-card:active {
+    transform: scale(0.992) translate3d(0, 1px, 0) !important;
+  }
+
+  /* Premium hierarchy: clearer headings and easier reading on narrow screens. */
+  .text-title,
+  .text-title-lg,
+  .page-title,
+  .glass-card h2,
+  .glass-card h3 {
+    line-height: 1.16;
+    text-wrap: balance;
+  }
+
+  .text-muted,
+  .page-subtitle,
+  .text-body-sm {
+    color: rgba(31, 31, 31, 0.68) !important;
+  }
+
+  .page-header + .grid,
+  .page-header + .glass-card,
+  .page-content > .grid + .grid,
+  .page-content > .glass-card + .glass-card {
+    margin-top: 16px;
+  }
+
+  /* Premium bottom nav: animated active pill, tactile icon motion, and glass depth. */
+  .mobile-bottom-nav {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.94)),
+      rgba(255, 255, 255, 0.9);
+    border-top-color: rgba(216, 155, 41, 0.16);
+    -webkit-backdrop-filter: saturate(150%) blur(24px);
+    backdrop-filter: saturate(150%) blur(24px);
+  }
+
+  .mobile-bottom-nav-item {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mobile-bottom-nav-item::before {
+    content: "";
+    position: absolute;
+    inset: 6px 8px;
+    z-index: -1;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(216, 155, 41, 0.16), rgba(168, 110, 17, 0.08));
+    opacity: 0;
+    transform: scale(0.82);
+    transition: opacity 220ms var(--mobile-ease), transform 240ms var(--mobile-ease);
+  }
+
+  .mobile-bottom-nav-item.active::before,
+  .mobile-bottom-nav-item:active::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .mobile-bottom-nav-item.active {
+    background: transparent;
+  }
+
+  .mobile-bottom-nav-item.active svg {
+    transform: translate3d(0, -1px, 0) scale(1.06);
+  }
+
+  .mobile-bottom-nav-item:active svg {
+    transform: scale(0.92);
+  }
+
+  /* Premium drawer: polished transition, blur overlay, and cleaner menu density. */
+  .sidebar {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 244, 236, 0.92)) !important;
+    -webkit-backdrop-filter: saturate(130%) blur(20px);
+    backdrop-filter: saturate(130%) blur(20px);
+  }
+
+  .sidebar-backdrop {
+    background: rgba(31, 31, 31, 0.34);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  .sidebar.mobile-open .nav-item {
+    animation: drawer-item-in 300ms var(--mobile-ease) both;
+  }
+
+  .sidebar.mobile-open .nav-item:nth-child(2) { animation-delay: 35ms; }
+  .sidebar.mobile-open .nav-item:nth-child(3) { animation-delay: 70ms; }
+  .sidebar.mobile-open .nav-item:nth-child(4) { animation-delay: 105ms; }
+  .sidebar.mobile-open .nav-item:nth-child(5) { animation-delay: 140ms; }
+  .sidebar.mobile-open .nav-item:nth-child(6) { animation-delay: 175ms; }
+  .sidebar.mobile-open .nav-item:nth-child(7) { animation-delay: 210ms; }
+
+  @keyframes drawer-item-in {
+    from {
+      opacity: 0;
+      transform: translate3d(-10px, 0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Premium forms: clearer input affordance and stable mobile spacing. */
+  .form-group {
+    gap: 8px;
+  }
+
+  .form-label {
+    color: rgba(31, 31, 31, 0.78) !important;
+    font-size: 0.76rem !important;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea,
+  input,
+  select,
+  textarea {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    transition:
+      border-color 180ms var(--mobile-ease),
+      box-shadow 220ms var(--mobile-ease),
+      background-color 220ms var(--mobile-ease),
+      transform 180ms var(--mobile-ease);
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    transform: translate3d(0, -1px, 0);
+  }
+
+  /* Premium loading: smoother shimmer for existing skeleton blocks. */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px !important;
+    background: linear-gradient(90deg, #F4EEE4 0%, #FFF9EF 45%, #F4EEE4 100%) !important;
+    background-size: 220% 100% !important;
+    animation: mobile-skeleton 1.45s ease-in-out infinite !important;
+  }
+
+  @keyframes mobile-skeleton {
+    from { background-position: 120% 0; }
+    to { background-position: -120% 0; }
+  }
+
+  /* Premium tables: horizontal scrollers get a subtle affordance without layout shifts. */
+  .table-wrapper,
+  .table-wrap,
+  .timetable-table-wrap,
+  .timetable-grid,
+  #exp-table-wrap {
+    border-radius: 16px;
+    box-shadow: inset -18px 0 18px -22px rgba(31, 31, 31, 0.38);
+  }
+
+  /* Premium modals and PDF preview: native-app bottom-sheet feel on mobile. */
+  .modal-backdrop,
+  #pdf-modal {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal,
+  #pdf-modal-inner {
+    border-radius: 22px 22px 0 0 !important;
+    box-shadow: 0 -20px 56px rgba(31, 31, 31, 0.22) !important;
+    animation: mobile-sheet-in 280ms var(--mobile-ease) both;
+  }
+
+  @keyframes mobile-sheet-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Premium FABs: keep floating actions reachable above the bottom nav. */
+  .fab,
+  .qna-fab {
+    bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 16px 34px rgba(168, 110, 17, 0.28) !important;
+  }
+}
+
+/* Premium hover: only apply lift effects on devices that truly support hover. */
+@media (max-width: 768px) and (hover: hover) and (pointer: fine) {
+  .glass-card:hover,
+  .glass-card-static:hover,
+  .stat-card:hover,
+  .post-card:hover,
+  .subject-attendance-card:hover,
+  .exam-card:hover,
+  .quick-action-card:hover {
+    transform: translate3d(0, -3px, 0) !important;
+    box-shadow: var(--mobile-shadow-lift) !important;
+  }
+
+  .btn:hover,
+  .mobile-bottom-nav-item:hover,
+  .nav-item:hover {
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+/* Premium scroll reveal: progressive enhancement for browsers with view timelines. */
+@supports (animation-timeline: view()) {
+  @media (max-width: 768px) {
+    .post-card,
+    .exam-card,
+    .subject-attendance-card,
+    .trending-topic {
+      animation: mobile-scroll-reveal both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+
+    @keyframes mobile-scroll-reveal {
+      from {
+        opacity: 0.65;
+        transform: translate3d(0, 12px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+  }
+}

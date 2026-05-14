@@ -1,0 +1,10 @@
+19AI301 Python Programming T2-Q13 Krishnamoorthy J Monday 10-12
+19AI301 Python Programming T2-Q13 Krishnamoorthy J Thursday 10-12
+19AI413 Deep Learning T2-BLENDED Nadar Akila Tuesday 1-3
+19AI413 Deep Learning T2-BLENDED Nadar Akila Friday 8-10
+19AI541 Cloud Computing T2-BLENDED-5 Malathi K Wednesday 3-5
+19AI541 Cloud Computing T2-BLENDED-5 Malathi K Friday 10-12
+19AI332 Data Mining T3-C22 Priya S Monday 8-10
+19AI332 Data Mining T3-C22 Priya S Wednesday 10-12
+19AI360 Software Engineering T1-H11 Anand R Tuesday 10-12
+19AI360 Software Engineering T1-H11 Anand R Thursday 1-3
