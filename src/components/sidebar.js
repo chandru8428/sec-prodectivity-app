@@ -11,9 +11,11 @@ const studentNavItems = [
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>', label: 'Knowledge Exchange',       path: '/student/qa-board' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>', label: 'Record Book Forge', path: '/student/record-book' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>', label: 'Attendance',      path: '/student/attendance' },
+  { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'My Profile',      path: '/student/profile' },
 ];
 
 const adminNavItems = [
+
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>', label: 'Dashboard',         path: '/admin/dashboard' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>', label: 'Upload Timetable',  path: '/admin/upload-timetable' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>', label: 'Repo Mapping',      path: '/admin/repo-mapping' },
@@ -57,8 +59,8 @@ export function renderSidebar(container) {
     </nav>
 
     <div class="sidebar-footer">
-      <div class="sidebar-user" id="sidebar-user-menu">
-        <div class="user-avatar">${initials}</div>
+      <div class="sidebar-user" id="sidebar-user-menu" style="position:relative;cursor:pointer" title="Account options">
+        <div class="user-avatar" id="sidebar-avatar">${initials}</div>
         <div style="flex:1;min-width:0">
           <div class="text-body-sm" style="font-weight:600;color:#1F1F1F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.name || 'User'}</div>
           <div style="font-size:11px;color:#666666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.registerNumber || user?.email || ''}</div>
@@ -66,6 +68,19 @@ export function renderSidebar(container) {
         <button class="btn btn-sm" id="logout-btn" title="Logout" style="background:linear-gradient(135deg, #D89B29, #A86E11);color:white;border:none;border-radius:12px;padding:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(216,155,41,0.25);cursor:pointer;transition:all 0.2s;width:38px;height:38px;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
         </button>
+
+        <!-- Profile dropdown -->
+        <div id="profile-dropdown" style="display:none;position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:var(--color-surface-container);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);overflow:hidden;z-index:200">
+          <button id="goto-profile-btn" style="width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--color-on-surface);font-weight:600;transition:background 0.15s" onmouseover="this.style.background='var(--color-surface-container-high)'" onmouseout="this.style.background='none'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Edit Profile
+          </button>
+          <div style="height:1px;background:var(--border-color);margin:0 12px"></div>
+          <button id="dropdown-logout-btn" style="width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--color-danger);font-weight:600;transition:background 0.15s" onmouseover="this.style.background='var(--color-surface-container-high)'" onmouseout="this.style.background='none'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -79,7 +94,39 @@ export function renderSidebar(container) {
     });
   });
 
-  // Logout
+  // Profile dropdown toggle
+  const userMenu    = sidebar.querySelector('#sidebar-user-menu');
+  const dropdown    = sidebar.querySelector('#profile-dropdown');
+  const gotoProfile = sidebar.querySelector('#goto-profile-btn');
+  const dropLogout  = sidebar.querySelector('#dropdown-logout-btn');
+
+  if (userMenu && dropdown) {
+    userMenu.addEventListener('click', (e) => {
+      // Don't open dropdown when clicking the logout arrow button directly
+      if (e.target.closest('#logout-btn')) return;
+      const isOpen = dropdown.style.display !== 'none';
+      dropdown.style.display = isOpen ? 'none' : 'block';
+    });
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!userMenu.contains(e.target)) dropdown.style.display = 'none';
+    }, { capture: false });
+  }
+
+  gotoProfile?.addEventListener('click', () => {
+    if (dropdown) dropdown.style.display = 'none';
+    router.navigate('/student/profile');
+  });
+
+  dropLogout?.addEventListener('click', async () => {
+    if (dropdown) dropdown.style.display = 'none';
+    try {
+      await signOut(auth);
+      showToast('Logged out successfully', 'success');
+    } catch { showToast('Logout failed', 'error'); }
+  });
+
+  // Logout (arrow button at bottom right)
   sidebar.querySelector('#logout-btn').addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
@@ -116,6 +163,7 @@ export function createLayout(title, content, breadcrumb = '') {
       'Knowledge Exchange': 'Q&A',
       'Record Book Forge': 'Records',
       Attendance: 'Attend',
+      'My Profile': 'Profile',
       'Upload Timetable': 'Upload',
       'Repo Mapping': 'Repos',
       'Q&A Moderation': 'Q&A',
@@ -138,7 +186,24 @@ export function createLayout(title, content, breadcrumb = '') {
       </div>
       <div class="flex items-center gap-3">
         ${role === 'admin' ? '<span class="badge badge-admin">Admin</span>' : ''}
-        <div class="user-avatar" style="width:40px;height:40px;border-radius:12px">${initials}</div>
+        <div id="topbar-user-menu" style="position:relative;cursor:pointer" title="Account options">
+          <button id="topbar-avatar-btn" aria-haspopup="true" aria-expanded="false" style="width:40px;height:40px;border-radius:12px;background:var(--gradient-primary);color:white;font-weight:700;font-size:15px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(68,70,85,0.25);transition:box-shadow 0.2s,transform 0.15s" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">${initials}</button>
+          <div id="topbar-profile-dropdown" role="menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:180px;background:var(--color-surface-container);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.13);overflow:hidden;z-index:300">
+            <div style="padding:12px 16px 8px;border-bottom:1px solid var(--border-color)">
+              <div style="font-size:13px;font-weight:700;color:var(--color-on-surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.name || 'User'}</div>
+              <div style="font-size:11px;color:var(--color-on-surface-variant);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.email || ''}</div>
+            </div>
+            <button id="topbar-goto-profile-btn" role="menuitem" style="width:100%;display:flex;align-items:center;gap:10px;padding:11px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--color-on-surface);font-weight:600;transition:background 0.15s" onmouseover="this.style.background='var(--color-surface-container-high)'" onmouseout="this.style.background='none'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Edit Profile
+            </button>
+            <div style="height:1px;background:var(--border-color);margin:0 12px"></div>
+            <button id="topbar-logout-btn" role="menuitem" style="width:100%;display:flex;align-items:center;gap:10px;padding:11px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--color-danger);font-weight:600;transition:background 0.15s" onmouseover="this.style.background='var(--color-surface-container-high)'" onmouseout="this.style.background='none'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
     </header>
     <main class="page-content" id="page-main">
@@ -214,6 +279,51 @@ export function createLayout(title, content, breadcrumb = '') {
       });
     });
   }
+
+  // ── Topbar right-side avatar dropdown ────────────────────────────────────────
+  const topbarUserMenu    = main.querySelector('#topbar-user-menu');
+  const topbarAvatarBtn   = main.querySelector('#topbar-avatar-btn');
+  const topbarDropdown    = main.querySelector('#topbar-profile-dropdown');
+  const topbarProfileBtn  = main.querySelector('#topbar-goto-profile-btn');
+  const topbarLogoutBtn   = main.querySelector('#topbar-logout-btn');
+
+  if (topbarAvatarBtn && topbarDropdown) {
+    topbarAvatarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = topbarDropdown.style.display !== 'none';
+      topbarDropdown.style.display = isOpen ? 'none' : 'block';
+      topbarAvatarBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (topbarUserMenu && !topbarUserMenu.contains(e.target)) {
+        topbarDropdown.style.display = 'none';
+        topbarAvatarBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        topbarDropdown.style.display = 'none';
+        topbarAvatarBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  topbarProfileBtn?.addEventListener('click', () => {
+    if (topbarDropdown) topbarDropdown.style.display = 'none';
+    router.navigate('/student/profile');
+  });
+
+  topbarLogoutBtn?.addEventListener('click', async () => {
+    if (topbarDropdown) topbarDropdown.style.display = 'none';
+    try {
+      await signOut(auth);
+      showToast('Logged out successfully', 'success');
+    } catch { showToast('Logout failed', 'error'); }
+  });
 
   return wrapper;
 }

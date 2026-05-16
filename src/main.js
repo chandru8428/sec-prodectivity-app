@@ -3,6 +3,8 @@ import './styles/pages.css';
 import './styles/theme-overrides.css';
 import './styles/responsive-mobile.css';
 import { auth, db, onAuthStateChanged, doc, getDoc } from '/src/firebase.js';
+import { supabase } from '/src/supabase.js';
+
 import { router } from './router.js';
 
 // ── Toast System ──────────────────────────────────────────────────────────────
@@ -37,25 +39,38 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     appState.currentUser = user;
     try {
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (userDoc.exists()) {
-        appState.userData  = userDoc.data();
-        appState.userRole  = userDoc.data().role;
+      // ── Primary: load profile from Supabase (source of truth for student data) ──
+      const { data: sbUser, error: sbErr } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.uid)
+        .single();
+
+      if (!sbErr && sbUser) {
+        appState.userData = sbUser;
+        appState.userRole = sbUser.role || 'student';
       } else {
-        // Admin check by email
-        if (user.email === 'admin@example.com') {
-          appState.userRole  = 'admin';
-          appState.userData  = { name: 'Admin', email: user.email, role: 'admin', registerNumber: 'ADMIN001' };
-        } else {
-          appState.userRole  = 'student';
-          appState.userData  = { name: user.displayName || user.email, email: user.email, role: 'student' };
+        // ── Fallback: try Firebase Firestore ──
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            appState.userData = userDoc.data();
+            appState.userRole = userDoc.data().role;
+          } else {
+            appState.userRole = user.email?.includes('admin') ? 'admin' : 'student';
+            appState.userData = { name: user.displayName || user.email, email: user.email, role: appState.userRole };
+          }
+        } catch {
+          appState.userRole = 'student';
+          appState.userData = { name: user.displayName || 'Student', email: user.email, role: 'student' };
         }
       }
     } catch (err) {
-      console.warn('Firestore read failed:', err);
+      console.warn('Profile load failed:', err);
       appState.userRole = 'student';
       appState.userData = { name: user.displayName || 'Student', email: user.email, role: 'student' };
     }
+
 
     // Route to appropriate dashboard
     const currentHash = window.location.hash;

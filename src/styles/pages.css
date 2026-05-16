@@ -224,6 +224,20 @@
   margin-top: var(--space-lg);
 }
 
+/* Mode selection cards */
+.mode-card:hover {
+  border-color: var(--primary) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(224,142,254,0.18);
+}
+.mode-card:hover h2 { color: var(--primary); }
+
+/* URL status badges (auto-generate review step) */
+.status-found   { color: var(--success); font-weight: 600; }
+.status-missing { color: var(--outline); }
+.status-fixed   { color: #d97706; font-weight: 600; }
+.status-broken  { color: var(--error); font-weight: 600; }
+
 /* ============================================================
    STEP WIZARD (Timetable Maker)
    ============================================================ */

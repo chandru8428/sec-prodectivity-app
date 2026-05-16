@@ -1,8 +1,8 @@
 import {
   createUserWithEmailAndPassword,
-  doc, setDoc, collection, query, where, getDocs,
-  auth, db
+  auth
 } from '/src/firebase.js';
+import { supabase } from '/src/supabase.js';
 import { showToast } from '../main.js';
 
 export function render(root) {
@@ -28,11 +28,11 @@ export function render(root) {
               <div class="grid grid-2 gap-4">
                 <div class="form-group">
                   <label class="form-label">First Name</label>
-                  <input class="form-input" id="first-name" type="text" placeholder="Chandru" required />
+                  <input class="form-input" id="first-name" type="text" placeholder="e.g. Arjun" required />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Last Name</label>
-                  <input class="form-input" id="last-name" type="text" placeholder="K" />
+                  <input class="form-input" id="last-name" type="text" placeholder="e.g. S" />
                 </div>
               </div>
 
@@ -49,7 +49,7 @@ export function render(root) {
                 <label class="form-label">Register Number <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
                   <span class="input-icon icon-left">🪪</span>
-                  <input class="form-input" id="reg-number" type="text" placeholder="212224220017" required />
+                  <input class="form-input" id="reg-number" type="text" placeholder="e.g. 311824110042" required />
                 </div>
                 <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px">Your college register number — used to match exam schedules</div>
               </div>
@@ -80,18 +80,23 @@ export function render(root) {
               </div>
 
               <div class="form-group">
-                <label class="form-label">Password <span style="color:var(--color-danger)">*</span></label>
+                <label class="form-label" for="reg-password">Password <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left">🔒</span>
-                  <input class="form-input" id="reg-password" type="password" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password" />
-                  <button type="button" class="input-icon" id="toggle-reg-pass">👁</button>
+                  <span class="input-icon icon-left" aria-hidden="true">🔒</span>
+                  <input class="form-input" id="reg-password" type="password" placeholder="Min. 8 characters" required minlength="8" autocomplete="new-password" />
+                  <button type="button" class="input-icon" id="toggle-reg-pass" aria-label="Show password">👁</button>
                 </div>
+                <!-- Strength bar -->
+                <div id="pw-strength-bar-wrap" style="margin-top:6px;height:4px;border-radius:4px;background:rgba(0,0,0,0.08);overflow:hidden">
+                  <div id="pw-strength-bar" style="height:100%;width:0%;border-radius:4px;transition:width 0.3s,background 0.3s"></div>
+                </div>
+                <div id="pw-strength-label" style="font-size:11px;margin-top:4px;color:var(--color-outline);min-height:16px"></div>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Confirm Password <span style="color:var(--color-danger)">*</span></label>
+                <label class="form-label" for="reg-confirm">Confirm Password <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left">🔒</span>
+                  <span class="input-icon icon-left" aria-hidden="true">🔒</span>
                   <input class="form-input" id="reg-confirm" type="password" placeholder="Re-enter password" required autocomplete="new-password" />
                 </div>
               </div>
@@ -121,6 +126,34 @@ export function render(root) {
     inp.type = inp.type === 'password' ? 'text' : 'password';
   });
 
+  // Password strength meter
+  root.querySelector('#reg-password').addEventListener('input', (e) => {
+    const val = e.target.value;
+    const bar = root.querySelector('#pw-strength-bar');
+    const lbl = root.querySelector('#pw-strength-label');
+    if (!val) { bar.style.width = '0%'; lbl.textContent = ''; return; }
+    const hasUpper  = /[A-Z]/.test(val);
+    const hasNumber = /[0-9]/.test(val);
+    const hasSpecial = /[^A-Za-z0-9]/.test(val);
+    const long = val.length >= 12;
+    let score = 0;
+    if (val.length >= 8)  score++;
+    if (hasUpper)         score++;
+    if (hasNumber)        score++;
+    if (hasSpecial || long) score++;
+    const levels = [
+      { w: '20%', color: '#ef4444', text: 'Too weak' },
+      { w: '45%', color: '#f97316', text: 'Weak' },
+      { w: '70%', color: '#eab308', text: 'Fair' },
+      { w: '100%', color: '#22c55e', text: 'Strong ✓' },
+    ];
+    const lvl = levels[Math.max(0, score - 1)];
+    bar.style.width = lvl.w;
+    bar.style.background = lvl.color;
+    lbl.textContent = lvl.text;
+    lbl.style.color = lvl.color;
+  });
+
   const showError = (msg) => {
     const box = root.querySelector('#reg-error');
     root.querySelector('#reg-error-msg').textContent = msg;
@@ -147,10 +180,12 @@ export function render(root) {
     if (!email)     { showError('Please enter your email.'); return; }
     if (!regNumber) { showError('Please enter your register number.'); return; }
     if (regNumber.includes('@')) {
-      showError('Register number cannot be an email. Enter your college register number (e.g. 212224220017).');
+      showError('Register number cannot be an email. Enter your college register number (e.g. 311824110042).');
       return;
     }
-    if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+    if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
+    if (!/[A-Z]/.test(password)) { showError('Password must contain at least one uppercase letter.'); return; }
+    if (!/[0-9]/.test(password)) { showError('Password must contain at least one number.'); return; }
     if (password !== confirm) { showError('Passwords do not match.'); return; }
 
     const btn  = root.querySelector('#register-btn');
@@ -161,10 +196,13 @@ export function render(root) {
     spin.classList.remove('hidden');
 
     try {
-      // Check if register number already in use
-      const q = query(collection(db, 'users'), where('registerNumber', '==', regNumber));
-      const existing = await getDocs(q);
-      if (!existing.empty) {
+      // Check if register number already in use (Supabase is source of truth)
+      const { data: existing } = await supabase
+        .from('users')
+        .select('id')
+        .eq('registerNumber', regNumber)
+        .limit(1);
+      if (existing && existing.length > 0) {
         showError(`Register number ${regNumber} is already registered. Please login instead.`);
         btn.disabled = false; text.classList.remove('hidden'); spin.classList.add('hidden');
         return;
@@ -173,8 +211,9 @@ export function render(root) {
       // Create Firebase Auth account
       const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Store user profile in Firestore
-      await setDoc(doc(db, 'users', cred.user.uid), {
+      // Store user profile in Supabase
+      const { error: insertErr } = await supabase.from('users').insert({
+        id: cred.user.uid,
         name: `${firstName} ${lastName}`.trim(),
         firstName,
         lastName,
@@ -185,6 +224,7 @@ export function render(root) {
         role: 'student',
         createdAt: new Date().toISOString(),
       });
+      if (insertErr) throw insertErr;
 
       showToast('Account created! Welcome to EduSync 🎉', 'success');
       // Auth state change in main.js will auto-redirect to dashboard

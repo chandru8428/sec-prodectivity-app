@@ -7,6 +7,7 @@ import {
   query as sbQuery,
   where as sbWhere,
   getDocs as sbGetDocs,
+  addDoc as sbAddDoc,
 } from '/src/supabase-adapter.js';
 import { router } from '../../router.js';
 
@@ -71,6 +72,14 @@ export function render(root) {
 
       <!-- Left: Hero Exam + Exam List -->
       <div class="flex flex-col gap-6">
+        
+        <!-- Add Event Button Above Timer -->
+        <div class="flex justify-end">
+          <button class="btn btn-primary" id="btn-add-event" style="padding:8px 16px; font-size:14px; font-weight:700; border-radius:24px; box-shadow:0 4px 12px rgba(67,97,238,0.3); display:flex; align-items:center; gap:6px;">
+            <span style="font-size:16px">➕</span> Add Personal Event
+          </button>
+        </div>
+
         <!-- Hero countdown -->
         <div class="hero-exam-card" id="hero-exam">
           <div style="margin-bottom:var(--space-4)">
@@ -106,7 +115,7 @@ export function render(root) {
         <!-- Upcoming exams list -->
         <div class="glass-card">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-title">📋 Upcoming Exams</h2>
+            <h2 class="text-title">📋 Upcoming Exams / Events</h2>
             <button class="btn btn-secondary btn-sm" onclick="window.location.hash='#/student/timetable'">View All</button>
           </div>
           <div id="exam-list" class="flex flex-col gap-3">
@@ -147,9 +156,48 @@ export function render(root) {
         </div>
       </div>
     </div>
+
+    <!-- Add Event Modal -->
+    <div id="add-event-modal" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div class="glass-card" style="width:100%;max-width:400px;background:var(--bg-surface);border-radius:12px;padding:24px;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <h3 class="text-title-lg mb-4">Add Personal Event</h3>
+        <form id="add-event-form" class="flex flex-col gap-3">
+          <div class="form-group">
+            <label class="form-label">Event/Subject Name</label>
+            <input type="text" id="ev-name" class="form-input" required placeholder="e.g. Mock Test, Assignment Due" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="ev-date" class="form-input" required />
+          </div>
+          <div class="grid grid-2 gap-3">
+             <div class="form-group">
+               <label class="form-label">Start Time</label>
+               <input type="time" id="ev-start" class="form-input" />
+             </div>
+             <div class="form-group">
+               <label class="form-label">End Time</label>
+               <input type="time" id="ev-end" class="form-input" />
+             </div>
+          </div>
+          <div class="form-group">
+             <label class="form-label">Type</label>
+             <select id="ev-type" class="form-input">
+               <option value="theory">Theory / General</option>
+               <option value="practical">Practical / Lab</option>
+             </select>
+          </div>
+          <div class="flex justify-end gap-2 mt-4">
+            <button type="button" class="btn btn-ghost" id="ev-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="ev-save">Save Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
   `;
 
   loadDashboardData(main);
+  setupAddEventModal(main);
 }
 
 async function loadDashboardData(main) {
@@ -311,8 +359,9 @@ function renderExamList(container, exams) {
             ${exam.hall ? `<div class="exam-meta-item">🏛️ Hall ${exam.hall}</div>` : ''}
           </div>
         </div>
-        <div class="text-right">
+        <div class="text-right flex flex-col items-end gap-2">
           ${getDaysChip(exam.examDate)}
+          ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm text-danger" style="color:var(--color-danger);padding:4px 8px;font-size:12px" onclick="deletePersonalEvent('${exam.id}')">🗑️ Delete</button>` : ''}
         </div>
       </div>
     </div>
@@ -350,3 +399,68 @@ function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
+
+function setupAddEventModal(main) {
+  const modal = main.querySelector('#add-event-modal');
+  const btnOpen = main.querySelector('#btn-add-event');
+  const btnCancel = main.querySelector('#ev-cancel');
+  const form = main.querySelector('#add-event-form');
+  const saveBtn = main.querySelector('#ev-save');
+
+  btnOpen.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+  });
+
+  btnCancel.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    form.reset();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = appState.userData;
+    if (!user || !user.registerNumber) {
+      alert('Register Number is missing. Cannot save event.');
+      return;
+    }
+
+    const payload = {
+      subject: main.querySelector('#ev-name').value.trim(),
+      examDate: main.querySelector('#ev-date').value,
+      startTime: main.querySelector('#ev-start').value,
+      endTime: main.querySelector('#ev-end').value,
+      examType: main.querySelector('#ev-type').value,
+      registerNumber: user.registerNumber,
+      uploadedBy: 'student',
+      uploadedAt: new Date().toISOString()
+    };
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    try {
+      await sbAddDoc(sbCollection(supabaseDb, 'examSchedules'), payload);
+      modal.classList.add('hidden');
+      form.reset();
+      // Reload dashboard data
+      loadDashboardData(main);
+    } catch (err) {
+      console.error('Error adding event:', err);
+      alert('Failed to save event. Try again later.');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Event';
+    }
+  });
+}
+
+window.deletePersonalEvent = async function(id) {
+  if (!confirm('Are you sure you want to delete this personal event?')) return;
+  try {
+    const { deleteDoc, doc, db: supabaseDb } = await import('/src/supabase-adapter.js');
+    await deleteDoc(doc(supabaseDb, 'examSchedules', id));
+    window.location.reload();
+  } catch(err) {
+    console.error('Delete error:', err);
+    alert('Failed to delete event.');
+  }
+};

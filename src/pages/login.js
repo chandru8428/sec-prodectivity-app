@@ -5,6 +5,7 @@ import {
   doc, setDoc, getDoc,
   auth, googleProvider, db
 } from '/src/firebase.js';
+import { supabase } from '/src/supabase.js';
 import { showToast } from '../main.js';
 import { router } from '../router.js';
 
@@ -32,25 +33,25 @@ export function render(root) {
           <form id="student-form">
             <div class="flex flex-col gap-4">
               <div class="form-group">
-                <label class="form-label">Email or Register Number</label>
+                <label class="form-label" for="student-identifier">Email or Register Number</label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left">👤</span>
-                  <input class="form-input" id="student-identifier" type="text" placeholder="Gmail or Reg. No (e.g. 212224220017)" required autocomplete="username" />
+                  <span class="input-icon icon-left" aria-hidden="true">👤</span>
+                  <input class="form-input" id="student-identifier" type="text" placeholder="Gmail or Reg. No (e.g. 311824110042)" required autocomplete="username" />
                 </div>
               </div>
               <div class="form-group">
-                <label class="form-label">Password</label>
+                <label class="form-label" for="student-password">Password</label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left">🔒</span>
+                  <span class="input-icon icon-left" aria-hidden="true">🔒</span>
                   <input class="form-input" id="student-password" type="password" placeholder="Enter your password" required autocomplete="current-password" />
-                  <button type="button" class="input-icon" id="toggle-student-pass">👁</button>
+                  <button type="button" class="input-icon" id="toggle-student-pass" aria-label="Show password">👁</button>
                 </div>
               </div>
               <div class="flex items-center justify-between" style="margin-top:var(--space-1)">
                 <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--font-body-sm);color:var(--color-on-surface-variant);cursor:pointer">
-                  <input type="checkbox" id="student-remember" style="accent-color:var(--color-primary-container)"> Remember me
+                  <input type="checkbox" id="student-remember" style="accent-color:var(--color-primary-container);width:16px;height:16px;min-width:16px;min-height:16px;margin:0;flex-shrink:0;"> Remember me
                 </label>
-                <a href="#" style="font-size:var(--font-body-sm);color:var(--color-primary);text-decoration:none;font-weight:500">Forgot password?</a>
+                <a href="#/forgot-password" style="font-size:var(--font-body-sm);color:var(--color-primary);text-decoration:none;font-weight:500">Forgot password?</a>
               </div>
               <button type="submit" class="btn btn-primary btn-lg w-full" id="student-login-btn" style="margin-top:var(--space-2)">
                 <span id="student-login-text">Login to EduSync</span>
@@ -103,15 +104,18 @@ export function render(root) {
     try {
       let email = identifier;
 
-      // If not an email, look up by register number
+      // If not an email, look up by register number via Supabase (source of truth)
       if (!identifier.includes('@')) {
-        const { collection, query, where, getDocs } = await import('/src/firebase.js');
-        const q = query(collection(db, 'users'), where('registerNumber', '==', identifier));
-        const snap = await getDocs(q);
-        if (snap.empty) {
+        const regNo = identifier.trim().toUpperCase();
+        const { data: matched, error: lookupErr } = await supabase
+          .from('users')
+          .select('email')
+          .eq('registerNumber', regNo)
+          .single();
+        if (lookupErr || !matched?.email) {
           throw new Error('No account found for register number ' + identifier + '. Please register first.');
         }
-        email = snap.docs[0].data().email;
+        email = matched.email;
       }
 
       // Admin first-time account creation
@@ -134,11 +138,14 @@ export function render(root) {
           }
         }
         showToast('Welcome, Admin! ⚙️', 'success');
+        // Explicit redirect — don't wait for onAuthStateChanged race
+        router.navigate('/admin/dashboard');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         showToast('Welcome back! 👋', 'success');
+        // Explicit redirect — don't wait for onAuthStateChanged race
+        router.navigate('/student/dashboard');
       }
-      // Routing is handled automatically by onAuthStateChanged in main.js
     } catch (err) {
       showToast(friendlyAuthError(err), 'error');
       btn.disabled = false;
@@ -163,6 +170,8 @@ export function render(root) {
         });
       }
       showToast('Welcome! 🎉', 'success');
+      // Explicit redirect — don't wait for onAuthStateChanged race
+      router.navigate('/student/dashboard');
     } catch (err) {
       showToast(friendlyAuthError(err), 'error');
     }

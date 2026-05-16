@@ -16,8 +16,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title">Attendance Calculator</h1>
-
+      <p class="text-muted text-body-sm">Track your 85% mandate — results update live as you type</p>
     </div>
 
     <div class="grid gap-6" style="grid-template-columns:minmax(0, 1.15fr) minmax(320px, 0.85fr);align-items:start">

@@ -26,8 +26,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title">📊 GPA / CGPA Calculator</h1>
-
+      <p class="text-muted text-body-sm">Anna University grade system — O, A+, A, B+, B, C, U</p>
     </div>
 
     <div class="grid gap-6" style="grid-template-columns:1fr 380px;align-items:start">
@@ -36,9 +35,9 @@ export function render(root) {
       <div class="flex flex-col gap-6">
         <!-- Semester selector -->
         <div class="glass-card">
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-between mb-4" style="flex-wrap:wrap;gap:var(--space-3)">
             <h2 class="text-title">Semester</h2>
-            <div class="flex gap-2">
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
               ${[1,2,3,4,5,6,7,8].map(s => `
                 <button class="chip sem-btn ${s===1?'active':''}" data-sem="${s}">S${s}</button>
               `).join('')}

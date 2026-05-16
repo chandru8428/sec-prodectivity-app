@@ -4,6 +4,7 @@ import { appState } from './main.js';
 const routes = {
   '/login':               () => import('./pages/login.js'),
   '/register':            () => import('./pages/register.js'),
+  '/forgot-password':     () => import('./pages/forgot-password.js'),
   '/student/dashboard':   () => import('./pages/student/dashboard.js'),
   '/student/timetable':   () => import('./pages/student/timetable.js'),
   '/student/timetable-maker': () => import('./pages/student/timetable-maker.js'),
@@ -17,12 +18,34 @@ const routes = {
   '/admin/moderation':    () => import('./pages/admin/moderation.js'),
   '/admin/calendar':      () => import('./pages/admin/calendar.js'),
   '/admin/students':      () => import('./pages/admin/students.js'),
+  '/student/profile':     () => import('./pages/student/profile.js'),
+};
+
+const PAGE_TITLES = {
+  '/login':                   'Login | EduSync',
+  '/register':                'Create Account | EduSync',
+  '/forgot-password':         'Reset Password | EduSync',
+  '/student/dashboard':       'Dashboard | EduSync',
+  '/student/timetable':       'Exam Roadmap | EduSync',
+  '/student/timetable-maker': 'AI Schedule Crafter | EduSync',
+  '/student/gpa':             'GPA Calculator | EduSync',
+  '/student/qa-board':        'Knowledge Exchange | EduSync',
+  '/student/record-book':     'Record Book Forge | EduSync',
+  '/student/attendance':      'Attendance Tracker | EduSync',
+  '/student/profile':         'My Profile | EduSync',
+  '/admin/dashboard':         'Admin Dashboard | EduSync',
+  '/admin/upload-timetable':  'Upload Timetable | EduSync',
+  '/admin/repo-mapping':      'Repo Mapping | EduSync',
+  '/admin/moderation':        'Q&A Moderation | EduSync',
+  '/admin/calendar':          'Academic Calendar | EduSync',
+  '/admin/students':          'All Students | EduSync',
 };
 
 // ── Auth-Protected Route Map ───────────────────────────────────────────────────
 const studentRoutes = new Set([
   '/student/dashboard', '/student/timetable', '/student/timetable-maker',
   '/student/gpa', '/student/qa-board', '/student/record-book', '/student/attendance',
+  '/student/profile',
 ]);
 const adminRoutes = new Set([
   '/admin/dashboard', '/admin/upload-timetable', '/admin/repo-mapping',
@@ -65,6 +88,9 @@ export const router = {
 
     const root = document.getElementById('page-root');
     if (!root) return;
+
+    // Update document title dynamically
+    document.title = PAGE_TITLES[path] || 'EduSync — Your Academic Command Center';
 
     try {
       const module = await loader();

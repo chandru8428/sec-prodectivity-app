@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "edusync-auth-qa-2026"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }

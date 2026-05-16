@@ -1,6 +1,7 @@
 import { createLayout } from '../../components/sidebar.js';
 import { appState, showToast } from '../../main.js';
 import { db, collection, query, where, getDocs } from '/src/supabase-adapter.js';
+import { validateAndFixMappingUrls, stringSimilarity } from '../../services/github-service.js';
 import QRCode from 'qrcode';
 
 // Module-level experiment list (survives re-renders inside the page)
@@ -313,6 +314,12 @@ export function render(root) {
       <!-- Left Panel -->
       <div class="flex flex-col gap-5">
 
+        <!-- Mode Selector -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button id="mode-auto" type="button" class="btn btn-secondary flex-1" style="border: 2px solid var(--accent-primary); background: var(--bg-surface-elevated)">⚡ Auto-Generate</button>
+          <button id="mode-manual" type="button" class="btn btn-ghost flex-1">✍️ Manual Entry</button>
+        </div>
+
         <!-- Details form -->
         <div class="glass-card">
           <div class="flex items-center gap-3 mb-4">
@@ -320,7 +327,7 @@ export function render(root) {
             <h2 class="text-title">Repository Details</h2>
           </div>
           <form id="record-form" class="flex flex-col gap-4">
-            <div class="form-group">
+            <div class="form-group" id="github-username-group">
               <label class="form-label">GitHub Username</label>
               <div class="form-input-wrapper">
                 <span class="input-icon icon-left">@</span>
@@ -328,16 +335,39 @@ export function render(root) {
                   value="${sessionStorage.getItem('rb_username') || ''}" />
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Subject Name</label>
-              <input class="form-input" id="rec-subject" type="text" placeholder="e.g. Subject Name" required
-                value="${sessionStorage.getItem('rb_subject') || ''}" />
+
+            <!-- Auto-Generate Fields -->
+            <div id="auto-fields" class="flex flex-col gap-4">
+              <div class="form-group">
+                <label class="form-label">Select Subject</label>
+                <select class="form-input" id="auto-subject-select" required style="padding:10px 12px;border-radius:8px;font-weight:600;font-size:14px;background:#f8fafc;">
+                  <option value="">Loading subjects...</option>
+                </select>
+              </div>
+              <div id="custom-subject-fields" class="flex flex-col gap-4" style="display:none;">
+                <div class="form-group">
+                  <label class="form-label">Subject Name</label>
+                  <input class="form-input" id="auto-custom-subject" type="text" placeholder="e.g. Machine Learning" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Subject Code (Optional)</label>
+                  <input class="form-input" id="auto-custom-code" type="text" placeholder="e.g. CS101" />
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Subject Code</label>
-              <input class="form-input" id="rec-code" type="text" placeholder="e.g. SUB101" required
-                value="${sessionStorage.getItem('rb_code') || ''}" />
+
+            <!-- Manual Fields -->
+            <div id="manual-fields" class="flex flex-col gap-4" style="display:none;">
+              <div class="form-group">
+                <label class="form-label">Subject Name</label>
+                <input class="form-input" id="manual-subject" type="text" placeholder="e.g. Subject Name" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject Code</label>
+                <input class="form-input" id="manual-code" type="text" placeholder="e.g. SUB101" />
+              </div>
             </div>
+
             <button type="submit" class="btn btn-primary btn-lg w-full" id="validate-btn">
               <span id="validate-text">🔍 Fetch &amp; Load Experiments</span>
               <span id="validate-spinner" class="spinner hidden" style="width:18px;height:18px;border-width:2px"></span>
@@ -367,13 +397,43 @@ export function render(root) {
 
       <!-- Right: Editable Experiment Table -->
       <div>
-        <div id="editor-empty" class="glass-card" style="text-align:center;padding:var(--space-12)">
+        <div id="editor-empty" class="glass-card" style="text-align:center;padding:var(--space-10) var(--space-6)">
           <div style="display:flex;justify-content:center;margin-bottom:16px;color:var(--color-outline)">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg>
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg>
           </div>
-          <h3 class="text-title">Experiment Table Will Appear Here</h3>
-          <p class="text-muted" style="margin-top:8px;font-size:13px">Fill in your details and click Fetch &amp; Load Experiments.</p>
+          <h3 class="text-title" style="margin-bottom:6px">Your experiment table will appear here</h3>
+          <p class="text-muted" style="font-size:13px;margin-bottom:var(--space-6)">Fill the form on the left and click <strong>Fetch &amp; Load Experiments</strong>.</p>
+
+          <!-- How It Works steps -->
+          <div style="text-align:left;display:flex;flex-direction:column;gap:12px;max-width:400px;margin:0 auto">
+            <div style="font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--color-outline);margin-bottom:4px">How it works</div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--gradient-primary);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+              <div>
+                <div style="font-weight:700;font-size:14px;color:var(--color-on-surface)">Enter your GitHub username</div>
+                <div style="font-size:12px;color:var(--color-on-surface-variant);margin-top:2px">We'll fetch your public repositories to auto-detect experiments.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--gradient-primary);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+              <div>
+                <div style="font-weight:700;font-size:14px;color:var(--color-on-surface)">Select your subject</div>
+                <div style="font-size:12px;color:var(--color-on-surface-variant);margin-top:2px">Pick from admin-mapped subjects or choose "My subject is not listed" for AI matching.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--gradient-primary);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+              <div>
+                <div style="font-weight:700;font-size:14px;color:var(--color-on-surface)">Edit &amp; download your PDF</div>
+                <div style="font-size:12px;color:var(--color-on-surface-variant);margin-top:2px">Dates are auto-fetched from GitHub. Edit any cell, add rows, then download.</div>
+              </div>
+            </div>
+          </div>
         </div>
+
 
         <div id="editor-card" class="glass-card" style="display:none">
           <div class="flex items-center justify-between mb-4" style="flex-wrap:wrap;gap:8px">
@@ -414,7 +474,7 @@ export function render(root) {
                   <th style="width:140px">Date</th>
                   <th>Name of The Experiment</th>
                   <th style="width:200px">GitHub URL</th>
-                  <th style="width:50px">QR</th>
+                  <th style="width:50px">Status</th>
                   <th style="width:40px"></th>
                 </tr>
               </thead>
@@ -433,13 +493,120 @@ export function render(root) {
     </div>
   `;
 
-  // ── sessionStorage persistence for inputs ──
-  const ghInput   = main.querySelector('#gh-username');
-  const subInput  = main.querySelector('#rec-subject');
-  const codeInput = main.querySelector('#rec-code');
-  ghInput.addEventListener('input',   () => { sessionStorage.setItem('rb_username', ghInput.value); localStorage.setItem('rb_username', ghInput.value); });
-  subInput.addEventListener('input',  () => { sessionStorage.setItem('rb_subject',  subInput.value);  localStorage.setItem('rb_subjectName', subInput.value); });
-  codeInput.addEventListener('input', () => { sessionStorage.setItem('rb_code',     codeInput.value); localStorage.setItem('rb_subjectCode', codeInput.value); });
+  // ── Mode selection & Subject logic ──
+  let currentMode = 'auto';
+  const autoBtn = main.querySelector('#mode-auto');
+  const manualBtn = main.querySelector('#mode-manual');
+  const autoFields = main.querySelector('#auto-fields');
+  const manualFields = main.querySelector('#manual-fields');
+  const customFields = main.querySelector('#custom-subject-fields');
+  const subjectSelect = main.querySelector('#auto-subject-select');
+  
+  const manualSubjectInp = main.querySelector('#manual-subject');
+  const manualCodeInp = main.querySelector('#manual-code');
+  const autoCustomSubjInp = main.querySelector('#auto-custom-subject');
+  const autoCustomCodeInp = main.querySelector('#auto-custom-code');
+  const ghInput = main.querySelector('#gh-username');
+
+  // Load subjects
+  async function loadSubjects() {
+    try {
+      const snap = await getDocs(collection(db, 'repoMappings'));
+      const subjectsMap = {};
+      snap.docs.forEach(d => {
+        const data = d.data();
+        if (data.subjectName && data.subjectCode) {
+          subjectsMap[data.subjectCode] = data.subjectName;
+        }
+      });
+      subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+      for (const [code, name] of Object.entries(subjectsMap)) {
+        const opt = document.createElement('option');
+        opt.value = `${code}|${name}`;
+        opt.textContent = `${name} (${code})`;
+        subjectSelect.appendChild(opt);
+      }
+      const customOpt = document.createElement('option');
+      customOpt.value = 'custom';
+      customOpt.textContent = '🔍 My subject is not listed...';
+      subjectSelect.appendChild(customOpt);
+      
+      const prevCode = sessionStorage.getItem('rb_code');
+      const prevSubj = sessionStorage.getItem('rb_subject');
+      if (prevCode && prevSubj) {
+        const val = `${prevCode}|${prevSubj}`;
+        if (Array.from(subjectSelect.options).some(o => o.value === val)) {
+          subjectSelect.value = val;
+        } else {
+          subjectSelect.value = 'custom';
+          customFields.style.display = 'flex';
+          autoCustomSubjInp.value = prevSubj;
+          autoCustomCodeInp.value = prevCode;
+          autoCustomSubjInp.required = true;
+        }
+      }
+    } catch(e) {
+      subjectSelect.innerHTML = '<option value="custom">🔍 My subject is not listed...</option>';
+      customFields.style.display = 'flex';
+      autoCustomSubjInp.required = true;
+    }
+  }
+  loadSubjects();
+
+  autoBtn.addEventListener('click', () => {
+    currentMode = 'auto';
+    autoBtn.className = 'btn btn-secondary flex-1';
+    autoBtn.style.border = '2px solid var(--accent-primary)';
+    autoBtn.style.background = 'var(--bg-surface-elevated)';
+    manualBtn.className = 'btn btn-ghost flex-1';
+    manualBtn.style.border = '';
+    manualBtn.style.background = '';
+    autoFields.style.display = 'flex';
+    manualFields.style.display = 'none';
+    
+    main.querySelector('#github-username-group').style.display = 'block';
+    main.querySelector('#gh-username').required = true;
+    
+    subjectSelect.required = true;
+    manualSubjectInp.required = false;
+    manualCodeInp.required = false;
+    if (subjectSelect.value === 'custom') autoCustomSubjInp.required = true;
+    
+    main.querySelector('#validate-text').innerHTML = '🔍 Fetch &amp; Load Experiments';
+  });
+
+  manualBtn.addEventListener('click', () => {
+    currentMode = 'manual';
+    manualBtn.className = 'btn btn-secondary flex-1';
+    manualBtn.style.border = '2px solid var(--accent-primary)';
+    manualBtn.style.background = 'var(--bg-surface-elevated)';
+    autoBtn.className = 'btn btn-ghost flex-1';
+    autoBtn.style.border = '';
+    autoBtn.style.background = '';
+    autoFields.style.display = 'none';
+    manualFields.style.display = 'flex';
+    
+    main.querySelector('#github-username-group').style.display = 'none';
+    main.querySelector('#gh-username').required = false;
+    
+    subjectSelect.required = false;
+    autoCustomSubjInp.required = false;
+    autoCustomCodeInp.required = false;
+    manualSubjectInp.required = true;
+    manualCodeInp.required = true;
+    
+    main.querySelector('#validate-text').innerHTML = '✍️ Start Manual Entry';
+  });
+
+  subjectSelect.addEventListener('change', () => {
+    if (subjectSelect.value === 'custom') {
+      customFields.style.display = 'flex';
+      autoCustomSubjInp.required = true;
+    } else {
+      customFields.style.display = 'none';
+      autoCustomSubjInp.required = false;
+    }
+  });
 
   // ── Restore previous session's experiment table if available ──
   if (experiments.length > 0) {
@@ -453,11 +620,49 @@ export function render(root) {
   main.querySelector('#record-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = ghInput.value.trim();
-    const subject  = subInput.value.trim();
-    const code     = codeInput.value.trim();
+    let subject = '';
+    let code = '';
+
+    if (currentMode === 'auto') {
+      if (subjectSelect.value === 'custom') {
+        subject = autoCustomSubjInp.value.trim();
+        code = autoCustomCodeInp.value.trim();
+      } else {
+        const parts = subjectSelect.value.split('|');
+        code = parts[0];
+        subject = parts[1];
+      }
+    } else {
+      subject = manualSubjectInp.value.trim();
+      code = manualCodeInp.value.trim();
+    }
+
     sessionStorage.setItem('rb_username', username);
+    localStorage.setItem('rb_username', username);
     sessionStorage.setItem('rb_subject',  subject);
+    localStorage.setItem('rb_subjectName', subject);
     sessionStorage.setItem('rb_code',     code);
+    localStorage.setItem('rb_subjectCode', code);
+
+    if (currentMode === 'manual') {
+      _username = username;
+      // Pre-fill with 3 empty rows so the user has immediate inputs to type in
+      experiments = Array.from({ length: 3 }).map((_, i) => ({
+        expNo: String(i + 1).padStart(2, '0'),
+        date: '',
+        title: '',
+        repoUrl: '',
+        isLive: false,
+        _manual: true
+      }));
+      localStorage.setItem('rb_experiments', JSON.stringify(experiments));
+      main.querySelector('#validation-card').style.display = 'none';
+      main.querySelector('#editor-card').style.display = '';
+      main.querySelector('#editor-empty').style.display = 'none';
+      buildEditor(main, _username);
+      showToast('Manual mode activated! Add your experiments below.', 'success');
+      return;
+    }
 
     const btn  = main.querySelector('#validate-btn');
     const text = main.querySelector('#validate-text');
@@ -470,7 +675,7 @@ export function render(root) {
     main.querySelector('#editor-empty').style.display = '';
 
     try {
-      await runPipeline(main, username, subject, code);
+      await runPipeline(main, username, subject, code, subjectSelect.value === 'custom');
     } finally {
       btn.disabled = false;
       text.classList.remove('hidden');
@@ -536,7 +741,7 @@ export function render(root) {
 }
 
 // ── Pipeline ──────────────────────────────────────────────────────────────────
-async function runPipeline(main, username, subject, code) {
+async function runPipeline(main, username, subject, code, isCustom) {
   _username = username;
 
   const setStep = (id, status, msg) => {
@@ -581,75 +786,104 @@ async function runPipeline(main, username, subject, code) {
     return;
   }
 
-  // Step 3 — Supabase mapping
-  setStep('v3', 'loading', 'Checking subject-repo mapping...');
+  // Step 3 — Supabase mapping or Custom AI Matching
+  setStep('v3', 'loading', isCustom ? 'Finding relevant repos via AI...' : 'Checking subject-repo mapping...');
   let mappings = [];
   try {
-    const snap = await getDocs(query(collection(db, 'repoMappings'), where('subjectCode', '==', code)));
-    mappings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (isCustom) {
+      // Custom mode: Generate experiments from matching repositories using fuzzy AI
+      const targetSubjWords = subject.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+      
+      let expCount = 1;
+      repos.forEach(repo => {
+        const repoStr = (repo.name + ' ' + (repo.description || '')).toLowerCase();
+        let matchScore = 0;
+        targetSubjWords.forEach(w => { if (repoStr.includes(w)) matchScore += 1; });
+        
+        // Simple heuristic: if any word matches or similarity is high, consider it an experiment
+        if (matchScore > 0 || stringSimilarity(subject, repo.name) > 0.3) {
+          mappings.push({
+            expNo: String(expCount).padStart(2, '0'),
+            title: repo.description || repo.name.replace(/[-_]/g, ' '),
+            repoUrl: repo.html_url,
+            date: new Date(repo.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g, '/'),
+            _repoName: repo.name
+          });
+          expCount++;
+        }
+      });
+      
+      if (mappings.length === 0) {
+        setStep('v3', 'error', `No relevant repositories found for "${subject}"`);
+        showToast(`Could not find repos related to "${subject}". Try manual mode.`, 'warning', 5000);
+        return;
+      }
+    } else {
+      const snap = await getDocs(query(collection(db, 'repoMappings'), where('subjectCode', '==', code)));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    if (mappings.length > 0) {
-      const sl = subject.toLowerCase();
-      const filtered = mappings.filter(m =>
-        (m.subjectName || '').toLowerCase().includes(sl) || sl.includes((m.subjectName || '').toLowerCase())
-      );
-      if (filtered.length > 0) mappings = filtered;
+      if (docs.length > 0) {
+        const sl = subject.toLowerCase();
+        const filtered = docs.filter(m =>
+          (m.subjectName || '').toLowerCase().includes(sl) || sl.includes((m.subjectName || '').toLowerCase())
+        );
+        mappings = filtered.length > 0 ? filtered : docs;
+      } else {
+        const allSnap = await getDocs(collection(db, 'repoMappings'));
+        const all = allSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const sl = subject.toLowerCase();
+        mappings = all.filter(m =>
+          (m.subjectName || '').toLowerCase().includes(sl) ||
+          (m.subjectCode || '').toLowerCase() === code.toLowerCase()
+        );
+      }
+      
+      if (mappings.length === 0) {
+        setStep('v3', 'error', `No mapping found for "${subject}" (${code})`);
+        showToast('No experiment mappings found. Ask your admin to add them.', 'warning', 5000);
+        return;
+      }
+      mappings.sort((a, b) => (parseInt(a.expNo) || 0) - (parseInt(b.expNo) || 0));
     }
-
-    if (mappings.length === 0) {
-      const allSnap = await getDocs(collection(db, 'repoMappings'));
-      const all = allSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const sl = subject.toLowerCase();
-      mappings = all.filter(m =>
-        (m.subjectName || '').toLowerCase().includes(sl) ||
-        (m.subjectCode || '').toLowerCase() === code.toLowerCase()
-      );
-    }
-
-    if (mappings.length === 0) {
-      setStep('v3', 'error', `No mapping found for "${subject}" (${code})`);
-      showToast('No experiment mappings found. Ask your admin to add them.', 'warning', 5000);
-      return;
-    }
-
-    mappings.sort((a, b) => (parseInt(a.expNo) || 0) - (parseInt(b.expNo) || 0));
+    
     setStep('v3', 'done', `✓ ${mappings.length} experiment(s) found`);
   } catch (err) {
     setStep('v3', 'error', 'Mapping check failed: ' + err.message);
     return;
   }
 
-  // Step 4 — Verify repos + auto-detect dates from GitHub
-  setStep('v4', 'loading', 'Verifying repos and fetching dates...');
+  // Step 4 — Verify repos + auto-detect dates from GitHub + AI Auto-Fix
+  setStep('v4', 'loading', 'Verifying URLs & applying AI fixes...');
   try {
     const repoLookup = {};
     repos.forEach(r => { repoLookup[r.name.toLowerCase()] = r; });
 
-    experiments = await Promise.all(mappings.map(async (m) => {
-      const adminUrl = m.repoUrl || '';
+    // Validate and auto-fix the URLs
+    const fixedMappings = await validateAndFixMappingUrls(mappings, repos);
+
+    experiments = await Promise.all(fixedMappings.map(async (m) => {
+      let isLive = m.isLive;
+      let repoUrl = m.repoUrl || '';
+      let date = m.date || '';
       let repoName = '';
+      
       try {
-        const parts = new URL(adminUrl).pathname.split('/').filter(Boolean);
+        const parts = new URL(repoUrl).pathname.split('/').filter(Boolean);
         if (parts.length >= 2) repoName = parts[1];
       } catch {
-        const gh = adminUrl.match(/github\.com\/[^/]+\/([^/?#]+)/);
+        const gh = repoUrl.match(/github\.com\/[^/]+\/([^/?#]+)/);
         if (gh) repoName = gh[1];
       }
       repoName = repoName.replace(/\.git$/i, '');
 
-      const match = repoName ? repoLookup[repoName.toLowerCase()] : null;
-      let isLive = !!match;
-      let repoUrl = match ? match.html_url : (repoName ? `https://github.com/${username}/${repoName}` : '');
-      let date = m.date || '';
-
       // Auto-detect date from GitHub repo created_at if no date set
       if (!date && repoName) {
         try {
-          const repoData = match || null;
-          if (repoData && repoData.created_at) {
-            date = new Date(repoData.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g, '/');
+          const match = repoLookup[repoName.toLowerCase()];
+          if (match && match.created_at) {
+            date = new Date(match.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g, '/');
           } else if (!match) {
-            // Try direct API call for non-found repos
+            // Try direct API call
             const res = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
             if (res.ok) {
               const data = await res.json();
@@ -668,11 +902,12 @@ async function runPipeline(main, username, subject, code) {
         repoUrl,
         repoName,
         isLive,
+        isFixed:  m.isFixed || false
       };
     }));
 
-    const live = experiments.filter(e => e.isLive).length;
-    setStep('v4', 'done', `✓ ${live}/${experiments.length} repos live, dates fetched`);
+    const live = experiments.filter(e => e.isLive || e.isFixed).length;
+    setStep('v4', 'done', `✓ ${live}/${experiments.length} links verified or fixed`);
   } catch (err) {
     setStep('v4', 'error', 'Verification failed: ' + err.message);
   }
@@ -731,7 +966,13 @@ function addEditorRow(main, exp, i) {
       <input type="text" class="exp-url url-input" value="${exp.repoUrl || ''}" placeholder="https://github.com/..." style="min-width:180px" />
     </td>
     <td style="text-align:center">
-      <span class="qr-cell">${exp.isLive ? '<div style="background:#dcfce7; width:28px; height:28px; border-radius:8px; border: 1px solid #bbf7d0; display:inline-flex; align-items:center; justify-content:center; margin:auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' : '<span style="color:#9ca3af;font-weight:600">—</span>'}</span>
+      <span class="qr-cell">${
+        exp.isFixed 
+          ? '<div style="background:#fef9c3; width:28px; height:28px; border-radius:8px; border: 1px solid #fde047; display:inline-flex; align-items:center; justify-content:center; margin:auto;" title="Fixed by AI"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>'
+          : (exp.isLive
+            ? '<div style="background:#dcfce7; width:28px; height:28px; border-radius:8px; border: 1px solid #bbf7d0; display:inline-flex; align-items:center; justify-content:center; margin:auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+            : '<span style="color:#9ca3af;font-weight:600" title="Broken / Missing URL">—</span>')
+      }</span>
     </td>
     <td style="text-align:center;padding-right:8px;">
       <button class="del-row-btn" title="Remove row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
@@ -763,10 +1004,12 @@ function addEditorRow(main, exp, i) {
       <input type="text" class="exp-url url-input" value="${exp.repoUrl || ''}" placeholder="https://github.com/..." />
     </div>
     <div class="exp-card-footer">
-      <span class="exp-card-status ${exp.isLive ? 'live' : 'missing'}">
-        ${exp.isLive
-          ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Live on GitHub'
-          : '— Not found on GitHub'}
+      <span class="exp-card-status ${exp.isFixed ? 'fixed' : (exp.isLive ? 'live' : 'missing')}" style="${exp.isFixed ? 'color:#ca8a04;' : ''}">
+        ${exp.isFixed 
+          ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Fixed by AI'
+          : (exp.isLive
+            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Live on GitHub'
+            : '— Not found on GitHub')}
       </span>
     </div>
   `;

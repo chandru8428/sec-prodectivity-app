@@ -1,6 +1,6 @@
 import { createLayout } from '../../components/sidebar.js';
 import { appState } from '../../main.js';
-import { db, collection, query, where, getDocs } from '/src/supabase-adapter.js';
+import { supabase } from '/src/supabase.js';
 
 let countdownIntervals = [];
 
@@ -30,7 +30,21 @@ export function render(root) {
 }
 
 async function loadExams(container) {
-  const user = appState.userData;
+  let user = appState.userData;
+
+  // If userData is missing registerNumber, re-fetch from Supabase directly
+  if (!user?.registerNumber && appState.currentUser?.uid) {
+    const { data: freshUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', appState.currentUser.uid)
+      .single();
+    if (freshUser) {
+      appState.userData = freshUser;
+      user = freshUser;
+    }
+  }
+
   if (!user?.registerNumber) {
     container.innerHTML = `
       <div class="glass-card" style="text-align:center;padding:var(--space-12)">
@@ -44,11 +58,18 @@ async function loadExams(container) {
 
   try {
     const today = new Date().toISOString().split('T')[0];
-    const q = query(collection(db,'examSchedules'), where('registerNumber','==', user.registerNumber));
-    const snap = await getDocs(q);
-    const all = snap.docs
-      .map(d => ({ id:d.id, ...d.data() }))
-      .sort((a,b) => (a.examDate||'').localeCompare(b.examDate||''));
+    // Normalize: trim + uppercase to match admin-stored format
+    const regNo = String(user.registerNumber).trim().toUpperCase();
+
+    // Direct Supabase query — no adapter abstraction
+    const { data: all, error: qErr } = await supabase
+      .from('examSchedules')
+      .select('*')
+      .eq('registerNumber', regNo)
+      .order('examDate', { ascending: true });
+
+    if (qErr) throw qErr;
+
 
     const theory    = all.filter(e => !e.examType || e.examType === 'theory');
     const practical = all.filter(e => e.examType === 'practical');
@@ -59,11 +80,14 @@ async function loadExams(container) {
           <div style="font-size:64px;margin-bottom:var(--space-4)">📭</div>
           <h2 class="text-title">No Exams Found</h2>
           <p class="text-muted" style="margin-top:var(--space-2)">Your admin hasn't uploaded the exam timetable yet. Check back later.</p>
-          <p class="text-muted text-body-sm" style="margin-top:var(--space-2);opacity:0.6">Logged in as: <strong>${user.registerNumber}</strong></p>
+          <p class="text-muted text-body-sm" style="margin-top:var(--space-2);opacity:0.6">
+            Searching for: <strong>${regNo}</strong>
+          </p>
         </div>
       `;
       return;
     }
+
 
     // Build tab UI
     container.innerHTML = `
@@ -178,6 +202,7 @@ function renderExamPanel(panel, exams, today) {
               <span class="text-title" style="font-size:1.1rem;color:var(--text-primary)">${exam.subject || '—'}</span>
               ${exam.subjectCode ? `<span class="badge" style="background:#F1F5F9;color:#475569;font-size:10px">${exam.subjectCode}</span>` : ''}
               <span class="badge" style="background:${isPractical?'#F5F3FF':'#EEF2FF'};color:${isPractical?'#7C3AED':'#4F46E5'};font-size:10px">${typeLabel}</span>
+              ${exam.uploadedBy === 'student' ? '<span class="badge" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;font-size:10px">🌟 Personal Event</span>' : ''}
               ${i === 0 ? '<span class="badge" style="background:#FFF7ED;color:#C2410C">Next Up</span>' : ''}
             </div>
             <!-- Details row -->
@@ -197,6 +222,7 @@ function renderExamPanel(panel, exams, today) {
               <button class="btn btn-ghost btn-sm" onclick="notifyExam('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}')">
                 🔔 Alert Me
               </button>
+              ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm text-danger" style="color:var(--color-danger)" onclick="deletePersonalEvent('${exam.id}')">🗑️ Delete</button>` : ''}
             </div>
           </div>
 
@@ -232,8 +258,10 @@ function renderExamPanel(panel, exams, today) {
               ${exam.hall ? `· Hall: ${exam.hall}` : ''}
             </div>
           </div>
+          ${exam.uploadedBy === 'student' ? '<span class="badge" style="background:#FFFBEB;color:#D97706;font-size:10px">🌟 Personal</span>' : ''}
           ${exam.subjectCode ? `<span class="badge" style="background:#F1F5F9;color:#64748B;font-size:10px">${exam.subjectCode}</span>` : ''}
           <span class="badge" style="background:#DCFCE7;color:#166534">✅ Done</span>
+          ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px;margin-left:8px" onclick="deletePersonalEvent('${exam.id}')" title="Delete">🗑️</button>` : ''}
         </div>
       `;
     }).join('');
@@ -246,6 +274,18 @@ window.addToCalendar = function(subject, date, startTime, endTime) {
   const end   = date.replace(/-/g,'') + 'T' + endTime.replace(':','') + '00';
   const url   = `https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(subject+' Exam')}&dates=${start}/${end}&details=${encodeURIComponent('EduSync Exam Reminder')}&location=Exam+Hall`;
   window.open(url, '_blank');
+};
+
+window.deletePersonalEvent = async function(id) {
+  if (!confirm('Are you sure you want to delete this personal event?')) return;
+  try {
+    const { deleteDoc, doc, db: supabaseDb } = await import('/src/supabase-adapter.js');
+    await deleteDoc(doc(supabaseDb, 'examSchedules', id));
+    window.location.reload();
+  } catch(err) {
+    console.error('Delete error:', err);
+    alert('Failed to delete event.');
+  }
 };
 
 window.notifyExam = function(subject, examDate) {
