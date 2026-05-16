@@ -18,6 +18,101 @@ export function render(root) {
 
   main.innerHTML = `
     <style>
+      /* ── Filter bar ── */
+      .qa-filter-bar {
+        display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+        background:var(--color-surface-container); border:1px solid var(--border-color);
+        border-radius:var(--radius-xl); padding:12px 16px; margin-bottom:20px;
+      }
+      .qa-search-wrap {
+        display:flex; align-items:center; gap:8px;
+        background:var(--color-surface); border:1px solid var(--border-color);
+        border-radius:var(--radius-full); padding:7px 14px;
+        flex:1; min-width:160px;
+      }
+      .qa-search-wrap input {
+        border:none; background:transparent; outline:none;
+        font-size:13px; color:var(--color-on-surface); width:100%;
+      }
+      .qa-chips { display:flex; gap:6px; flex-wrap:wrap; }
+      .qa-chip {
+        padding:5px 13px; border-radius:var(--radius-full);
+        border:1px solid var(--border-color); background:var(--color-surface);
+        font-size:12px; font-weight:600; cursor:pointer;
+        color:var(--color-on-surface-variant); transition:all 0.15s; white-space:nowrap;
+      }
+      .qa-chip.active {
+        background:var(--color-primary-container); border-color:var(--color-primary);
+        color:var(--color-primary);
+      }
+      .qa-sem-sel {
+        padding:6px 12px; border-radius:var(--radius-full);
+        border:1px solid var(--border-color); background:var(--color-surface);
+        font-size:12px; font-weight:600; color:var(--color-on-surface-variant);
+        cursor:pointer; outline:none;
+      }
+      /* ── Post cards ── */
+      .qa-card {
+        background:var(--color-surface-container);
+        border:1px solid var(--border-color);
+        border-radius:var(--radius-xl);
+        padding:18px 20px;
+        transition:box-shadow 0.18s, transform 0.15s;
+      }
+      .qa-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.08); transform:translateY(-1px); }
+      .qa-card.pinned { border-color:var(--color-primary); }
+      .qa-card-head {
+        display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;
+      }
+      .qa-author { display:flex; align-items:center; gap:10px; }
+      .qa-avatar {
+        width:36px; height:36px; border-radius:10px;
+        background:var(--gradient-primary); color:#fff;
+        font-weight:700; font-size:14px;
+        display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      }
+      .qa-author-name { font-size:13px; font-weight:700; color:var(--color-on-surface); }
+      .qa-author-reg  { font-size:11px; color:var(--color-on-surface-variant); }
+      .qa-type-pill {
+        padding:4px 11px; border-radius:var(--radius-full);
+        font-size:11px; font-weight:700; flex-shrink:0; white-space:nowrap;
+      }
+      .tp-question { background:#EEF2FF; color:#4F46E5; }
+      .tp-tip      { background:#FFFBEB; color:#B45309; }
+      .tp-answer   { background:#F0FDF4; color:#16A34A; }
+      .qa-title {
+        font-size:15px; font-weight:700; color:var(--color-on-surface);
+        margin:0 0 6px; line-height:1.4;
+      }
+      .qa-body {
+        font-size:13px; color:var(--color-on-surface-variant);
+        line-height:1.6; margin:0 0 12px;
+        display:-webkit-box; -webkit-line-clamp:2;
+        -webkit-box-orient:vertical; overflow:hidden;
+      }
+      .qa-footer {
+        display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+        border-top:1px solid var(--border-color); padding-top:10px;
+      }
+      .qa-tag {
+        display:inline-flex; align-items:center; gap:4px;
+        padding:3px 9px; border-radius:var(--radius-full);
+        font-size:11px; font-weight:600;
+        background:var(--color-surface-container-high);
+        color:var(--color-on-surface-variant);
+        border:1px solid var(--border-color);
+      }
+      .qa-tag-subj { background:#F5F3FF; color:#7C3AED; border-color:#DDD6FE; }
+      .qa-tag-sem  { background:#F0F9FF; color:#0369A1; border-color:#BAE6FD; }
+      .qa-time { font-size:11px; color:var(--color-on-surface-variant); margin-left:auto; }
+      .qa-vote {
+        display:inline-flex; align-items:center; gap:5px;
+        padding:4px 12px; border-radius:var(--radius-full);
+        border:1px solid var(--border-color); background:var(--color-surface);
+        font-size:12px; font-weight:600; cursor:pointer;
+        color:var(--color-on-surface-variant); transition:all 0.15s;
+      }
+      .qa-vote:hover { border-color:var(--color-primary); color:var(--color-primary); }
       /* ── Attachment drop-zone ── */
       .drop-zone {
         border: 2px dashed var(--border-color);
@@ -95,36 +190,39 @@ export function render(root) {
       }
     </style>
 
-    <div class="page-header">
+    <div class="page-header" style="margin-bottom:4px">
       <h1 class="page-title">💬 Exam Q&A Board</h1>
+    </div>
+
+    <!-- Filter bar — full width above the two-column grid -->
+    <div class="qa-filter-bar">
+      <div class="qa-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="qa-search" placeholder="Search questions, tips, answer keys…" />
+      </div>
+      <div class="qa-chips" id="type-filters">
+        <button class="qa-chip active" data-type="all">All</button>
+        <button class="qa-chip" data-type="question">❓ Questions</button>
+        <button class="qa-chip" data-type="tip">💡 Tips</button>
+        <button class="qa-chip" data-type="answer">✅ Answer Keys</button>
+      </div>
+      <select class="qa-sem-sel" id="sem-filter">
+        <option value="">All Sems</option>
+        ${[1,2,3,4,5,6,7,8].map(s=>`<option value="${s}">Sem ${s}</option>`).join('')}
+      </select>
     </div>
 
     <div class="grid gap-6" style="grid-template-columns:1fr 340px;align-items:start">
 
       <!-- Left: Feed -->
       <div>
-        <div class="flex gap-3 flex-wrap mb-4 items-center">
-          <div class="search-bar" style="max-width:280px">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="qa-search" placeholder="Search posts..." />
-          </div>
-          <div class="flex gap-2 flex-wrap" id="type-filters">
-            <button class="chip active" data-type="all">All</button>
-            <button class="chip" data-type="question">❓ Questions</button>
-            <button class="chip" data-type="tip">💡 Tips</button>
-            <button class="chip" data-type="answer">✅ Answer Keys</button>
-          </div>
-          <select class="form-select" id="sem-filter" style="width:130px;border-radius:var(--radius-full);border:1px solid var(--border-color)">
-            <option value="">All Sems</option>
-            ${[1,2,3,4,5,6,7,8].map(s=>`<option value="${s}">Semester ${s}</option>`).join('')}
-          </select>
-        </div>
         <div id="posts-list" class="flex flex-col gap-4">
-          <div class="skeleton" style="height:140px;border-radius:var(--radius-xl)"></div>
-          <div class="skeleton" style="height:140px;border-radius:var(--radius-xl)"></div>
-          <div class="skeleton" style="height:140px;border-radius:var(--radius-xl)"></div>
+          <div class="skeleton" style="height:120px;border-radius:var(--radius-xl)"></div>
+          <div class="skeleton" style="height:120px;border-radius:var(--radius-xl)"></div>
+          <div class="skeleton" style="height:120px;border-radius:var(--radius-xl)"></div>
         </div>
       </div>
+
 
       <!-- Right: Post form + Trending -->
       <div class="flex flex-col gap-4" style="position:sticky;top:80px">
@@ -302,49 +400,42 @@ function renderPosts(container, posts, main) {
   }
 
   const isAdmin = appState.userRole === 'admin';
-  const badges = {
-    question: ['badge-primary', '❓ Question'],
-    tip:      ['badge-secondary', '💡 Tip'],
-    answer:   ['badge-success', '✅ Answer Key']
-  };
+  const tpClass = { question:'tp-question', tip:'tp-tip', answer:'tp-answer' };
+  const tpLabel = { question:'❓ Question', tip:'💡 Tip', answer:'✅ Answer Key' };
 
   container.innerHTML = filtered.map(post => {
-    const [badgeClass, badgeLabel] = badges[post.type] || ['badge-primary', 'Post'];
     const pinned  = post.pinned;
     const timeAgo = getTimeAgo(post.createdAt?.toDate?.() || new Date(post.createdAt));
-
-    // Attachments rendering
     const attachHtml = buildAttachmentHtml(post.attachments);
+    const tc = tpClass[post.type] || 'tp-question';
+    const tl = tpLabel[post.type] || 'Post';
 
     return `
-      <div class="post-card ${pinned?'pinned':''}" id="post-${post.id}">
-        <div class="flex items-start gap-3">
-          <div class="user-avatar" style="width:40px;height:40px;flex-shrink:0;font-size:16px">
-            ${(post.authorName||'?')[0].toUpperCase()}
-          </div>
-          <div style="flex:1;min-width:0">
-            <div class="flex items-center gap-2 flex-wrap mb-1">
-              <span style="font-weight:700;font-size:var(--font-body-sm)">${post.authorName||'Anonymous'}</span>
-              ${post.registerNumber?`<span class="badge badge-primary" style="font-size:10px">${post.registerNumber}</span>`:''}
-              ${pinned?'<span class="badge badge-secondary">📌 Pinned</span>':''}
-              <span class="badge ${badgeClass}" style="margin-left:auto">${badgeLabel}</span>
-            </div>
-            <h4 style="font-size:var(--font-body);font-weight:700;margin-bottom:var(--space-2)">${post.title}</h4>
-            <p class="line-clamp-2 text-muted text-body-sm" style="line-height:1.5">${post.content}</p>
-            ${attachHtml}
-            <div class="flex items-center gap-4 mt-3 flex-wrap">
-              <span class="badge badge-purple">📚 ${post.subject}</span>
-              <span class="badge" style="background:var(--bg-secondary);color:var(--accent-primary)">Sem ${post.semester}</span>
-              <span style="font-size:11px;color:var(--color-on-surface-variant);margin-left:auto">${timeAgo}</span>
-              <button class="btn btn-ghost btn-sm upvote-btn" data-id="${post.id}" data-votes="${post.votes||0}" style="gap:4px;padding:4px 10px;border-radius:var(--radius-full);border:1px solid var(--border-color)">
-                ▲ <span class="vote-count">${post.votes||0}</span>
-              </button>
-              ${isAdmin ? `
-                <button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin">📌</button>
-                <button class="btn btn-ghost btn-sm" style="color:var(--color-danger)" onclick="moderatePost('${post.id}','delete')" title="Delete">🗑️</button>
-              ` : ''}
+      <div class="qa-card ${pinned ? 'pinned' : ''}" id="post-${post.id}">
+        <div class="qa-card-head">
+          <div class="qa-author">
+            <div class="qa-avatar">${(post.authorName||'?')[0].toUpperCase()}</div>
+            <div>
+              <div class="qa-author-name">${post.authorName||'Anonymous'}${pinned ? ' <span title="Pinned">📌</span>' : ''}</div>
+              ${post.registerNumber ? `<div class="qa-author-reg">${post.registerNumber}</div>` : ''}
             </div>
           </div>
+          <span class="qa-type-pill ${tc}">${tl}</span>
+        </div>
+        <h4 class="qa-title">${post.title}</h4>
+        <p class="qa-body">${post.content}</p>
+        ${attachHtml}
+        <div class="qa-footer">
+          <span class="qa-tag qa-tag-subj">📚 ${post.subject}</span>
+          <span class="qa-tag qa-tag-sem">Sem ${post.semester}</span>
+          <span class="qa-time">${timeAgo}</span>
+          <button class="qa-vote upvote-btn" data-id="${post.id}" data-votes="${post.votes||0}">
+            ▲ <span class="vote-count">${post.votes||0}</span>
+          </button>
+          ${isAdmin ? `
+            <button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin" style="padding:4px 8px">📌</button>
+            <button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px 8px" onclick="moderatePost('${post.id}','delete')" title="Delete">🗑️</button>
+          ` : ''}
         </div>
       </div>
     `;
