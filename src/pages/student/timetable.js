@@ -192,7 +192,16 @@ function renderExamPanel(panel, exams, today) {
 
       const card = document.createElement('div');
       card.className = 'glass-card';
-      card.style.cssText = `border-left:4px solid ${isPractical?'#7C3AED':'#4F46E5'};transition:transform 0.2s`;
+      card.style.cssText = `
+        border-left: 5px solid ${isPractical ? '#7C3AED' : '#4F46E5'};
+        background: ${isPractical 
+          ? 'linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%)' 
+          : 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)'};
+        border-top: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.25)' : 'rgba(79, 70, 229, 0.25)'};
+        border-right: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.25)' : 'rgba(79, 70, 229, 0.25)'};
+        border-bottom: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.25)' : 'rgba(79, 70, 229, 0.25)'};
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      `;
 
       card.innerHTML = `
         <div class="flex items-start gap-4">
@@ -248,7 +257,15 @@ function renderExamPanel(panel, exams, today) {
       const isPractical = exam.examType === 'practical';
       const accentColor = isPractical ? '#7C3AED' : '#4F46E5';
       return `
-        <div style="display:flex;align-items:center;gap:var(--space-4);padding:12px 16px;border-radius:12px;background:#FFFFFF;border:1px solid var(--border-primary);opacity:0.8;border-left:3px solid ${accentColor}44">
+        <div style="display:flex;align-items:center;gap:var(--space-4);padding:12px 16px;border-radius:12px;
+          background: ${isPractical 
+            ? 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)' 
+            : 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)'};
+          border: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.2)' : 'rgba(79, 70, 229, 0.2)'};
+          border-left: 4px solid ${accentColor};
+          opacity: 0.95;
+          transition: transform 0.2s ease;
+        ">
           <span style="font-size:1.4rem">${isPractical?'🧪':'📝'}</span>
           <div style="flex:1">
             <div style="font-weight:600;color:var(--text-primary)">${exam.subject||'—'}</div>

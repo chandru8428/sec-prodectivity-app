@@ -1,7 +1,7 @@
 import { createLayout } from '../../components/sidebar.js';
 import { appState, showToast } from '../../main.js';
 import { db, collection, query, where, getDocs } from '/src/supabase-adapter.js';
-import { validateAndFixMappingUrls, stringSimilarity } from '../../services/github-service.js';
+import { getUserRepos, matchExperimentsToRepos, stringSimilarity } from '../../services/github-service.js';
 import QRCode from 'qrcode';
 
 // Module-level experiment list (survives re-renders inside the page)
@@ -123,7 +123,7 @@ export function render(root) {
         .exp-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 4px; border-top: 1px dashed rgba(0,0,0,0.07); }
         .exp-card-status { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .exp-card-status.live { color: #16a34a; }
-        .exp-card-status.missing { color: #9ca3af; }
+        .exp-card-status.missing { color: #ef4444; }
       }
 
       /* Header Styles */
@@ -324,9 +324,21 @@ export function render(root) {
         <div class="glass-card">
           <div class="flex items-center gap-3 mb-4">
             <div style="width:32px;height:32px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0">1</div>
-            <h2 class="text-title">Repository Details</h2>
+            <h2 class="text-title">Student &amp; Repository Details</h2>
           </div>
           <form id="record-form" class="flex flex-col gap-4">
+            <div class="form-group">
+              <label class="form-label">Student Name</label>
+              <input class="form-input" id="student-name" type="text" placeholder="e.g. John Doe" required
+                value="${sessionStorage.getItem('rb_student_name') || appState.userData?.name || ''}" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Register Number</label>
+              <input class="form-input" id="register-number" type="text" placeholder="e.g. 211301110" required
+                value="${sessionStorage.getItem('rb_reg_no') || appState.userData?.registerNumber || ''}" />
+            </div>
+
             <div class="form-group" id="github-username-group">
               <label class="form-label">GitHub Username</label>
               <div class="form-input-wrapper">
@@ -619,6 +631,8 @@ export function render(root) {
   // ── Form submit ──
   main.querySelector('#record-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const studentName = main.querySelector('#student-name').value.trim();
+    const regNo = main.querySelector('#register-number').value.trim();
     const username = ghInput.value.trim();
     let subject = '';
     let code = '';
@@ -637,6 +651,10 @@ export function render(root) {
       code = manualCodeInp.value.trim();
     }
 
+    sessionStorage.setItem('rb_student_name', studentName);
+    localStorage.setItem('rb_student_name', studentName);
+    sessionStorage.setItem('rb_reg_no', regNo);
+    localStorage.setItem('rb_reg_no', regNo);
     sessionStorage.setItem('rb_username', username);
     localStorage.setItem('rb_username', username);
     sessionStorage.setItem('rb_subject',  subject);
@@ -741,6 +759,15 @@ export function render(root) {
 }
 
 // ── Pipeline ──────────────────────────────────────────────────────────────────
+//
+// PLAN:
+//  Step 1 — Validate the student's GitHub username exists
+//  Step 2 — Fetch ALL of the student's public repos (once, as raw objects)
+//  Step 3 — Load admin experiment-title mappings for the selected subject
+//  Step 4 — For each experiment title, AI-fuzzy-match the best repo in the
+//            student's list, then verify it's live via GitHub API
+//  Step 5 — Build the editable table
+//
 async function runPipeline(main, username, subject, code, isCustom) {
   _username = username;
 
@@ -760,75 +787,85 @@ async function runPipeline(main, username, subject, code, isCustom) {
     if (msgEl) msgEl.textContent = msg;
   };
 
-  // Step 1
+  // ── Step 1: Validate GitHub username ────────────────────────────────────
   setStep('v1', 'loading', 'Checking GitHub username...');
   try {
     const r = await fetch(`https://api.github.com/users/${username}`);
-    if (!r.ok) throw new Error();
+    if (!r.ok) throw new Error('not found');
     setStep('v1', 'done', `✓ Found: ${username}`);
   } catch {
-    setStep('v1', 'error', `User "${username}" not found`);
-    showToast('GitHub username not found', 'error');
+    setStep('v1', 'error', `User "${username}" not found on GitHub`);
+    showToast('GitHub username not found. Check spelling and try again.', 'error');
     return;
   }
 
-  // Step 2
-  setStep('v2', 'loading', 'Fetching repositories...');
-  let repos = [];
+  // ── Step 2: Fetch all student repos ─────────────────────────────────────
+  setStep('v2', 'loading', 'Fetching your repositories...');
+  let userRepos = [];
   try {
-    const r = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=created`);
-    if (!r.ok) throw new Error();
-    repos = await r.json();
-    setStep('v2', 'done', `✓ Found ${repos.length} repositories`);
-  } catch {
-    setStep('v2', 'error', 'Cannot fetch repositories');
-    showToast('Failed to fetch repositories', 'error');
+    userRepos = await getUserRepos(username);
+    if (!userRepos.length) throw new Error('no public repos');
+    setStep('v2', 'done', `✓ Found ${userRepos.length} public repositories`);
+  } catch (err) {
+    setStep('v2', 'error', 'Cannot fetch repositories — ' + err.message);
+    showToast('Failed to fetch your GitHub repositories.', 'error');
     return;
   }
 
-  // Step 3 — Supabase mapping or Custom AI Matching
-  setStep('v3', 'loading', isCustom ? 'Finding relevant repos via AI...' : 'Checking subject-repo mapping...');
+  // ── Step 3: Load admin experiment-title mappings ─────────────────────────
+  setStep('v3', 'loading', isCustom ? 'Scanning your repos for subject matches...' : 'Loading experiment list from admin mapping...');
   let mappings = [];
   try {
     if (isCustom) {
-      // Custom mode: Generate experiments from matching repositories using fuzzy AI
-      const targetSubjWords = subject.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 2);
-      
+      // Custom mode — no admin mapping; scan student's repos directly by subject keywords
+      const subjectWords = subject
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 2);
+
       let expCount = 1;
-      repos.forEach(repo => {
-        const repoStr = (repo.name + ' ' + (repo.description || '')).toLowerCase();
-        let matchScore = 0;
-        targetSubjWords.forEach(w => { if (repoStr.includes(w)) matchScore += 1; });
-        
-        // Simple heuristic: if any word matches or similarity is high, consider it an experiment
-        if (matchScore > 0 || stringSimilarity(subject, repo.name) > 0.3) {
+      userRepos.forEach(repo => {
+        const target = `${repo.name} ${repo.description || ''}`.toLowerCase();
+        const kwHits  = subjectWords.filter(w => target.includes(w)).length;
+        const simScore = stringSimilarity(subject, repo.name);
+        if (kwHits > 0 || simScore > 0.3) {
           mappings.push({
-            expNo: String(expCount).padStart(2, '0'),
-            title: repo.description || repo.name.replace(/[-_]/g, ' '),
+            expNo:   String(expCount).padStart(2, '0'),
+            title:   repo.description || repo.name.replace(/[-_]/g, ' '),
             repoUrl: repo.html_url,
-            date: new Date(repo.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g, '/'),
-            _repoName: repo.name
+            date:    repo.created_at
+              ? new Date(repo.created_at)
+                  .toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' })
+                  .replace(/\//g, '/')
+              : '',
+            _directRepo: repo,  // already resolved — skip AI matching in step 4
           });
           expCount++;
         }
       });
-      
-      if (mappings.length === 0) {
-        setStep('v3', 'error', `No relevant repositories found for "${subject}"`);
-        showToast(`Could not find repos related to "${subject}". Try manual mode.`, 'warning', 5000);
+
+      if (!mappings.length) {
+        setStep('v3', 'error', `No repos found matching "${subject}"`);
+        showToast(`No repositories related to "${subject}" found. Try manual mode.`, 'warning', 5000);
         return;
       }
     } else {
-      const snap = await getDocs(query(collection(db, 'repoMappings'), where('subjectCode', '==', code)));
+      // Standard mode — fetch admin-stored experiment titles for this subject
+      const snap = await getDocs(
+        query(collection(db, 'repoMappings'), where('subjectCode', '==', code))
+      );
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
       if (docs.length > 0) {
         const sl = subject.toLowerCase();
         const filtered = docs.filter(m =>
-          (m.subjectName || '').toLowerCase().includes(sl) || sl.includes((m.subjectName || '').toLowerCase())
+          (m.subjectName || '').toLowerCase().includes(sl) ||
+          sl.includes((m.subjectName || '').toLowerCase())
         );
         mappings = filtered.length > 0 ? filtered : docs;
       } else {
+        // Fallback: search all mappings by name/code
         const allSnap = await getDocs(collection(db, 'repoMappings'));
         const all = allSnap.docs.map(d => ({ id: d.id, ...d.data() }));
         const sl = subject.toLowerCase();
@@ -837,79 +874,88 @@ async function runPipeline(main, username, subject, code, isCustom) {
           (m.subjectCode || '').toLowerCase() === code.toLowerCase()
         );
       }
-      
-      if (mappings.length === 0) {
-        setStep('v3', 'error', `No mapping found for "${subject}" (${code})`);
-        showToast('No experiment mappings found. Ask your admin to add them.', 'warning', 5000);
+
+      if (!mappings.length) {
+        setStep('v3', 'error', `No experiment mapping found for "${subject}" (${code})`);
+        showToast('No experiments mapped for this subject. Ask your admin to add them.', 'warning', 5000);
         return;
       }
+      // Sort by experiment number
       mappings.sort((a, b) => (parseInt(a.expNo) || 0) - (parseInt(b.expNo) || 0));
     }
-    
+
     setStep('v3', 'done', `✓ ${mappings.length} experiment(s) found`);
   } catch (err) {
-    setStep('v3', 'error', 'Mapping check failed: ' + err.message);
+    setStep('v3', 'error', 'Failed to load experiment list: ' + err.message);
     return;
   }
 
-  // Step 4 — Verify repos + auto-detect dates from GitHub + AI Auto-Fix
-  setStep('v4', 'loading', 'Verifying URLs & applying AI fixes...');
+  // ── Step 4: AI-match each experiment title → student's repo → verify live ─
+  setStep('v4', 'loading', `Matching ${mappings.length} experiment(s) to your repositories...`);
   try {
-    const repoLookup = {};
-    repos.forEach(r => { repoLookup[r.name.toLowerCase()] = r; });
+    // Separate directly-resolved repos (custom mode) from mappings that need AI matching
+    const needsMatching  = mappings.filter(m => !m._directRepo);
+    const alreadyMatched = mappings.filter(m =>  m._directRepo);
 
-    // Validate and auto-fix the URLs
-    const fixedMappings = await validateAndFixMappingUrls(mappings, repos);
+    // AI matching for standard (admin-mapped) experiments
+    const rawAiMatched = matchExperimentsToRepos(needsMatching, userRepos, username);
 
-    experiments = await Promise.all(fixedMappings.map(async (m) => {
-      let isLive = m.isLive;
-      let repoUrl = m.repoUrl || '';
-      let date = m.date || '';
-      let repoName = '';
-      
-      try {
-        const parts = new URL(repoUrl).pathname.split('/').filter(Boolean);
-        if (parts.length >= 2) repoName = parts[1];
-      } catch {
-        const gh = repoUrl.match(/github\.com\/[^/]+\/([^/?#]+)/);
-        if (gh) repoName = gh[1];
-      }
-      repoName = repoName.replace(/\.git$/i, '');
-
-      // Auto-detect date from GitHub repo created_at if no date set
-      if (!date && repoName) {
-        try {
-          const match = repoLookup[repoName.toLowerCase()];
-          if (match && match.created_at) {
-            date = new Date(match.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g, '/');
-          } else if (!match) {
-            // Try direct API call
-            const res = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
-            if (res.ok) {
-              const data = await res.json();
-              isLive = true;
-              repoUrl = data.html_url;
-              date = new Date(data.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g, '/');
-            }
+    // Enrich the matched experiments with dates and isLive status from userRepos
+    const aiMatched = rawAiMatched.map(exp => {
+      let isLive = false;
+      let date = '';
+      if (exp.matched && exp.repoName) {
+        const repo = userRepos.find(r => r.name === exp.repoName);
+        if (repo) {
+          isLive = true;
+          if (repo.created_at) {
+            date = new Date(repo.created_at)
+              .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+              .replace(/\//g, '/');
           }
-        } catch {}
+        }
       }
-
       return {
-        expNo:    m.expNo || '—',
-        date,
-        title:    m.title || m.subjectName || '—',
-        repoUrl,
-        repoName,
-        isLive,
-        isFixed:  m.isFixed || false
+        expNo:      exp.expNo || '—',
+        date:       date,
+        title:      exp.title || '—',
+        repoUrl:    exp.repoUrl || '',
+        repoName:   exp.repoName || '',
+        isLive:     isLive,
+        matchScore: exp.matchScore || 0,
+        isFixed:    exp.matched,
       };
+    });
+
+    // Convert directly-resolved custom-mode repos
+    const directResults = alreadyMatched.map(m => ({
+      expNo:      m.expNo || '—',
+      date:       m.date  || '',
+      title:      m.title || '—',
+      repoUrl:    m.repoUrl,
+      repoName:   m._directRepo.name,
+      isLive:     true,
+      matchScore: 100,
+      isFixed:    false,
     }));
 
-    const live = experiments.filter(e => e.isLive || e.isFixed).length;
-    setStep('v4', 'done', `✓ ${live}/${experiments.length} links verified or fixed`);
+    // Merge & restore original order
+    const allResults = [...aiMatched, ...directResults];
+    allResults.sort((a, b) => (parseInt(a.expNo) || 0) - (parseInt(b.expNo) || 0));
+
+    experiments = allResults;
+
+    const liveCount    = experiments.filter(e => e.isLive).length;
+    const missingCount = experiments.filter(e => !e.repoUrl).length;
+
+    if (missingCount > 0) {
+      setStep('v4', 'done',
+        `✓ ${liveCount}/${experiments.length} repos matched — ${missingCount} not found (you can add URLs manually)`);
+    } else {
+      setStep('v4', 'done', `✓ All ${experiments.length} repos matched and verified live`);
+    }
   } catch (err) {
-    setStep('v4', 'error', 'Verification failed: ' + err.message);
+    setStep('v4', 'error', 'Matching failed: ' + err.message);
   }
 
   // Step 5 — Build editor
@@ -967,11 +1013,9 @@ function addEditorRow(main, exp, i) {
     </td>
     <td style="text-align:center">
       <span class="qr-cell">${
-        exp.isFixed 
-          ? '<div style="background:#fef9c3; width:28px; height:28px; border-radius:8px; border: 1px solid #fde047; display:inline-flex; align-items:center; justify-content:center; margin:auto;" title="Fixed by AI"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>'
-          : (exp.isLive
-            ? '<div style="background:#dcfce7; width:28px; height:28px; border-radius:8px; border: 1px solid #bbf7d0; display:inline-flex; align-items:center; justify-content:center; margin:auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
-            : '<span style="color:#9ca3af;font-weight:600" title="Broken / Missing URL">—</span>')
+        exp.isLive
+          ? '<div style="background:#dcfce7; width:28px; height:28px; border-radius:8px; border: 1px solid #bbf7d0; display:inline-flex; align-items:center; justify-content:center; margin:auto;" title="Live on GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+          : '<div style="background:#fee2e2; width:28px; height:28px; border-radius:8px; border: 1px solid #fecaca; display:inline-flex; align-items:center; justify-content:center; margin:auto;" title="Not Found / Broken URL"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>'
       }</span>
     </td>
     <td style="text-align:center;padding-right:8px;">
@@ -1004,12 +1048,10 @@ function addEditorRow(main, exp, i) {
       <input type="text" class="exp-url url-input" value="${exp.repoUrl || ''}" placeholder="https://github.com/..." />
     </div>
     <div class="exp-card-footer">
-      <span class="exp-card-status ${exp.isFixed ? 'fixed' : (exp.isLive ? 'live' : 'missing')}" style="${exp.isFixed ? 'color:#ca8a04;' : ''}">
-        ${exp.isFixed 
-          ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Fixed by AI'
-          : (exp.isLive
-            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Live on GitHub'
-            : '— Not found on GitHub')}
+      <span class="exp-card-status ${exp.isLive ? 'live' : 'missing'}">
+        ${exp.isLive
+          ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Live on GitHub'
+          : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Not found on GitHub'}
       </span>
     </div>
   `;
@@ -1027,14 +1069,32 @@ function addEditorRow(main, exp, i) {
       const [y, mo, d] = rawDate.split('-');
       displayDate = `${d}/${mo}/${y}`;
     }
+    const isLive = !!el.querySelector('.exp-url').value;
     experiments[idx] = {
       ...experiments[idx],
       expNo:   el.querySelector('.exp-no').value,
       date:    displayDate,
       title:   el.querySelector('.exp-title').value,
       repoUrl: el.querySelector('.exp-url').value,
-      isLive:  !!el.querySelector('.exp-url').value,
+      isLive:  isLive,
     };
+
+    // Update status indicators dynamically!
+    const desktopStatus = tr.querySelector('.qr-cell');
+    if (desktopStatus) {
+      desktopStatus.innerHTML = isLive
+        ? '<div style="background:#dcfce7; width:28px; height:28px; border-radius:8px; border: 1px solid #bbf7d0; display:inline-flex; align-items:center; justify-content:center; margin:auto;" title="Live on GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>'
+        : '<div style="background:#fee2e2; width:28px; height:28px; border-radius:8px; border: 1px solid #fecaca; display:inline-flex; align-items:center; justify-content:center; margin:auto;" title="Not Found / Broken URL"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>';
+    }
+
+    const mobileStatus = card.querySelector('.exp-card-status');
+    if (mobileStatus) {
+      mobileStatus.className = `exp-card-status ${isLive ? 'live' : 'missing'}`;
+      mobileStatus.innerHTML = isLive
+        ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Live on GitHub'
+        : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Not found on GitHub';
+    }
+
     // Mirror title to card header display
     if (!isCard) {
       const cardTitle = card.querySelector('.exp-card-title');
@@ -1100,10 +1160,13 @@ async function buildPDFDoc(main) {
     });
   }
 
+  const studentName    = main.querySelector('#stu-name')?.value    || sessionStorage.getItem('rb_name')    || user?.name           || '';
+  const registerNumber = main.querySelector('#stu-regno')?.value   || sessionStorage.getItem('rb_regno')   || user?.registerNumber || '';
+
   return generateRecordBookPDF({
     subject, code, experiments,
-    studentName:    user?.name           || '',
-    registerNumber: user?.registerNumber || '',
+    studentName,
+    registerNumber,
   });
 }
 
