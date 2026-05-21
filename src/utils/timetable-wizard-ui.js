@@ -10,14 +10,28 @@ export function getSubjectColor(idx) { return COLORS[idx % COLORS.length]; }
 
 export function renderProgressBar(step) {
   const labels = ['Input','Select Subjects','Preferences','Generate','Timetable'];
-  return `<div class="glass-card mb-4" style="padding:var(--space-4)">
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px;flex-wrap:wrap;gap:4px">
-      ${labels.map((l,i) => `<span style="color:${(i+1)===step?'var(--color-primary)':(i+1)<step?'var(--color-on-surface)':'var(--color-on-surface-variant)'};font-weight:${(i+1)<=step?'700':'400'}">${i+1}. ${l}</span>`).join('')}
-    </div>
-    <div style="height:6px;background:var(--border-color);border-radius:3px;overflow:hidden">
-      <div style="height:100%;width:${Math.round(step/5*100)}%;background:var(--color-primary);transition:width 0.35s"></div>
-    </div>
-  </div>`;
+  return `
+    <style>
+      @keyframes stripemove { 0% { background-position: 0 0; } 100% { background-position: 28px 0; } }
+      .cool-prog-bar {
+        background-image: 
+          linear-gradient(-45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent),
+          var(--gradient-primary, linear-gradient(90deg, #d89b29, #fde047));
+        background-size: 28px 28px, 100% 100%;
+        animation: stripemove 0.8s linear infinite;
+        box-shadow: 0 0 12px rgba(216,155,41, 0.6);
+        border-radius: 4px;
+        transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+    </style>
+    <div class="glass-card mb-4" style="padding:var(--space-4)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px;flex-wrap:wrap;gap:4px">
+        ${labels.map((l,i) => `<span style="color:${(i+1)===step?'var(--color-primary)':(i+1)<step?'var(--color-on-surface)':'var(--color-on-surface-variant)'};font-weight:${(i+1)<=step?'800':'500'};text-transform:uppercase;letter-spacing:0.5px">${i+1}. ${l}</span>`).join('')}
+      </div>
+      <div style="height:8px;background:var(--border-color, rgba(0,0,0,0.05));border-radius:4px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1);">
+        <div class="cool-prog-bar" style="height:100%;width:${Math.round(step/5*100)}%;"></div>
+      </div>
+    </div>`;
 }
 
 export function renderStep1(rawText) {
@@ -301,7 +315,7 @@ export function renderStep5(results, selectedSubjects, leaveDay, clashWarning) {
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2 no-print">
       <h2 class="text-title-lg">✅ Your Optimal Timetable</h2>
       <div class="flex gap-2 flex-wrap">
-        ${results.length>1?`<select id="alt-select" class="form-input" style="width:auto;font-size:12px">${results.map((r,i)=>`<option value="${i}">Option ${i+1} — Score ${r.score}</option>`).join('')}</select>`:''}
+        ${results.length>1?`<select id="alt-select" class="btn btn-sm" style="width:auto;cursor:pointer;appearance:none;padding-left:16px;padding-right:32px;border:none;outline:none;background:linear-gradient(135deg, #6366f1, #a855f7, #ec4899);color:#fff;box-shadow:0 4px 15px rgba(168,85,247,0.4);border-radius:12px;font-weight:700;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23ffffff%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(168,85,247,0.6)';" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(168,85,247,0.4)';">${results.map((r,i)=>`<option value="${i}" style="color:#333;background:#fff;font-weight:600;">✨ Option ${i+1} — Score ${r.score}</option>`).join('')}</select>`:''}
         <button class="btn btn-secondary btn-sm no-print" id="regen-btn">🔄 Regenerate</button>
         <button class="btn btn-primary btn-sm no-print" id="print-btn">🖨️ Print</button>
         <button class="btn btn-primary btn-sm" id="save-btn">💾 Save</button>

@@ -37,10 +37,10 @@ export function render(root) {
             <input class="form-input" id="m-title" type="text" placeholder="Implementation of Symbol Table" required />
           </div>
           <div class="form-group">
-            <label class="form-label">GitHub Repo URL</label>
+            <label class="form-label">GitHub Repo URLs (comma separated)</label>
             <div class="form-input-wrapper">
               <span class="input-icon icon-left" style="font-size:14px">🔗</span>
-              <input class="form-input" id="m-repo" type="url" placeholder="https://github.com/user/repo" required />
+              <input class="form-input" id="m-repo" type="text" placeholder="user/repo1, user/repo2" required />
             </div>
           </div>
           <div class="form-group">
@@ -170,7 +170,6 @@ async function loadMappings(main, search = '') {
     }
 
     tbody.innerHTML = mappings.map(m => {
-      const shortUrl = m.repoUrl?.replace('https://github.com/','') || '—';
       return `
         <tr>
           <td><span class="badge badge-primary">${m.subjectCode||'—'}</span></td>
@@ -178,9 +177,13 @@ async function loadMappings(main, search = '') {
           <td style="text-align:center">${m.expNo||'—'}</td>
           <td style="max-width:200px" class="truncate">${m.title||'—'}</td>
           <td>
-            <a href="${m.repoUrl}" target="_blank" style="font-size:11px;color:var(--color-secondary);text-decoration:none" class="truncate" title="${m.repoUrl}">
-              🔗 ${shortUrl}
-            </a>
+            ${(m.repoUrl || '').split(',').map(url => {
+              const cleanUrl = url.trim();
+              const shortUrl = cleanUrl.replace('https://github.com/','') || '—';
+              return `<a href="${cleanUrl}" target="_blank" style="font-size:11px;color:var(--color-secondary);text-decoration:none;display:block" class="truncate" title="${cleanUrl}">
+                🔗 ${shortUrl}
+              </a>`;
+            }).join('') || '—'}
           </td>
           <td><span class="badge badge-success">✓ Active</span></td>
           <td>

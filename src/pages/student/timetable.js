@@ -190,6 +190,20 @@ function renderExamPanel(panel, exams, today) {
       const isToday  = daysLeft <= 0;
       const isTomorrow = daysLeft === 1;
 
+      const cdId = `cd-${exam.id || i}-${Date.now()}`;
+      let badgeHtml = '';
+      let needsInterval = false;
+
+      // Show timer if exam is within 48 hours
+      if (diffMs > 0 && diffMs <= 86400000 * 2) {
+        badgeHtml = `<div class="badge" id="${cdId}" style="background:var(--color-danger);color:#fff;font-size:11px;padding:6px 12px;animation:pulse 2s infinite;box-shadow:0 2px 8px rgba(239,68,68,0.4)">⏳</div>`;
+        needsInterval = true;
+      } else if (diffMs <= 0 && isToday) {
+        badgeHtml = '<div class="badge badge-danger" style="font-size:11px;padding:6px 12px">Ongoing / Done</div>';
+      } else {
+        badgeHtml = `<div class="badge badge-primary" style="font-size:11px;padding:6px 12px">${daysLeft} days left</div>`;
+      }
+
       const card = document.createElement('div');
       card.className = 'glass-card';
       card.style.cssText = `
@@ -237,17 +251,35 @@ function renderExamPanel(panel, exams, today) {
 
           <!-- Countdown column -->
           <div class="text-right" style="flex-shrink:0;min-width:100px">
-            ${isToday
-              ? '<div class="badge badge-danger" style="font-size:11px;padding:6px 12px;animation:pulse 1s infinite">Today!</div>'
-              : isTomorrow
-              ? '<div class="badge badge-warning" style="font-size:11px;padding:6px 12px">Tomorrow!</div>'
-              : `<div class="badge badge-primary" style="font-size:11px;padding:6px 12px">${daysLeft} days left</div>`
-            }
+            ${badgeHtml}
           </div>
         </div>
       `;
 
       upcomingList.appendChild(card);
+      
+      if (needsInterval) {
+        const timerEl = card.querySelector(`#${cdId}`);
+        const updateTimer = () => {
+          const now = new Date();
+          let remain = target - now;
+          if (remain <= 0) {
+            timerEl.innerHTML = 'Started / Ongoing';
+            timerEl.style.animation = 'none';
+            timerEl.style.background = 'var(--color-success)';
+            timerEl.style.boxShadow = 'none';
+            return;
+          }
+          const h = Math.floor(remain / 3600000);
+          remain %= 3600000;
+          const m = Math.floor(remain / 60000).toString().padStart(2, '0');
+          remain %= 60000;
+          const s = Math.floor(remain / 1000).toString().padStart(2, '0');
+          timerEl.innerHTML = `⏳ ${h}h ${m}m ${s}s`;
+        };
+        updateTimer();
+        countdownIntervals.push(setInterval(updateTimer, 1000));
+      }
     });
   }
 

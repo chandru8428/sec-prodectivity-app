@@ -633,7 +633,8 @@ export function render(root) {
     e.preventDefault();
     const studentName = main.querySelector('#student-name').value.trim();
     const regNo = main.querySelector('#register-number').value.trim();
-    const username = ghInput.value.trim();
+    let username = ghInput.value.trim().replace(/^@\s*/, '');
+    ghInput.value = username; // Update input field visually
     let subject = '';
     let code = '';
 
@@ -775,14 +776,23 @@ async function runPipeline(main, username, subject, code, isCustom) {
     const circle = main.querySelector(`#${id}-circle`);
     const msgEl  = main.querySelector(`#${id}-msg`);
     if (status === 'loading') {
-      circle.innerHTML = '<span class="spinner" style="width:11px;height:11px;border-width:2px"></span>';
-      circle.style.cssText = '';
+      circle.innerHTML = '<span class="spinner" style="width:12px;height:12px;border-width:2px"></span>';
+      circle.style.background = 'transparent';
+      circle.style.color = 'inherit';
+      circle.style.border = '2px solid var(--color-primary)';
+      circle.style.boxShadow = 'none';
     } else if (status === 'done') {
-      circle.innerHTML = '✓';
-      circle.style.cssText = 'background:var(--gradient-success);color:#fff;border:none;';
+      circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      circle.style.background = 'var(--gradient-primary, #6366f1)';
+      circle.style.color = '#fff';
+      circle.style.border = '2px solid transparent';
+      circle.style.boxShadow = '0 2px 8px rgba(99,102,241,0.4)';
     } else if (status === 'error') {
-      circle.innerHTML = '✕';
-      circle.style.cssText = 'background:var(--gradient-danger);color:#fff;border:none;';
+      circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+      circle.style.background = 'var(--color-danger, #ef4444)';
+      circle.style.color = '#fff';
+      circle.style.border = '2px solid transparent';
+      circle.style.boxShadow = '0 2px 8px rgba(239,68,68,0.4)';
     }
     if (msgEl) msgEl.textContent = msg;
   };
@@ -791,8 +801,13 @@ async function runPipeline(main, username, subject, code, isCustom) {
   setStep('v1', 'loading', 'Checking GitHub username...');
   try {
     const r = await fetch(`https://api.github.com/users/${username}`);
-    if (!r.ok) throw new Error('not found');
-    setStep('v1', 'done', `✓ Found: ${username}`);
+    if (r.status === 403 || r.status === 429) {
+      setStep('v1', 'done', `✓ (Rate Limited) ${username}`);
+    } else if (!r.ok) {
+      throw new Error('not found');
+    } else {
+      setStep('v1', 'done', `✓ Found: ${username}`);
+    }
   } catch {
     setStep('v1', 'error', `User "${username}" not found on GitHub`);
     showToast('GitHub username not found. Check spelling and try again.', 'error');
@@ -890,24 +905,24 @@ async function runPipeline(main, username, subject, code, isCustom) {
     return;
   }
 
-  // ── Step 4: AI-match each experiment title → student's repo → verify live ─
+  // ── Step 4: Match each experiment title → student's repo (exact fork first, then fuzzy) ─
   setStep('v4', 'loading', `Matching ${mappings.length} experiment(s) to your repositories...`);
   try {
-    // Separate directly-resolved repos (custom mode) from mappings that need AI matching
+    // Separate directly-resolved repos (custom mode) from mappings that need matching
     const needsMatching  = mappings.filter(m => !m._directRepo);
     const alreadyMatched = mappings.filter(m =>  m._directRepo);
 
-    // AI matching for standard (admin-mapped) experiments
-    const rawAiMatched = matchExperimentsToRepos(needsMatching, userRepos, username);
+    // Match: exact fork-name first, fuzzy keyword fallback
+    const rawMatched = matchExperimentsToRepos(needsMatching, userRepos, username);
 
-    // Enrich the matched experiments with dates and isLive status from userRepos
-    const aiMatched = rawAiMatched.map(exp => {
+    // Enrich matched experiments with dates and isLive status from userRepos
+    const enriched = rawMatched.map(exp => {
       let isLive = false;
-      let date = '';
+      let date   = '';
       if (exp.matched && exp.repoName) {
         const repo = userRepos.find(r => r.name === exp.repoName);
         if (repo) {
-          isLive = true;
+          isLive = true; // repo exists in the fetched list → it is live
           if (repo.created_at) {
             date = new Date(repo.created_at)
               .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -916,44 +931,48 @@ async function runPipeline(main, username, subject, code, isCustom) {
         }
       }
       return {
-        expNo:      exp.expNo || '—',
-        date:       date,
-        title:      exp.title || '—',
-        repoUrl:    exp.repoUrl || '',
-        repoName:   exp.repoName || '',
-        isLive:     isLive,
-        matchScore: exp.matchScore || 0,
-        isFixed:    exp.matched,
+        expNo:       exp.expNo || '—',
+        date,
+        title:       exp.title || '—',
+        repoUrl:     exp.repoUrl || '',
+        repoName:    exp.repoName || '',
+        isLive,
+        matchScore:  exp.matchScore || 0,
+        matchMethod: exp.matchMethod || 'none',
+        isFixed:     exp.matched,
       };
     });
 
     // Convert directly-resolved custom-mode repos
     const directResults = alreadyMatched.map(m => ({
-      expNo:      m.expNo || '—',
-      date:       m.date  || '',
-      title:      m.title || '—',
-      repoUrl:    m.repoUrl,
-      repoName:   m._directRepo.name,
-      isLive:     true,
-      matchScore: 100,
-      isFixed:    false,
+      expNo:       m.expNo || '—',
+      date:        m.date  || '',
+      title:       m.title || '—',
+      repoUrl:     m.repoUrl,
+      repoName:    m._directRepo.name,
+      isLive:      true,
+      matchScore:  100,
+      matchMethod: 'exact-fork',
+      isFixed:     false,
     }));
 
     // Merge & restore original order
-    const allResults = [...aiMatched, ...directResults];
+    const allResults = [...enriched, ...directResults];
     allResults.sort((a, b) => (parseInt(a.expNo) || 0) - (parseInt(b.expNo) || 0));
 
     experiments = allResults;
 
-    const liveCount    = experiments.filter(e => e.isLive).length;
+    const exactCount   = experiments.filter(e => e.matchMethod === 'exact-fork').length;
+    const fuzzyCount   = experiments.filter(e => e.matchMethod === 'fuzzy').length;
     const missingCount = experiments.filter(e => !e.repoUrl).length;
 
-    if (missingCount > 0) {
-      setStep('v4', 'done',
-        `✓ ${liveCount}/${experiments.length} repos matched — ${missingCount} not found (you can add URLs manually)`);
-    } else {
-      setStep('v4', 'done', `✓ All ${experiments.length} repos matched and verified live`);
-    }
+    let v4Msg = `✓ ${experiments.length - missingCount}/${experiments.length} matched`;
+    if (exactCount > 0) v4Msg += ` (${exactCount} exact fork`;
+    if (fuzzyCount > 0) v4Msg += exactCount > 0 ? `, ${fuzzyCount} keyword` : ` (${fuzzyCount} keyword`;
+    if (exactCount > 0 || fuzzyCount > 0) v4Msg += ')';
+    if (missingCount > 0) v4Msg += ` — ${missingCount} not found (add URLs manually)`;
+
+    setStep('v4', 'done', v4Msg);
   } catch (err) {
     setStep('v4', 'error', 'Matching failed: ' + err.message);
   }

@@ -42,8 +42,8 @@ export function render(root) {
         color:var(--color-on-surface-variant); transition:all 0.15s; white-space:nowrap;
       }
       .qa-chip.active {
-        background:var(--color-primary-container); border-color:var(--color-primary);
-        color:var(--color-primary);
+        background:var(--gradient-primary, var(--color-primary)); border-color:var(--color-primary);
+        color:#fff; box-shadow:0 2px 8px rgba(216,155,41,0.25);
       }
       .qa-sem-sel {
         padding:6px 12px; border-radius:var(--radius-full);
