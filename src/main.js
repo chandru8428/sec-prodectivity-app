@@ -8,17 +8,17 @@ import { supabase } from '/src/supabase.js';
 import { router } from './router.js';
 
 // ── Theme Toggle Logic ────────────────────────────────────────────────────────
+const savedTheme = localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+  document.body.classList.add('dark-mode');
+} else {
+  document.body.classList.add('light-mode');
+}
+
 const toggleBtn = document.getElementById('theme-toggle');
 if (toggleBtn) {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark-mode');
-  } else {
-    document.body.classList.add('light-mode');
-  }
-
   toggleBtn.addEventListener('click', () => {
     if (document.body.classList.contains('dark-mode')) {
       document.body.classList.remove('dark-mode');
@@ -82,24 +82,26 @@ onAuthStateChanged(auth, async (user) => {
             appState.userData = userDoc.data();
             appState.userRole = userDoc.data().role;
           } else {
-            appState.userRole = user.email?.includes('admin') ? 'admin' : 'student';
-            appState.userData = { name: user.displayName || user.email, email: user.email, role: appState.userRole };
+            appState.userRole = null;
+            appState.userData = { name: user.displayName || user.email, email: user.email, role: null };
           }
         } catch {
-          appState.userRole = 'student';
-          appState.userData = { name: user.displayName || 'Student', email: user.email, role: 'student' };
+          appState.userRole = null;
+          appState.userData = { name: user.displayName || 'Student', email: user.email, role: null };
         }
       }
     } catch (err) {
       console.warn('Profile load failed:', err);
-      appState.userRole = 'student';
-      appState.userData = { name: user.displayName || 'Student', email: user.email, role: 'student' };
+      appState.userRole = null;
+      appState.userData = { name: user.displayName || 'Student', email: user.email, role: null };
     }
 
 
     // Route to appropriate dashboard
     const currentHash = window.location.hash;
-    if (!currentHash || currentHash === '#/' || currentHash === '#/login') {
+    if (appState.userRole === null) {
+      router.navigate('/register');
+    } else if (!currentHash || currentHash === '#/' || currentHash === '#/login' || currentHash === '#/register') {
       router.navigate(appState.userRole === 'admin' ? '/admin/dashboard' : '/student/dashboard');
     } else {
       router.render();

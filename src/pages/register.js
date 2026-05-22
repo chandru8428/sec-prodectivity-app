@@ -3,9 +3,21 @@ import {
   auth
 } from '/src/firebase.js';
 import { supabase } from '/src/supabase.js';
-import { showToast } from '../main.js';
+import { showToast, appState } from '../main.js';
+import { router } from '../router.js';
 
 export function render(root) {
+  const isGoogleUser = !!auth.currentUser;
+  const prefillEmail = auth.currentUser?.email || '';
+  const prefillName = auth.currentUser?.displayName || '';
+  let prefillFirst = '';
+  let prefillLast = '';
+  if (prefillName) {
+    const parts = prefillName.split(' ');
+    prefillFirst = parts[0];
+    prefillLast = parts.slice(1).join(' ');
+  }
+
   root.innerHTML = `
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:var(--space-6);position:relative;z-index:1">
       <div style="width:100%;max-width:500px">
@@ -28,11 +40,11 @@ export function render(root) {
               <div class="grid grid-2 gap-4">
                 <div class="form-group">
                   <label class="form-label">First Name</label>
-                  <input class="form-input" id="first-name" type="text" placeholder="e.g. Arjun" required />
+                  <input class="form-input" id="first-name" type="text" placeholder="e.g. Arjun" required value="${prefillFirst}" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Last Name</label>
-                  <input class="form-input" id="last-name" type="text" placeholder="e.g. S" />
+                  <input class="form-input" id="last-name" type="text" placeholder="e.g. S" value="${prefillLast}" />
                 </div>
               </div>
 
@@ -40,7 +52,7 @@ export function render(root) {
                 <label class="form-label">College Email <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
                   <span class="input-icon icon-left">📧</span>
-                  <input class="form-input" id="reg-email" type="email" placeholder="yourname@example.com" required autocomplete="email" />
+                  <input class="form-input" id="reg-email" type="email" placeholder="yourname@example.com" required autocomplete="email" value="${prefillEmail}" ${isGoogleUser ? 'readonly style="opacity:0.7;cursor:not-allowed;"' : ''} />
                 </div>
                 <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px">Use any valid email address</div>
               </div>
@@ -79,11 +91,11 @@ export function render(root) {
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" style="${isGoogleUser ? 'display:none;' : ''}">
                 <label class="form-label" for="reg-password">Password <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
                   <span class="input-icon icon-left" aria-hidden="true">🔒</span>
-                  <input class="form-input" id="reg-password" type="password" placeholder="Min. 8 characters" required minlength="8" autocomplete="new-password" />
+                  <input class="form-input" id="reg-password" type="password" placeholder="Min. 8 characters" ${isGoogleUser ? '' : 'required'} minlength="8" autocomplete="new-password" />
                   <button type="button" class="input-icon" id="toggle-reg-pass" aria-label="Show password">👁</button>
                 </div>
                 <!-- Strength bar -->
@@ -93,16 +105,16 @@ export function render(root) {
                 <div id="pw-strength-label" style="font-size:11px;margin-top:4px;color:var(--color-outline);min-height:16px"></div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" style="${isGoogleUser ? 'display:none;' : ''}">
                 <label class="form-label" for="reg-confirm">Confirm Password <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
                   <span class="input-icon icon-left" aria-hidden="true">🔒</span>
-                  <input class="form-input" id="reg-confirm" type="password" placeholder="Re-enter password" required autocomplete="new-password" />
+                  <input class="form-input" id="reg-confirm" type="password" placeholder="Re-enter password" ${isGoogleUser ? '' : 'required'} autocomplete="new-password" />
                 </div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-lg w-full" id="register-btn">
-                <span id="reg-text">🎓 Create Account</span>
+                <span id="reg-text">🎓 ${isGoogleUser ? 'Complete Profile' : 'Create Account'}</span>
                 <span id="reg-spinner" class="spinner hidden" style="width:18px;height:18px;border-width:2px"></span>
               </button>
 
@@ -183,10 +195,12 @@ export function render(root) {
       showError('Register number cannot be an email. Enter your college register number (e.g. 311824110042).');
       return;
     }
-    if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
-    if (!/[A-Z]/.test(password)) { showError('Password must contain at least one uppercase letter.'); return; }
-    if (!/[0-9]/.test(password)) { showError('Password must contain at least one number.'); return; }
-    if (password !== confirm) { showError('Passwords do not match.'); return; }
+    if (!isGoogleUser) {
+      if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
+      if (!/[A-Z]/.test(password)) { showError('Password must contain at least one uppercase letter.'); return; }
+      if (!/[0-9]/.test(password)) { showError('Password must contain at least one number.'); return; }
+      if (password !== confirm) { showError('Passwords do not match.'); return; }
+    }
 
     const btn  = root.querySelector('#register-btn');
     const text = root.querySelector('#reg-text');
@@ -208,12 +222,18 @@ export function render(root) {
         return;
       }
 
-      // Create Firebase Auth account
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      let uid;
+      if (isGoogleUser) {
+        uid = auth.currentUser.uid;
+      } else {
+        // Create Firebase Auth account
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        uid = cred.user.uid;
+      }
 
       // Store user profile in Supabase
       const { error: insertErr } = await supabase.from('users').insert({
-        id: cred.user.uid,
+        id: uid,
         name: `${firstName} ${lastName}`.trim(),
         firstName,
         lastName,
@@ -227,7 +247,12 @@ export function render(root) {
       if (insertErr) throw insertErr;
 
       showToast('Account created! Welcome to EduSync 🎉', 'success');
-      // Auth state change in main.js will auto-redirect to dashboard
+      if (isGoogleUser) {
+        appState.userRole = 'student';
+        appState.userData = { ...appState.userData, name: `${firstName} ${lastName}`.trim(), registerNumber: regNumber, role: 'student' };
+        router.navigate('/student/dashboard');
+      }
+      // For email/password, auth state change in main.js will auto-redirect to dashboard
     } catch (err) {
       const msg = friendlyRegError(err);
       showError(msg);

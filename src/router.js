@@ -76,11 +76,13 @@ export const router = {
     if (studentRoutes.has(path) && appState.userRole !== 'student') {
       if (!appState.currentUser) { this.navigate('/login'); return; }
       if (appState.userRole === 'admin') { this.navigate('/admin/dashboard'); return; }
+      this.navigate('/register'); return;
     }
 
     if (adminRoutes.has(path) && appState.userRole !== 'admin') {
       if (!appState.currentUser) { this.navigate('/login'); return; }
       if (appState.userRole === 'student') { this.navigate('/student/dashboard'); return; }
+      this.navigate('/register'); return;
     }
 
     const loader = routes[path];

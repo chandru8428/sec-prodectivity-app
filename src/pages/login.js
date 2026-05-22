@@ -237,9 +237,9 @@ export function render(root) {
         .single();
 
       if (profileErr || !profile) {
-        // Not registered — sign out and reject
-        await supabase.auth.signOut();
-        showToast('🚫 Access denied. Your Google account is not registered in EduSync. Please contact your admin.', 'error', 6000);
+        // Not registered — redirect to register to complete profile
+        showToast(`Welcome! Please complete your registration.`, 'info');
+        router.navigate('/register');
         return;
       }
 

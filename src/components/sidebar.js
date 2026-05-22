@@ -185,6 +185,10 @@ export function createLayout(title, content, breadcrumb = '') {
         </div>
       </div>
       <div class="flex items-center gap-3">
+        <button id="header-theme-toggle" class="header-theme-toggle" aria-label="Toggle dark/light mode">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
         ${role === 'admin' ? '<span class="badge badge-admin">Admin</span>' : ''}
         <div id="topbar-user-menu" style="position:relative;cursor:pointer" title="Account options">
           <button id="topbar-avatar-btn" aria-haspopup="true" aria-expanded="false" style="width:40px;height:40px;border-radius:12px;background:var(--gradient-primary);color:white;font-weight:700;font-size:15px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(68,70,85,0.25);transition:box-shadow 0.2s,transform 0.15s" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">${initials}</button>
@@ -324,6 +328,21 @@ export function createLayout(title, content, breadcrumb = '') {
       showToast('Logged out successfully', 'success');
     } catch { showToast('Logout failed', 'error'); }
   });
+
+  const headerThemeToggle = main.querySelector('#header-theme-toggle');
+  if (headerThemeToggle) {
+    headerThemeToggle.addEventListener('click', () => {
+      if (document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  }
 
   return wrapper;
 }
