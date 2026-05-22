@@ -7,6 +7,31 @@ import { supabase } from '/src/supabase.js';
 
 import { router } from './router.js';
 
+// ── Theme Toggle Logic ────────────────────────────────────────────────────────
+const toggleBtn = document.getElementById('theme-toggle');
+if (toggleBtn) {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.add('light-mode');
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    if (document.body.classList.contains('dark-mode')) {
+      document.body.classList.remove('dark-mode');
+      document.body.classList.add('light-mode');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.body.classList.remove('light-mode');
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+}
+
 // ── Toast System ──────────────────────────────────────────────────────────────
 const toastContainer = document.createElement('div');
 toastContainer.id = 'toast-container';

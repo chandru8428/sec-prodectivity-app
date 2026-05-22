@@ -205,16 +205,11 @@ function renderExamPanel(panel, exams, today) {
       }
 
       const card = document.createElement('div');
-      card.className = 'glass-card';
+      card.className = 'glass-card exam-card-upcoming';
+      card.setAttribute('data-type', isPractical ? 'practical' : 'theory');
       card.style.cssText = `
-        border-left: 5px solid ${isPractical ? '#7C3AED' : '#4F46E5'};
-        background: ${isPractical 
-          ? 'linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%)' 
-          : 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)'};
-        border-top: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.25)' : 'rgba(79, 70, 229, 0.25)'};
-        border-right: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.25)' : 'rgba(79, 70, 229, 0.25)'};
-        border-bottom: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.25)' : 'rgba(79, 70, 229, 0.25)'};
-        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        border-left: 5px solid ${isPractical ? '#7C3AED' : 'var(--color-primary)'};
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       `;
 
       card.innerHTML = `
@@ -287,29 +282,25 @@ function renderExamPanel(panel, exams, today) {
     const pastList = panel.querySelector(`#${panel.id}-past`);
     pastList.innerHTML = past.map(exam => {
       const isPractical = exam.examType === 'practical';
-      const accentColor = isPractical ? '#7C3AED' : '#4F46E5';
+      const accentColor = isPractical ? '#7C3AED' : 'var(--color-primary)';
       return `
-        <div style="display:flex;align-items:center;gap:var(--space-4);padding:12px 16px;border-radius:12px;
-          background: ${isPractical 
-            ? 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)' 
-            : 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)'};
-          border: 1px solid ${isPractical ? 'rgba(124, 92, 237, 0.2)' : 'rgba(79, 70, 229, 0.2)'};
+        <div class="exam-card-past" style="display:flex;align-items:center;gap:var(--space-4);padding:12px 16px;border-radius:12px;
           border-left: 4px solid ${accentColor};
-          opacity: 0.95;
+          opacity: 0.9;
           transition: transform 0.2s ease;
         ">
           <span style="font-size:1.4rem">${isPractical?'🧪':'📝'}</span>
           <div style="flex:1">
-            <div style="font-weight:600;color:var(--text-primary)">${exam.subject||'—'}</div>
-            <div style="font-size:12px;color:var(--text-secondary)">
+            <div style="font-weight:600;color:var(--color-on-surface)">${exam.subject||'—'}</div>
+            <div style="font-size:12px;color:var(--color-on-surface-variant)">
               ${formatDate(exam.examDate)}
               ${exam.session ? `· ${exam.session==='FN'?'FN 10AM':'AN 2PM'}` : ''}
               ${exam.hall ? `· Hall: ${exam.hall}` : ''}
             </div>
           </div>
-          ${exam.uploadedBy === 'student' ? '<span class="badge" style="background:#FFFBEB;color:#D97706;font-size:10px">🌟 Personal</span>' : ''}
-          ${exam.subjectCode ? `<span class="badge" style="background:#F1F5F9;color:#64748B;font-size:10px">${exam.subjectCode}</span>` : ''}
-          <span class="badge" style="background:#DCFCE7;color:#166534">✅ Done</span>
+          ${exam.uploadedBy === 'student' ? '<span class="badge badge-warning" style="font-size:10px">🌟 Personal</span>' : ''}
+          ${exam.subjectCode ? `<span class="badge" style="font-size:10px">${exam.subjectCode}</span>` : ''}
+          <span class="badge badge-success">✅ Done</span>
           ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px;margin-left:8px" onclick="deletePersonalEvent('${exam.id}')" title="Delete">🗑️</button>` : ''}
         </div>
       `;

@@ -13,6 +13,31 @@
 
 const GITHUB_API = 'https://api.github.com';
 
+/* ── Sample fallback repos (used when GitHub API rate limit is hit) ────── */
+const SAMPLE_FALLBACK_REPOS = [
+  { name: 'symbol-table-implementation',   html_url: 'https://github.com/sample/symbol-table-implementation',   description: 'Implementation of Symbol Table using C', pushed_at: '2024-01-15T10:00:00Z', updated_at: '2024-01-15T10:00:00Z' },
+  { name: 'lexical-analyzer',              html_url: 'https://github.com/sample/lexical-analyzer',              description: 'Lexical Analyzer / Scanner using LEX', pushed_at: '2024-01-20T10:00:00Z', updated_at: '2024-01-20T10:00:00Z' },
+  { name: 'syntax-analyzer',              html_url: 'https://github.com/sample/syntax-analyzer',              description: 'Syntax Analyzer using YACC / Recursive Descent', pushed_at: '2024-01-25T10:00:00Z', updated_at: '2024-01-25T10:00:00Z' },
+  { name: 'intermediate-code-generation', html_url: 'https://github.com/sample/intermediate-code-generation', description: 'Intermediate Code Generation for expressions', pushed_at: '2024-02-01T10:00:00Z', updated_at: '2024-02-01T10:00:00Z' },
+  { name: 'code-optimization',            html_url: 'https://github.com/sample/code-optimization',            description: 'Code Optimization techniques in compiler design', pushed_at: '2024-02-05T10:00:00Z', updated_at: '2024-02-05T10:00:00Z' },
+  { name: 'sorting-algorithms',           html_url: 'https://github.com/sample/sorting-algorithms',           description: 'Bubble, Quick, Merge, Heap sort implementations', pushed_at: '2024-02-10T10:00:00Z', updated_at: '2024-02-10T10:00:00Z' },
+  { name: 'graph-algorithms',             html_url: 'https://github.com/sample/graph-algorithms',             description: 'BFS, DFS, Dijkstra, Kruskal, Prim algorithms', pushed_at: '2024-02-15T10:00:00Z', updated_at: '2024-02-15T10:00:00Z' },
+  { name: 'dynamic-programming',          html_url: 'https://github.com/sample/dynamic-programming',          description: 'LCS, Knapsack, Matrix Chain Multiplication', pushed_at: '2024-02-20T10:00:00Z', updated_at: '2024-02-20T10:00:00Z' },
+  { name: 'database-connectivity',        html_url: 'https://github.com/sample/database-connectivity',        description: 'JDBC / MySQL database connectivity experiments', pushed_at: '2024-02-25T10:00:00Z', updated_at: '2024-02-25T10:00:00Z' },
+  { name: 'os-scheduling-algorithms',     html_url: 'https://github.com/sample/os-scheduling-algorithms',     description: 'FCFS, SJF, Round Robin CPU scheduling', pushed_at: '2024-03-01T10:00:00Z', updated_at: '2024-03-01T10:00:00Z' },
+  { name: 'memory-management',            html_url: 'https://github.com/sample/memory-management',            description: 'Paging, Segmentation, Memory allocation', pushed_at: '2024-03-05T10:00:00Z', updated_at: '2024-03-05T10:00:00Z' },
+  { name: 'socket-programming',           html_url: 'https://github.com/sample/socket-programming',           description: 'TCP/UDP client-server socket programs', pushed_at: '2024-03-10T10:00:00Z', updated_at: '2024-03-10T10:00:00Z' },
+  { name: 'network-protocols',            html_url: 'https://github.com/sample/network-protocols',            description: 'HTTP, FTP, DNS protocol simulation', pushed_at: '2024-03-15T10:00:00Z', updated_at: '2024-03-15T10:00:00Z' },
+  { name: 'machine-learning-lab',         html_url: 'https://github.com/sample/machine-learning-lab',         description: 'Linear Regression, Decision Tree, KNN experiments', pushed_at: '2024-03-20T10:00:00Z', updated_at: '2024-03-20T10:00:00Z' },
+  { name: 'deep-learning-lab',            html_url: 'https://github.com/sample/deep-learning-lab',            description: 'ANN, CNN, RNN with TensorFlow/PyTorch', pushed_at: '2024-03-25T10:00:00Z', updated_at: '2024-03-25T10:00:00Z' },
+  { name: 'web-development-lab',          html_url: 'https://github.com/sample/web-development-lab',          description: 'HTML, CSS, JS, React web development experiments', pushed_at: '2024-03-28T10:00:00Z', updated_at: '2024-03-28T10:00:00Z' },
+  { name: 'data-structures-lab',          html_url: 'https://github.com/sample/data-structures-lab',          description: 'Linked List, Stack, Queue, Tree, Heap, Graph', pushed_at: '2024-04-01T10:00:00Z', updated_at: '2024-04-01T10:00:00Z' },
+  { name: 'computer-networks-lab',        html_url: 'https://github.com/sample/computer-networks-lab',        description: 'Wireshark, ping, traceroute, OSPF, RIP simulations', pushed_at: '2024-04-05T10:00:00Z', updated_at: '2024-04-05T10:00:00Z' },
+  { name: 'software-engineering-lab',     html_url: 'https://github.com/sample/software-engineering-lab',     description: 'UML diagrams, design patterns, testing', pushed_at: '2024-04-10T10:00:00Z', updated_at: '2024-04-10T10:00:00Z' },
+  { name: 'cryptography-lab',             html_url: 'https://github.com/sample/cryptography-lab',             description: 'Caesar, RSA, AES, DES encryption algorithms', pushed_at: '2024-04-15T10:00:00Z', updated_at: '2024-04-15T10:00:00Z' },
+];
+export { SAMPLE_FALLBACK_REPOS };
+
 /* ── 1. Username validation ──────────────────────────────────────────────── */
 export async function validateUsername(username) {
   try {
@@ -21,6 +46,10 @@ export async function validateUsername(username) {
       const data = await res.json();
       return { valid: true, user: data };
     }
+    if (res.status === 403 || res.status === 429) {
+      // Rate limited — treat as partial success so wizard can proceed
+      return { valid: true, rateLimited: true, user: { login: username, avatar_url: `https://github.com/${username}.png`, name: username } };
+    }
     return { valid: false, error: 'User not found' };
   } catch (e) {
     return { valid: false, error: e.message };
@@ -28,6 +57,14 @@ export async function validateUsername(username) {
 }
 
 /* ── 2. Fetch ALL public repos (paginated, up to 1000) ───────────────────── */
+// Special error type so callers can show a specific "rate limited" UI
+export class GitHubRateLimitError extends Error {
+  constructor() {
+    super('GITHUB_RATE_LIMIT');
+    this.name = 'GitHubRateLimitError';
+  }
+}
+
 export async function getUserRepos(username) {
   const allRepos = [];
   let page = 1;
@@ -40,24 +77,27 @@ export async function getUserRepos(username) {
       );
       if (!res.ok) {
         if (res.status === 403 || res.status === 429) {
-          throw new Error('GitHub API rate limit exceeded. Please try again later.');
+          // Throw a typed error so callers show proper UI
+          throw new GitHubRateLimitError();
         }
         if (page === 1) throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
-        break; // stop on error after first page
+        break;
       }
       const repos = await res.json();
       if (!Array.isArray(repos) || repos.length === 0) break;
 
       allRepos.push(...repos);
-      if (repos.length < perPage) break; // last page
+      if (repos.length < perPage) break;
       page++;
     } catch (err) {
+      // Re-throw rate limit errors so callers handle them properly
+      if (err instanceof GitHubRateLimitError) throw err;
       if (page === 1) throw err;
       break;
     }
   }
 
-  return allRepos; // raw GitHub repo objects
+  return allRepos;
 }
 
 /* ── 3. Normalize a string for matching ──────────────────────────────────── */

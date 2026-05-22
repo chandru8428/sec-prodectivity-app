@@ -2,6 +2,34 @@ import { createLayout } from '../../components/sidebar.js';
 import { db, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from '/src/supabase-adapter.js';
 import { showToast } from '../../main.js';
 
+/* ── 20 Sample Lab Entries (seeded into Firestore via button) ── */
+const SAMPLE_LABS = [
+  // Compiler Design
+  { subjectCode:'19CS409', subjectName:'Compiler Design', expNo:'01', title:'Implementation of Symbol Table',           repoUrl:'https://github.com/sample/symbol-table-implementation',   date:'2024-01-15' },
+  { subjectCode:'19CS409', subjectName:'Compiler Design', expNo:'02', title:'Lexical Analyzer using LEX',                repoUrl:'https://github.com/sample/lexical-analyzer',              date:'2024-01-22' },
+  { subjectCode:'19CS409', subjectName:'Compiler Design', expNo:'03', title:'Syntax Analyzer using YACC',                repoUrl:'https://github.com/sample/syntax-analyzer',               date:'2024-01-29' },
+  { subjectCode:'19CS409', subjectName:'Compiler Design', expNo:'04', title:'Intermediate Code Generation',              repoUrl:'https://github.com/sample/intermediate-code-generation',  date:'2024-02-05' },
+  { subjectCode:'19CS409', subjectName:'Compiler Design', expNo:'05', title:'Code Optimization Techniques',              repoUrl:'https://github.com/sample/code-optimization',             date:'2024-02-12' },
+  // Data Structures
+  { subjectCode:'19CS301', subjectName:'Data Structures Lab', expNo:'01', title:'Sorting Algorithms (Bubble, Quick, Merge)', repoUrl:'https://github.com/sample/sorting-algorithms',     date:'2024-01-15' },
+  { subjectCode:'19CS301', subjectName:'Data Structures Lab', expNo:'02', title:'Graph Algorithms (BFS, DFS)',              repoUrl:'https://github.com/sample/graph-algorithms',           date:'2024-01-22' },
+  { subjectCode:'19CS301', subjectName:'Data Structures Lab', expNo:'03', title:'Dynamic Programming',                     repoUrl:'https://github.com/sample/dynamic-programming',         date:'2024-01-29' },
+  { subjectCode:'19CS301', subjectName:'Data Structures Lab', expNo:'04', title:'Linked List Operations',                  repoUrl:'https://github.com/sample/data-structures-lab',        date:'2024-02-05' },
+  { subjectCode:'19CS301', subjectName:'Data Structures Lab', expNo:'05', title:'Stack and Queue Implementation',           repoUrl:'https://github.com/sample/data-structures-lab',        date:'2024-02-12' },
+  // Operating Systems
+  { subjectCode:'19CS405', subjectName:'Operating Systems Lab', expNo:'01', title:'CPU Scheduling Algorithms (FCFS, SJF, RR)', repoUrl:'https://github.com/sample/os-scheduling-algorithms', date:'2024-01-15' },
+  { subjectCode:'19CS405', subjectName:'Operating Systems Lab', expNo:'02', title:'Memory Management (Paging)',              repoUrl:'https://github.com/sample/memory-management',           date:'2024-01-22' },
+  { subjectCode:'19CS405', subjectName:'Operating Systems Lab', expNo:'03', title:'Deadlock Detection and Prevention',       repoUrl:'https://github.com/sample/os-scheduling-algorithms',    date:'2024-01-29' },
+  { subjectCode:'19CS405', subjectName:'Operating Systems Lab', expNo:'04', title:'Process Synchronization',                repoUrl:'https://github.com/sample/memory-management',           date:'2024-02-05' },
+  { subjectCode:'19CS405', subjectName:'Operating Systems Lab', expNo:'05', title:'File System Implementation',             repoUrl:'https://github.com/sample/os-scheduling-algorithms',    date:'2024-02-12' },
+  // Computer Networks
+  { subjectCode:'19CS501', subjectName:'Computer Networks Lab', expNo:'01', title:'Socket Programming (TCP/UDP)',            repoUrl:'https://github.com/sample/socket-programming',          date:'2024-01-15' },
+  { subjectCode:'19CS501', subjectName:'Computer Networks Lab', expNo:'02', title:'Network Protocol Simulation',             repoUrl:'https://github.com/sample/network-protocols',           date:'2024-01-22' },
+  { subjectCode:'19CS501', subjectName:'Computer Networks Lab', expNo:'03', title:'Wireshark Packet Analysis',               repoUrl:'https://github.com/sample/computer-networks-lab',       date:'2024-01-29' },
+  { subjectCode:'19CS501', subjectName:'Computer Networks Lab', expNo:'04', title:'Routing Algorithms (OSPF, RIP)',           repoUrl:'https://github.com/sample/computer-networks-lab',       date:'2024-02-05' },
+  { subjectCode:'19CS501', subjectName:'Computer Networks Lab', expNo:'05', title:'Cryptography Algorithms (RSA, AES)',       repoUrl:'https://github.com/sample/cryptography-lab',            date:'2024-02-12' },
+];
+
 export function render(root) {
   const layout = createLayout('Subject-Repo Mapping', '', 'Admin');
   root.appendChild(layout);
@@ -58,12 +86,13 @@ export function render(root) {
       <div class="glass-card">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-title">📋 All Mappings</h2>
-          <div class="flex gap-3">
+          <div class="flex gap-3" style="flex-wrap:wrap">
             <div class="search-bar" style="max-width:200px">
               <span class="search-icon">🔍</span>
               <input type="text" id="mapping-search" placeholder="Search..." />
             </div>
             <button class="btn btn-ghost btn-sm" id="refresh-maps">🔄</button>
+            <button class="btn btn-secondary btn-sm" id="seed-sample-btn" style="font-size:12px;white-space:nowrap">🧪 Seed Sample Labs</button>
           </div>
         </div>
         <div class="table-wrapper" style="overflow-x:auto">
@@ -122,6 +151,40 @@ export function render(root) {
   });
 
   main.querySelector('#refresh-maps').addEventListener('click', () => loadMappings(main));
+
+  /* Seed sample labs into Firestore */
+  main.querySelector('#seed-sample-btn').addEventListener('click', async () => {
+    const btn = main.querySelector('#seed-sample-btn');
+    if (!confirm(`This will add ${SAMPLE_LABS.length} sample lab entries to the repo mapping. Continue?`)) return;
+    btn.disabled = true;
+    btn.textContent = '⏳ Seeding...';
+    let added = 0, skipped = 0;
+    try {
+      // Check existing to avoid duplicates
+      const snap = await getDocs(collection(db, 'repoMappings'));
+      const existing = snap.docs.map(d => d.data());
+      for (const lab of SAMPLE_LABS) {
+        const isDuplicate = existing.some(e =>
+          e.subjectCode === lab.subjectCode &&
+          e.expNo === lab.expNo &&
+          e.title?.toLowerCase() === lab.title?.toLowerCase()
+        );
+        if (isDuplicate) { skipped++; continue; }
+        await addDoc(collection(db, 'repoMappings'), {
+          ...lab,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        added++;
+      }
+      showToast(`✅ Seeded ${added} labs! (${skipped} already existed)`, 'success', 4000);
+      loadMappings(main);
+    } catch (err) {
+      showToast('Seed failed: ' + err.message, 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = '🧪 Seed Sample Labs';
+  });
 
   let searchTimeout;
   main.querySelector('#mapping-search').addEventListener('input', (e) => {

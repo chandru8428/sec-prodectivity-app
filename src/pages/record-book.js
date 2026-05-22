@@ -3,7 +3,8 @@
  */
 import {
   validateUsername, getUserRepos, defaultSubjectRepoMap,
-  checkUrlLive, findBestMatchingRepo, validateAndFixMappingUrls, stringSimilarity
+  checkUrlLive, findBestMatchingRepo, validateAndFixMappingUrls, stringSimilarity,
+  GitHubRateLimitError
 } from '../services/github-service.js';
 import { generateRecordBookPDF, downloadPDF } from '../utils/pdf-generator.js';
 import { showToast } from '../components/toast.js';
@@ -22,6 +23,7 @@ export default async function renderRecordBook(container) {
   let selectedExperiments = [];
   let isGenerating = false;
   let isValidatingUrls = false;
+  let rateLimitHit = false;  // true when GitHub API rate limit is exceeded
 
   /* ── load DB mappings ── */
   async function loadDbMappings() {
@@ -166,7 +168,33 @@ export default async function renderRecordBook(container) {
         </div>
         <button class="btn btn-primary" id="validate-github-btn">Validate</button>
       </div>
-      ${githubUser ? `
+
+      ${rateLimitHit ? `
+        <div style="margin-top:20px;background:#fff1f222;border:2px solid #f8717133;border-radius:14px;padding:20px 24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:24px;">⏳</span>
+            <strong style="font-size:16px;color:var(--on-surface);">GitHub API Rate Limit Reached</strong>
+          </div>
+          <p style="color:var(--on-surface-variant);font-size:13px;margin-bottom:16px;line-height:1.6;">
+            GitHub limits unauthenticated requests to <strong>60 per hour</strong>. You've hit that limit.
+            Please wait ~1 hour and try again, or enter your repo URL manually below.
+          </p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" id="retry-github-btn">🔄 Try Again</button>
+            <button class="btn btn-secondary btn-sm" id="manual-url-btn">✏️ Enter Repo URL Manually</button>
+          </div>
+          <div id="manual-url-section" style="display:none;margin-top:16px;border-top:1px solid var(--outline-variant);padding-top:16px;">
+            <p style="font-size:13px;color:var(--on-surface-variant);margin-bottom:10px;">
+              Paste your GitHub repo URL(s) below (one per line or comma separated).
+              These will be used directly for the PDF record book.
+            </p>
+            <textarea id="manual-repo-urls" rows="5" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--outline-variant);background:var(--surface-container);color:var(--on-surface);font-size:13px;resize:vertical;font-family:monospace;"
+              placeholder="https://github.com/yourname/exp1-symbol-table&#10;https://github.com/yourname/exp2-lexical-analyzer&#10;https://github.com/yourname/exp3-syntax-analyzer"></textarea>
+            <button class="btn btn-primary" id="use-manual-urls-btn" style="margin-top:10px;">✅ Use These Repos</button>
+          </div>
+        </div>` : ''}
+
+      ${githubUser && !rateLimitHit ? `
         <div class="validation-status valid" style="margin-top:var(--space-lg);">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <div style="display:flex;align-items:center;gap:12px;">
@@ -331,28 +359,80 @@ export default async function renderRecordBook(container) {
     document.getElementById('validate-github-btn')?.addEventListener('click', async () => {
       githubUsername = document.getElementById('github-username')?.value?.trim();
       if (!githubUsername) { showToast('Please enter a GitHub username', 'warning'); return; }
-      showToast('Validating…', 'info', 2000);
-      const result = await validateUsername(githubUsername);
-      if (result.valid) {
-        githubUser = result.user;
-        userRepos = await getUserRepos(githubUsername);
-        if (mode === 'manual') {
-          repoMap = defaultSubjectRepoMap.map(s => {
-            const match = userRepos.find(r => r.name.toLowerCase()===s.expectedRepo.toLowerCase());
-            return { ...s, found:!!match, repoUrl:match?.url||'', pushedAt:match?.pushedAt||'' };
-          });
+
+      const btn = document.getElementById('validate-github-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Validating…';
+      rateLimitHit = false;
+
+      try {
+        const result = await validateUsername(githubUsername);
+        if (result.valid) {
+          githubUser = result.user;
+          try {
+            userRepos = await getUserRepos(githubUsername);
+            showToast(`✅ Verified! ${userRepos.length} repos found.`, 'success');
+          } catch (repoErr) {
+            if (repoErr instanceof GitHubRateLimitError) {
+              rateLimitHit = true;
+              githubUser = { login: githubUsername, avatar_url: `https://github.com/${githubUsername}.png`, name: githubUsername };
+              userRepos = [];
+              showToast('⏳ GitHub rate limit hit — see options below', 'warning', 4000);
+            } else {
+              throw repoErr;
+            }
+          }
+        } else {
+          githubUser = null; userRepos = [];
+          showToast('GitHub user not found', 'error');
         }
-        showToast(`Verified! ${userRepos.length} repos found.`, 'success');
-      } else {
-        githubUser = null; userRepos = [];
-        showToast('GitHub user not found', 'error');
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
       }
+
+      btn.disabled = false;
+      btn.textContent = 'Validate';
+      renderWizard();
+    });
+
+    /* Rate limit — Retry button */
+    document.getElementById('retry-github-btn')?.addEventListener('click', () => {
+      rateLimitHit = false;
+      githubUser = null;
+      userRepos = [];
+      renderWizard();
+      showToast('Try validating your username again', 'info', 2000);
+    });
+
+    /* Rate limit — Toggle manual URL section */
+    document.getElementById('manual-url-btn')?.addEventListener('click', () => {
+      const section = document.getElementById('manual-url-section');
+      if (section) section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    });
+
+    /* Rate limit — Use manually entered repo URLs */
+    document.getElementById('use-manual-urls-btn')?.addEventListener('click', () => {
+      const raw = document.getElementById('manual-repo-urls')?.value || '';
+      const urls = raw.split(/[\n,]+/).map(u => u.trim()).filter(u => u.startsWith('http'));
+      if (urls.length === 0) { showToast('Please enter at least one valid GitHub URL', 'warning'); return; }
+
+      // Build synthetic repos from the pasted URLs
+      userRepos = urls.map((url, i) => {
+        const parts = url.replace('https://github.com/', '').split('/');
+        const name = parts[1] || `repo-${i+1}`;
+        return { name, html_url: url, description: '', pushed_at: new Date().toISOString(), _manual: true };
+      });
+
+      rateLimitHit = false;
+      showToast(`✅ ${urls.length} repo URL${urls.length > 1 ? 's' : ''} added manually — you can now proceed!`, 'success', 3000);
       renderWizard();
     });
 
     /* Navigation */
     document.getElementById('next-step')?.addEventListener('click', async () => {
-      if (step===1 && !githubUser) { showToast('Please validate GitHub username first', 'warning'); return; }
+      if (step===1 && !githubUser && !userRepos.length) { showToast('Please validate GitHub username first', 'warning'); return; }
+      if (step===1 && rateLimitHit) { showToast('GitHub rate limit active — use "Try Again" or enter URLs manually', 'warning'); return; }
+
 
       if (mode==='auto' && step===2) {
         // resolve subject selection

@@ -432,9 +432,12 @@ function renderPosts(container, posts, main) {
           <button class="qa-vote upvote-btn" data-id="${post.id}" data-votes="${post.votes||0}">
             ▲ <span class="vote-count">${post.votes||0}</span>
           </button>
-          ${isAdmin ? `
-            <button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin" style="padding:4px 8px">📌</button>
-            <button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px 8px" onclick="moderatePost('${post.id}','delete')" title="Delete">🗑️</button>
+          ${(isAdmin || post.authorId === appState.currentUser?.uid) ? `
+            ${isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin" style="padding:4px 8px">📌</button>` : ''}
+            ${post.authorId === appState.currentUser?.uid ? `<button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="editPost('${post.id}')" title="Edit">✏️</button>` : ''}
+            <button class="btn btn-sm" style="background-color:#ef4444;color:white;border:none;padding:4px 8px;display:flex;align-items:center;gap:4px;" onclick="moderatePost('${post.id}','delete')" title="Delete">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
           ` : ''}
         </div>
       </div>
@@ -582,28 +585,48 @@ function setupPostForm(main) {
         }, 1200);
       }
 
-      // ── Save to Firestore ──────────────────────────────────────────────────
-      const newPost = {
-        title, content, subject, semester, type,
-        authorName:     user?.name || 'Anonymous',
-        authorId:       appState.currentUser?.uid,
-        registerNumber: user?.registerNumber || '',
-        votes: 0, pinned: false,
-        attachments,
-        createdAt: serverTimestamp(),
-      };
+      if (window._editingPostId) {
+        // ── Update existing post ───────────────────────────────────────────────
+        const postToEdit = (window._allPosts||[]).find(p => p.id === window._editingPostId);
+        let finalAttachments = postToEdit?.attachments || [];
+        if (attachments.length > 0) finalAttachments = [...finalAttachments, ...attachments];
 
-      const docRef = await addDoc(collection(db, 'posts'), newPost);
-      if (!window._allPosts) window._allPosts = [];
-      window._allPosts.unshift({ id: docRef.id, ...newPost, createdAt: new Date() });
+        const updatedFields = {
+          title, content, subject, semester, type,
+          attachments: finalAttachments
+        };
+        await updateDoc(doc(db, 'posts', window._editingPostId), updatedFields);
+
+        if (postToEdit) Object.assign(postToEdit, updatedFields);
+        
+        if (window.cancelEdit) window.cancelEdit();
+        showToast('Post updated! 📝', 'success');
+
+      } else {
+        // ── Save new to Firestore ──────────────────────────────────────────────
+        const newPost = {
+          title, content, subject, semester, type,
+          authorName:     user?.name || 'Anonymous',
+          authorId:       appState.currentUser?.uid,
+          registerNumber: user?.registerNumber || '',
+          votes: 0, pinned: false,
+          attachments,
+          createdAt: serverTimestamp(),
+        };
+
+        const docRef = await addDoc(collection(db, 'posts'), newPost);
+        if (!window._allPosts) window._allPosts = [];
+        window._allPosts.unshift({ id: docRef.id, ...newPost, createdAt: new Date() });
+        
+        // Reset form
+        e.target.reset();
+        pendingFiles.forEach(f => { if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
+        pendingFiles = [];
+        main.querySelector('#attach-preview').innerHTML = '';
+        showToast('Post published! 🎉', 'success');
+      }
+
       renderPosts(main.querySelector('#posts-list'), window._allPosts, main);
-
-      // Reset form
-      e.target.reset();
-      pendingFiles.forEach(f => { if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
-      pendingFiles = [];
-      main.querySelector('#attach-preview').innerHTML = '';
-      showToast('Post published! 🎉', 'success');
 
     } catch (err) {
       showToast('Failed to post: ' + err.message, 'error');
@@ -634,6 +657,49 @@ window.moderatePost = async function(id, action) {
   } catch (err) {
     showToast('Action failed: ' + err.message, 'error');
   }
+};
+
+window.editPost = function(id) {
+  const post = (window._allPosts||[]).find(p => p.id === id);
+  if (!post) return;
+  window._editingPostId = id;
+  
+  document.getElementById('post-title').value = post.title || '';
+  document.getElementById('post-content').value = post.content || '';
+  document.getElementById('post-subject').value = post.subject || '';
+  document.getElementById('post-sem').value = post.semester || '';
+  const typeRadio = document.querySelector(`input[name="post-type"][value="${post.type}"]`);
+  if (typeRadio) typeRadio.checked = true;
+
+  const submitBtn = document.getElementById('post-submit-btn');
+  submitBtn.innerHTML = '📝 Update Post';
+  
+  let cancelBtn = document.getElementById('post-cancel-btn');
+  if (!cancelBtn) {
+    cancelBtn = document.createElement('button');
+    cancelBtn.id = 'post-cancel-btn';
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'btn btn-secondary w-full';
+    cancelBtn.innerHTML = '❌ Cancel Edit';
+    cancelBtn.style.marginTop = '8px';
+    cancelBtn.onclick = window.cancelEdit;
+    submitBtn.parentNode.appendChild(cancelBtn);
+  }
+  cancelBtn.style.display = 'block';
+
+  document.getElementById('post-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+window.cancelEdit = function() {
+  window._editingPostId = null;
+  const form = document.getElementById('post-form');
+  if (form) form.reset();
+  
+  const submitBtn = document.getElementById('post-submit-btn');
+  if (submitBtn) submitBtn.innerHTML = '🚀 Post';
+  
+  const cancelBtn = document.getElementById('post-cancel-btn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

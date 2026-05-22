@@ -202,3 +202,406 @@ svg:not(.nav-icon svg):not(.stat-icon svg) {
   background: linear-gradient(135deg, #F5F1EA 0%, #F8F4EC 50%, #FDFBF7 100%) !important;
 }
 
+/* =====================================================
+   PROFESSIONAL DARK MODE
+   Inspired by Notion, Linear, Vercel dark themes
+   Uses deep slate palette instead of flat black
+   ===================================================== */
+body.dark-mode {
+  /* ── Core Palette ── */
+  --bg-primary:       #0D0F14;
+  --bg-secondary:     #151820;
+  --bg-elevated:      #1C1F2A;
+  --bg-overlay:       #232736;
+  --text-primary:     #EEF0F4;
+  --text-secondary:   #9BA3B4;
+  --text-muted:       #5D6578;
+  --border-color:     rgba(255,255,255,0.07);
+  --border-color-subtle: rgba(255,255,255,0.04);
+  --glass-bg:         rgba(21, 24, 32, 0.92);
+  --glass-border:     rgba(255, 255, 255, 0.08);
+
+  /* ── Design System Overrides ── */
+  --color-background:            #0D0F14 !important;
+  --color-surface:               #151820 !important;
+  --color-surface-dim:           #0D0F14 !important;
+  --color-surface-container-lowest: #090B0F !important;
+  --color-surface-container-low: #0D0F14 !important;
+  --color-surface-container:     #151820 !important;
+  --color-surface-container-high: #1C1F2A !important;
+  --color-surface-container-highest: #232736 !important;
+  --color-surface-bright:        #2A2E3D !important;
+  --color-surface-variant:       #1C1F2A !important;
+  --color-surface-tint:          #D89B29 !important;
+
+  --color-on-background:         #EEF0F4 !important;
+  --color-on-surface:            #EEF0F4 !important;
+  --color-on-surface-variant:    #9BA3B4 !important;
+  --color-outline:               rgba(255,255,255,0.08) !important;
+  --color-outline-variant:       rgba(255,255,255,0.05) !important;
+
+  /* ── Shadows (deeper and richer in dark mode) ── */
+  --shadow-xs:  0 1px 4px rgba(0, 0, 0, 0.4) !important;
+  --shadow-sm:  0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  --shadow-md:  0 8px 24px rgba(0, 0, 0, 0.6) !important;
+  --shadow-lg:  0 16px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ── Body & Global Background ── */
+body.dark-mode {
+  background-color: #0D0F14 !important;
+  color: #EEF0F4 !important;
+}
+
+/* ── Scrollbar Styling ── */
+body.dark-mode ::-webkit-scrollbar-track { background: #0D0F14; }
+body.dark-mode ::-webkit-scrollbar-thumb { background: #2A2E3D; }
+body.dark-mode ::-webkit-scrollbar-thumb:hover { background: #363B4F; }
+
+/* ── Cards ── */
+body.dark-mode .glass-card {
+  background: #151820 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.04) inset !important;
+}
+body.dark-mode .glass-card:hover {
+  background: #1C1F2A !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.06) inset !important;
+}
+body.dark-mode .glass-card-sm {
+  background: #151820 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+body.dark-mode .glass-surface {
+  background: #1C1F2A !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* ── Stat Cards ── */
+body.dark-mode .stat-card {
+  background: #151820 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35) !important;
+}
+body.dark-mode .stat-card:hover {
+  background: #1C1F2A !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.5) !important;
+}
+
+/* ── Form Inputs ── */
+body.dark-mode .form-input,
+body.dark-mode .form-select,
+body.dark-mode .form-textarea,
+body.dark-mode input[type="text"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="search"],
+body.dark-mode select,
+body.dark-mode textarea {
+  background: #0D0F14 !important;
+  border: 1.5px solid rgba(255,255,255,0.09) !important;
+  color: #EEF0F4 !important;
+}
+body.dark-mode .form-input:focus,
+body.dark-mode .form-select:focus,
+body.dark-mode .form-textarea:focus,
+body.dark-mode input:focus,
+body.dark-mode textarea:focus {
+  background: #151820 !important;
+  border-color: rgba(216,155,41,0.5) !important;
+  box-shadow: 0 0 0 4px rgba(216,155,41,0.08) !important;
+}
+body.dark-mode .form-input::placeholder,
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #5D6578 !important;
+}
+
+/* ── Sidebar ── */
+body.dark-mode #sidebar,
+body.dark-mode .sidebar {
+  background: #0D0F14 !important;
+  border-right: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* ── Topbar ── */
+body.dark-mode #topbar,
+body.dark-mode .topbar,
+body.dark-mode .top-bar {
+  background: rgba(13, 15, 20, 0.95) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+}
+
+/* ── Dropdown Menus ── */
+body.dark-mode .dropdown-menu {
+  background: #1C1F2A !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6) !important;
+}
+body.dark-mode .dropdown-item {
+  color: #9BA3B4 !important;
+}
+body.dark-mode .dropdown-item:hover {
+  background: rgba(216,155,41,0.08) !important;
+  color: #EEF0F4 !important;
+}
+
+/* ── Modal ── */
+body.dark-mode .modal-backdrop {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+body.dark-mode .modal {
+  background: #151820 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7) !important;
+}
+
+/* ── Tables ── */
+body.dark-mode .table-wrapper {
+  background: #151820 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+body.dark-mode thead th {
+  background: #1C1F2A !important;
+  color: #9BA3B4 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+body.dark-mode tbody td {
+  background: #151820 !important;
+  color: #EEF0F4 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+body.dark-mode tbody tr:hover td {
+  background: #1C1F2A !important;
+}
+
+/* ── Toasts ── */
+body.dark-mode .toast {
+  background: #1C1F2A !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  color: #EEF0F4 !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
+}
+
+/* ── Chips & Badges ── */
+body.dark-mode .chip {
+  background: #1C1F2A !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  color: #9BA3B4 !important;
+}
+body.dark-mode .chip:hover,
+body.dark-mode .chip.active {
+  background: rgba(216,155,41,0.1) !important;
+  border-color: rgba(216,155,41,0.3) !important;
+  color: #D89B29 !important;
+}
+
+/* ── Animated Login Background ── */
+body.dark-mode .animated-bg {
+  background: linear-gradient(135deg, #0D0F14 0%, #111420 50%, #0D0F14 100%) !important;
+}
+
+/* ── Button Adjustments ── */
+body.dark-mode .btn-secondary {
+  background: transparent !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  color: #EEF0F4 !important;
+}
+body.dark-mode .btn-secondary:hover {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(216,155,41,0.4) !important;
+}
+body.dark-mode .btn-ghost {
+  color: #9BA3B4 !important;
+}
+body.dark-mode .btn-ghost:hover {
+  background: rgba(255,255,255,0.05) !important;
+  color: #EEF0F4 !important;
+}
+
+/* ── Skeleton Loader ── */
+body.dark-mode .skeleton {
+  background: linear-gradient(90deg, #151820 25%, #1C1F2A 50%, #151820 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* ── Selection ── */
+body.dark-mode ::selection {
+  background: rgba(216,155,41,0.2);
+  color: #EEF0F4;
+}
+/* ── Hero Exam Card Dark Fix ── */
+body.dark-mode .hero-exam-card {
+  background: linear-gradient(135deg, #16130A 0%, #1C1805 50%, #1A1608 100%) !important;
+  border-color: rgba(216, 155, 41, 0.25) !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(216, 155, 41, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+body.dark-mode .hero-exam-card #hero-subject {
+  color: #E8B84B !important;
+}
+body.dark-mode .hero-exam-card #hero-meta {
+  color: #9B8050 !important;
+}
+body.dark-mode .hero-exam-card #hero-meta span {
+  color: #9B8050 !important;
+}
+
+/* ── Exam List Cards on Dashboard ── */
+body.dark-mode .exam-card {
+  background: #151820 !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+body.dark-mode .exam-card:hover {
+  background: #1C1F2A !important;
+}
+body.dark-mode .exam-subject {
+  color: #EEF0F4 !important;
+}
+body.dark-mode .exam-meta,
+body.dark-mode .exam-meta-item,
+body.dark-mode .exam-time {
+  color: #9BA3B4 !important;
+}
+
+/* ── Quick Action Cards Dark Fix ── */
+body.dark-mode .quick-action-card {
+  background: #151820 !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+body.dark-mode .quick-action-card:hover {
+  background: #1C1F2A !important;
+  border-color: rgba(216,155,41,0.2) !important;
+}
+/* ── Countdown Timer Dark Fix ── */
+body.dark-mode .countdown {
+  background: linear-gradient(135deg, #1C1A0F 0%, #231E0A 100%) !important;
+  border-color: rgba(216, 155, 41, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 2px rgba(216,155,41,0.15) inset !important;
+}
+body.dark-mode .countdown-sep {
+  color: #D89B29 !important;
+}
+
+/* ── Exam Cards Dark Fix ── */
+body.dark-mode .exam-card-upcoming {
+  background: #151820 !important;
+  border-top-color: rgba(255,255,255,0.07) !important;
+  border-right-color: rgba(255,255,255,0.07) !important;
+  border-bottom-color: rgba(255,255,255,0.07) !important;
+}
+body.dark-mode .exam-card-past {
+  background: #1C1F2A !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* ── Date Input Dark Fix (native browser date picker) ── */
+body.dark-mode input[type="date"],
+body.dark-mode input[type="time"],
+body.dark-mode input[type="datetime-local"] {
+  background: #0D0F14 !important;
+  color: #EEF0F4 !important;
+  border: 1.5px solid rgba(255,255,255,0.09) !important;
+  color-scheme: dark;
+}
+body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
+body.dark-mode input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.6);
+  cursor: pointer;
+}
+
+/* ── Record Book Experiment Date Inputs ── */
+body.dark-mode .exp-date,
+body.dark-mode input.exp-date {
+  background: #0D0F14 !important;
+  color: #EEF0F4 !important;
+  border: 1.5px solid rgba(255,255,255,0.09) !important;
+  border-radius: 8px !important;
+  color-scheme: dark;
+}
+
+/* ── Inline Badge Dark Fixes (subjectCode badge) ── */
+body.dark-mode .badge:not([class*="badge-"]) {
+  background: rgba(255,255,255,0.08) !important;
+  color: #9BA3B4 !important;
+}
+
+/* ── Upcoming exam subject code badge ── */
+body.dark-mode .exam-card-upcoming .badge {
+  background: rgba(255,255,255,0.08) !important;
+  color: #9BA3B4 !important;
+}
+body.dark-mode .exam-card-upcoming .badge-primary {
+  background: rgba(216,155,41,0.15) !important;
+  color: #D89B29 !important;
+}
+body.dark-mode .exam-card-upcoming .badge-warning {
+  background: rgba(234,179,8,0.15) !important;
+  color: #EAB308 !important;
+}
+body.dark-mode .exam-card-upcoming .badge-danger {
+  background: rgba(239,68,68,0.2) !important;
+  color: #f87171 !important;
+}
+
+/* ── Tabs Dark Fix ── */
+body.dark-mode .tabs .tab {
+  background: transparent !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #9BA3B4 !important;
+}
+body.dark-mode .tabs .tab.active {
+  background: rgba(216,155,41,0.12) !important;
+  color: #D89B29 !important;
+  border-color: rgba(216,155,41,0.3) !important;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: #eab308;
+  color: #1a1a1a;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(234, 179, 8, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle:hover {
+  transform: scale(1.1) translateY(-2px);
+  background: #f59e0b;
+  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.6);
+}
+.theme-toggle .sun-icon, .theme-toggle .moon-icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5px;
+}
+.theme-toggle .sun-icon { display: none; }
+.theme-toggle .moon-icon { display: block; }
+
+body.dark-mode .theme-toggle {
+  background: #f59e0b;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+}
+
+body.dark-mode .theme-toggle .sun-icon { display: block; }
+body.dark-mode .theme-toggle .moon-icon { display: none; }
