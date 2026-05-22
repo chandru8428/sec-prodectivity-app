@@ -18,6 +18,14 @@ export function render(root) {
   root.innerHTML = `
     <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-6);position:relative;z-index:1;">
       
+      <!-- Theme Toggle for Login Page -->
+      <div style="position:absolute;top:24px;right:24px;">
+        <button id="login-theme-toggle" class="header-theme-toggle" aria-label="Toggle dark/light mode" style="background:var(--color-surface);border:1px solid var(--border-color);box-shadow:var(--shadow-sm);">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+      </div>
+
       <div style="display:flex;width:100%;max-width:1040px;gap:24px;flex-wrap:wrap;justify-content:center;align-items:stretch;">
         
         <!-- Left Panel -->
@@ -249,6 +257,22 @@ export function render(root) {
       showToast(friendlyAuthError(err), 'error');
     }
   });
+
+  // ── Theme Toggle Logic ──
+  const themeToggle = root.querySelector('#login-theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      if (document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  }
 }
 
 // ── Human-readable Firebase Auth error messages ──────────────────────────────
