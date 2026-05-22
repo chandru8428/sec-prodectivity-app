@@ -39,6 +39,21 @@ export function generateTimetable(config) {
     }
   }
 
+  const totalSlotsNeeded = assignments.length;
+  const totalAvailableSlots = (days.length * periodsPerDay) - blockedSlots.length;
+  if (totalSlotsNeeded > totalAvailableSlots) {
+    return {
+      success: false,
+      grid: null,
+      error: `Not enough total slots available. Need ${totalSlotsNeeded} but only ${totalAvailableSlots} are open.`,
+      suggestion: 'Add more working days, increase periods per day, or reduce the number of hours per week for your subjects.'
+    };
+  }
+
+  let maxDepthReached = -1;
+  let failureReasons = null;
+  let failedAssignment = null;
+
   // Check if a slot is blocked
   function isBlocked(day, period) {
     return blockedSlots.some(s => s.day === day && s.period === period);
@@ -75,16 +90,22 @@ export function generateTimetable(config) {
     if (index >= assignments.length) return true; // All assigned
 
     const assignment = assignments[index];
+    let localReasons = { slotTaken: 0, blocked: 0, teacherBusy: 0, dailyLimit: 0, totalChecked: 0 };
 
     // Try each day and period
     for (const day of days) {
       // Limit: max 2 hours of same subject per day
-      if (subjectCountInDay(assignment.name, day) >= 2) continue;
+      if (subjectCountInDay(assignment.name, day) >= 2) {
+        localReasons.dailyLimit += periodsPerDay;
+        localReasons.totalChecked += periodsPerDay;
+        continue;
+      }
 
       for (let period = 1; period <= periodsPerDay; period++) {
-        if (grid[day][period] !== null) continue; // Slot taken
-        if (isBlocked(day, period)) continue;
-        if (assignment.teacher && isTeacherBusy(assignment.teacher, day, period)) continue;
+        localReasons.totalChecked++;
+        if (grid[day][period] !== null) { localReasons.slotTaken++; continue; }
+        if (isBlocked(day, period)) { localReasons.blocked++; continue; }
+        if (assignment.teacher && isTeacherBusy(assignment.teacher, day, period)) { localReasons.teacherBusy++; continue; }
 
         // Assign
         grid[day][period] = {
@@ -99,6 +120,12 @@ export function generateTimetable(config) {
       }
     }
 
+    if (index > maxDepthReached) {
+      maxDepthReached = index;
+      failureReasons = localReasons;
+      failedAssignment = assignment;
+    }
+
     return false; // No valid assignment found
   }
 
@@ -106,7 +133,31 @@ export function generateTimetable(config) {
   shuffleArray(assignments);
 
   const success = solve(0);
-  return success ? grid : null;
+  if (success) {
+    return { success: true, grid, error: null, suggestion: null };
+  } else {
+    let errorMsg = `Could not place "${failedAssignment.name}" (Teacher: ${failedAssignment.teacher || 'None'}). `;
+    let suggestionMsg = '';
+
+    if (failureReasons.dailyLimit >= failureReasons.totalChecked) {
+      errorMsg += `Reached the daily maximum of 2 hours for this subject on all available days. `;
+      suggestionMsg = 'Try spreading the subject across more working days, or reduce its hours per week.';
+    } else if (failureReasons.teacherBusy > 0 && failureReasons.teacherBusy >= (failureReasons.totalChecked - failureReasons.slotTaken - failureReasons.blocked)) {
+      errorMsg += `The teacher (${failedAssignment.teacher}) is fully booked or unavailable in the remaining open slots. `;
+      suggestionMsg = 'Try assigning a different teacher to some hours, or free up blocked slots.';
+    } else {
+      errorMsg += `The remaining slots were either occupied by other classes or explicitly blocked. `;
+      suggestionMsg = 'Try adding more working days, increasing periods per day, or unblocking some slots.';
+    }
+
+    return {
+      success: false,
+      grid: null,
+      error: errorMsg,
+      suggestion: suggestionMsg,
+      conflictAssignment: failedAssignment
+    };
+  }
 }
 
 function shuffleArray(arr) {

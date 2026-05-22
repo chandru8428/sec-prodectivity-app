@@ -4597,7 +4597,7 @@
       "label": "shuffleArray()",
       "file_type": "code",
       "source_file": "src/utils/timetable-algo.js",
-      "source_location": "L112",
+      "source_location": "L163",
       "id": "utils_timetable_algo_shufflearray",
       "community": 1,
       "norm_label": "shufflearray()"
@@ -4606,7 +4606,7 @@
       "label": "exportTimetableAsText()",
       "file_type": "code",
       "source_file": "src/utils/timetable-algo.js",
-      "source_location": "L119",
+      "source_location": "L170",
       "id": "utils_timetable_algo_exporttimetableastext",
       "community": 1,
       "norm_label": "exporttimetableastext()"
@@ -6645,9 +6645,9 @@
       "source_file": "firebase.json",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "clg_prodectivity_firebase_hosting",
-      "target": "clg_prodectivity_firebase_hosting_site",
-      "confidence_score": 1.0
+      "target": "clg_prodectivity_firebase_hosting_site"
     },
     {
       "relation": "contains",
@@ -9093,9 +9093,9 @@
       "source_file": "src/main.js",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_js",
-      "target": "src_main_savedtheme",
-      "confidence_score": 1.0
+      "target": "src_main_savedtheme"
     },
     {
       "relation": "contains",
@@ -9103,9 +9103,9 @@
       "source_file": "src/main.js",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_js",
-      "target": "src_main_togglebtn",
-      "confidence_score": 1.0
+      "target": "src_main_togglebtn"
     },
     {
       "relation": "contains",
@@ -9528,9 +9528,9 @@
       "source_file": "src/pages/register.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_register_js",
-      "target": "src_main_appstate",
-      "confidence_score": 1.0
+      "target": "src_main_appstate"
     },
     {
       "relation": "imports",
@@ -9688,9 +9688,9 @@
       "source_file": "src/pages/register.js",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_register_js",
-      "target": "src_router_js",
-      "confidence_score": 1.0
+      "target": "src_router_js"
     },
     {
       "relation": "imports_from",
@@ -9732,9 +9732,9 @@
       "source_file": "src/pages/register.js",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_register_js",
-      "target": "src_router_router",
-      "confidence_score": 1.0
+      "target": "src_router_router"
     },
     {
       "relation": "imports",
@@ -13029,9 +13029,9 @@
       "source_file": "src/pages/record-book.js",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_record_book_js",
-      "target": "services_github_service_githubratelimiterror",
-      "confidence_score": 1.0
+      "target": "services_github_service_githubratelimiterror"
     },
     {
       "relation": "imports_from",
@@ -13226,9 +13226,9 @@
       "source_file": "src/pages/admin/repo-mapping.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_admin_repo_mapping_js",
-      "target": "admin_repo_mapping_sample_labs",
-      "confidence_score": 1.0
+      "target": "admin_repo_mapping_sample_labs"
     },
     {
       "relation": "contains",
@@ -14221,9 +14221,9 @@
       "source_file": "src/pages/student/qa-board.js",
       "source_location": "L671",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_student_qa_board_js",
-      "target": "student_qa_board_typeradio",
-      "confidence_score": 1.0
+      "target": "student_qa_board_typeradio"
     },
     {
       "relation": "contains",
@@ -14231,9 +14231,9 @@
       "source_file": "src/pages/student/qa-board.js",
       "source_location": "L698",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_student_qa_board_js",
-      "target": "student_qa_board_submitbtn",
-      "confidence_score": 1.0
+      "target": "student_qa_board_submitbtn"
     },
     {
       "relation": "contains",
@@ -14241,9 +14241,9 @@
       "source_file": "src/pages/student/qa-board.js",
       "source_location": "L701",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_student_qa_board_js",
-      "target": "student_qa_board_cancelbtn",
-      "confidence_score": 1.0
+      "target": "student_qa_board_cancelbtn"
     },
     {
       "relation": "contains",
@@ -14251,9 +14251,9 @@
       "source_file": "src/pages/student/qa-board.js",
       "source_location": "L695",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_student_qa_board_js",
-      "target": "student_qa_board_form",
-      "confidence_score": 1.0
+      "target": "student_qa_board_form"
     },
     {
       "relation": "contains",
@@ -15621,9 +15621,9 @@
       "source_file": "src/services/github-service.js",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_github_service_js",
-      "target": "services_github_service_sample_fallback_repos",
-      "confidence_score": 1.0
+      "target": "services_github_service_sample_fallback_repos"
     },
     {
       "relation": "contains",
@@ -15641,9 +15641,9 @@
       "source_file": "src/services/github-service.js",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_github_service_js",
-      "target": "services_github_service_githubratelimiterror",
-      "confidence_score": 1.0
+      "target": "services_github_service_githubratelimiterror"
     },
     {
       "relation": "contains",
@@ -15841,9 +15841,9 @@
       "source_file": "src/services/github-service.js",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_github_service_githubratelimiterror",
-      "target": "services_github_service_githubratelimiterror_constructor",
-      "confidence_score": 1.0
+      "target": "services_github_service_githubratelimiterror_constructor"
     },
     {
       "relation": "calls",
@@ -18559,5 +18559,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "34407090a525342609c1fd2abe4c83f87db95164"
+  "built_at_commit": "2fc30ca735f90c07572ae8d6067f7df988ab59af"
 }

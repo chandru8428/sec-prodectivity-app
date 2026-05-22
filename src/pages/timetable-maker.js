@@ -14,6 +14,7 @@ export default async function renderTimetableMaker(container) {
   let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   let periodsPerDay = 7;
   let generatedGrid = null;
+  let generationError = null;
   const subjectColors = {};
 
   function getColor(name) {
@@ -94,6 +95,13 @@ export default async function renderTimetableMaker(container) {
         </div>
 
         ${generatedGrid ? renderGrid() : `
+          ${generationError ? `
+            <div class="alert alert-danger" style="margin-bottom:var(--space-md); text-align:left; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:16px;">
+              <div style="font-weight:600;margin-bottom:4px;color:var(--color-danger);">⚠️ Generation Failed</div>
+              <div style="font-size:13px;margin-bottom:8px;color:var(--on-surface);">${generationError.error}</div>
+              <div style="font-size:12px;opacity:0.9;color:var(--on-surface-variant);"><strong>Suggestion:</strong> ${generationError.suggestion}</div>
+            </div>
+          ` : ''}
           <div class="empty-state">
             <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg></div>
             <h3>No Timetable Generated Yet</h3>
@@ -240,17 +248,21 @@ export default async function renderTimetableMaker(container) {
         showToast('Please add at least one subject', 'warning');
         return;
       }
-      generatedGrid = generateTimetable({
+      const result = generateTimetable({
         subjects: validSubjects,
         days,
         periodsPerDay,
         blockedSlots,
         teacherAvailability: {},
       });
-      if (generatedGrid) {
+      if (result && result.success) {
+        generatedGrid = result.grid;
+        generationError = null;
         showToast('Timetable generated successfully!', 'success');
       } else {
-        showToast('Could not generate conflict-free timetable. Try adjusting constraints.', 'error');
+        generatedGrid = null;
+        generationError = result;
+        showToast('Could not generate conflict-free timetable.', 'error');
       }
       render();
     });

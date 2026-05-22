@@ -1,7 +1,7 @@
 # Graph Report - clg prodectivity  (2026-05-22)
 
 ## Corpus Check
-- 95 files · ~68,486 words
+- 95 files · ~68,797 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `34407090`
+- Built from commit: `2fc30ca7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
