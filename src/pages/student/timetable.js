@@ -196,7 +196,7 @@ function renderExamPanel(panel, exams, today) {
 
       // Show timer if exam is within 48 hours
       if (diffMs > 0 && diffMs <= 86400000 * 2) {
-        badgeHtml = `<div class="badge" id="${cdId}" style="background:var(--color-danger);color:#fff;font-size:11px;padding:6px 12px;animation:pulse 2s infinite;box-shadow:0 2px 8px rgba(239,68,68,0.4)">⏳</div>`;
+        badgeHtml = `<div class="badge badge-timer-alert" id="${cdId}">⏳</div>`;
         needsInterval = true;
       } else if (diffMs <= 0 && isToday) {
         badgeHtml = '<div class="badge badge-danger" style="font-size:11px;padding:6px 12px">Ongoing / Done</div>';
@@ -260,8 +260,8 @@ function renderExamPanel(panel, exams, today) {
           let remain = target - now;
           if (remain <= 0) {
             timerEl.innerHTML = 'Started / Ongoing';
+            timerEl.className = 'badge badge-success';
             timerEl.style.animation = 'none';
-            timerEl.style.background = 'var(--color-success)';
             timerEl.style.boxShadow = 'none';
             return;
           }
