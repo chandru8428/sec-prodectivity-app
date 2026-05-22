@@ -274,6 +274,97 @@ export function detectConflicts(grid) {
   return conflicts;
 }
 
+// ── Overlap Analyzer ─────────────────────────────────────────────────────────
+
+/**
+ * Analyze which subjects have overlapping time slots across ALL their
+ * available options.  Two subjects "overlap" when every slot option of
+ * subject A shares at least one (day|time) with every slot option of
+ * subject B — meaning there is NO combination that avoids a clash.
+ *
+ * @param {Array} selectedSubjects — parsed subject objects
+ * @param {string} leaveDay
+ * @returns {{ pairs: Array<{a,b,slots}>, subjectClashCount: Object }}
+ */
+export function analyzeOverlaps(selectedSubjects, leaveDay = 'None') {
+  // Collect all time-keys per subject (union of all slot options)
+  const subjectSlots = selectedSubjects.map(subj => {
+    const key = subj.subject_code || subj.subject_name;
+    const timeKeys = new Set();
+    for (const teacher of (subj.teachers || [])) {
+      for (const slot of (teacher.slots || [])) {
+        for (const cls of (slot.classes || [])) {
+          if (leaveDay !== 'None' && cls.day === leaveDay) continue;
+          timeKeys.add(`${cls.day}|${cls.time}`);
+        }
+      }
+    }
+    return { key, name: subj.subject_name, timeKeys };
+  });
+
+  const pairs = [];
+  const subjectClashCount = {};
+
+  for (let i = 0; i < subjectSlots.length; i++) {
+    for (let j = i + 1; j < subjectSlots.length; j++) {
+      const a = subjectSlots[i];
+      const b = subjectSlots[j];
+      // Find shared time keys
+      const shared = [];
+      for (const k of a.timeKeys) {
+        if (b.timeKeys.has(k)) shared.push(k);
+      }
+      if (shared.length > 0) {
+        const TL = {'8-10':'8–10 AM','10-12':'10–12 PM','1-3':'1–3 PM','3-5':'3–5 PM'};
+        const slotDescriptions = shared.map(s => {
+          const [day, time] = s.split('|');
+          return `${day} ${TL[time] || time}`;
+        });
+        pairs.push({ a: a.name, b: b.name, slots: slotDescriptions });
+        subjectClashCount[a.name] = (subjectClashCount[a.name] || 0) + shared.length;
+        subjectClashCount[b.name] = (subjectClashCount[b.name] || 0) + shared.length;
+      }
+    }
+  }
+
+  return { pairs, subjectClashCount };
+}
+
+/**
+ * Try generating a timetable by dropping one subject at a time.
+ * Returns the best result (highest score) along with info about what
+ * was dropped and the overlap analysis.
+ *
+ * @param {Array}  selectedSubjects
+ * @param {Object} preferences
+ * @param {number} maxResults
+ * @returns {{ results, droppedSubject, overlapInfo } | null}
+ */
+export function generateWithDropping(selectedSubjects, preferences = {}, maxResults = 3) {
+  const { leaveDay = 'None' } = preferences;
+  const { pairs, subjectClashCount } = analyzeOverlaps(selectedSubjects, leaveDay);
+
+  // Sort subjects by clash count descending — try dropping the most conflicting first
+  const ranked = selectedSubjects
+    .map((s, idx) => ({ subject: s, idx, clashes: subjectClashCount[s.subject_name] || 0 }))
+    .sort((a, b) => b.clashes - a.clashes);
+
+  for (const { subject, idx } of ranked) {
+    const subset = selectedSubjects.filter((_, i) => i !== idx);
+    const results = generateTimetables(subset, preferences, maxResults);
+    if (results.length > 0) {
+      return {
+        results,
+        droppedSubject: subject,
+        overlapPairs: pairs,
+        subjectClashCount,
+      };
+    }
+  }
+
+  return null; // Even dropping one subject doesn't help
+}
+
 // ── Utility ───────────────────────────────────────────────────────────────────
 
 function deepClone(obj) {

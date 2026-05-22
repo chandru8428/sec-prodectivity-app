@@ -232,7 +232,8 @@ export function renderStep5(results, selectedSubjects, leaveDay, clashWarning) {
   if (!results || !results.length) {
     return `<div class="glass-card fade-in">
       <h2 class="text-title-lg mb-4">❌ No Valid Timetable Found</h2>
-      <p class="text-muted mb-4">No conflict-free schedule found. Try removing avoid-slots or leave day.</p>
+      ${clashWarning ? `<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.4);color:var(--on-surface);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.6">${clashWarning}</div>` : ''}
+      <p class="text-muted mb-4">Even after relaxing all preferences and trying to remove individual subjects, no conflict-free schedule could be found. Please go back and select a different combination of subjects.</p>
       <button class="btn btn-secondary" id="back-3">← Adjust Preferences</button>
     </div>`;
   }

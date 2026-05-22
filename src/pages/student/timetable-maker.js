@@ -7,7 +7,7 @@ import { db, collection, addDoc } from '/src/firebase.js';
 import { pdfToText, aiRepairParse } from '../../services/timetable-ai.js';
 import { preprocess } from '../../utils/timetable-preprocessor.js';
 import { parseText } from '../../utils/timetable-regex-parser.js';
-import { generateTimetables } from '../../utils/timetable-scheduler.js';
+import { generateTimetables, generateWithDropping } from '../../utils/timetable-scheduler.js';
 import { renderProgressBar, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5 } from '../../utils/timetable-wizard-ui.js';
 
 const S_KEY = 'tt_wizard_v4';
@@ -16,7 +16,7 @@ const S_DEF = {
   leaveDay: 'None', avoidSlots: [],
   staffPrefs: {},   // { subjectKey: staffName | 'Any' }
   slotPrefs: {},    // { subjectKey: slotName  | 'Any' }
-  results: null, confidence: 0, clashWarning: null
+  results: null, confidence: 0, clashWarning: null, droppedSubject: null
 };
 let S = { ...S_DEF };
 
@@ -260,8 +260,30 @@ function wireStep3(wiz) {
             }
           }
           
+          // 5. Try dropping one subject to produce a working timetable
           if (results.length === 0) {
-             clashWarning = `<strong>Unresolvable Clash!</strong> Your selected subjects have unavoidable conflicts (e.g. overlapping mandatory slots). Please select a different combination.`;
+            const dropResult = generateWithDropping(selSubjects, { leaveDay: 'None', avoidSlots: [], staffPrefs: {}, slotPrefs: {} }, 3);
+            if (dropResult) {
+              results = dropResult.results;
+              const droppedName = dropResult.droppedSubject.subject_name || dropResult.droppedSubject.subject_code;
+              const overlapLines = (dropResult.overlapPairs || []).map(p =>
+                `<div style="font-size:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)">⚡ <b>${p.a}</b> ↔ <b>${p.b}</b> overlap at: ${p.slots.join(', ')}</div>`
+              ).join('');
+              clashWarning = `<strong>⚠️ Conflict Detected — Auto-Resolved</strong><br>
+                <div style="margin:8px 0 4px;font-size:13px">The following subjects have overlapping time slots:</div>
+                ${overlapLines}
+                <div style="margin-top:10px;padding:10px 14px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-size:13px">
+                  🗑️ <b>${droppedName}</b> was automatically removed to create a conflict-free schedule.
+                </div>
+                <div style="margin-top:8px;font-size:12px;color:var(--color-on-surface-variant)">
+                  💡 <b>Suggestion:</b> Go back and deselect one of the overlapping subjects, or pick a different slot/teacher combination for them.
+                </div>`;
+              S.droppedSubject = { name: droppedName, code: dropResult.droppedSubject.subject_code };
+              relaxed = true;
+            } else {
+              clashWarning = `<strong>Unresolvable Clash!</strong> Your selected subjects have unavoidable conflicts even after trying to remove individual subjects. Please select a different combination.`;
+              S.droppedSubject = null;
+            }
           }
         }
         
