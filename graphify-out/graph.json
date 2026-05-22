@@ -22,10 +22,19 @@
       "norm_label": "hosting"
     },
     {
-      "label": "public",
+      "label": "site",
       "file_type": "code",
       "source_file": "firebase.json",
       "source_location": "L3",
+      "id": "clg_prodectivity_firebase_hosting_site",
+      "community": 16,
+      "norm_label": "site"
+    },
+    {
+      "label": "public",
+      "file_type": "code",
+      "source_file": "firebase.json",
+      "source_location": "L4",
       "id": "clg_prodectivity_firebase_hosting_public",
       "community": 16,
       "norm_label": "public"
@@ -34,7 +43,7 @@
       "label": "ignore",
       "file_type": "code",
       "source_file": "firebase.json",
-      "source_location": "L4",
+      "source_location": "L6",
       "id": "clg_prodectivity_firebase_hosting_ignore",
       "community": 16,
       "norm_label": "ignore"
@@ -43,7 +52,7 @@
       "label": "rewrites",
       "file_type": "code",
       "source_file": "firebase.json",
-      "source_location": "L9",
+      "source_location": "L11",
       "id": "clg_prodectivity_firebase_hosting_rewrites",
       "community": 16,
       "norm_label": "rewrites"
@@ -52,7 +61,7 @@
       "label": "headers",
       "file_type": "code",
       "source_file": "firebase.json",
-      "source_location": "L15",
+      "source_location": "L17",
       "id": "clg_prodectivity_firebase_hosting_headers",
       "community": 16,
       "norm_label": "headers"
@@ -1269,7 +1278,7 @@
       "source_file": "scratch/migrate-to-firebase.js",
       "source_location": "L1",
       "id": "scratch_migrate_to_firebase_js",
-      "community": 47,
+      "community": 2,
       "norm_label": "migrate-to-firebase.js"
     },
     {
@@ -1278,7 +1287,7 @@
       "source_file": "scratch/migrate-to-firebase.js",
       "source_location": "L5",
       "id": "scratch_migrate_to_firebase_firebaseconfig",
-      "community": 47,
+      "community": 2,
       "norm_label": "firebaseconfig"
     },
     {
@@ -1287,7 +1296,7 @@
       "source_file": "scratch/migrate-to-firebase.js",
       "source_location": "L14",
       "id": "scratch_migrate_to_firebase_app",
-      "community": 47,
+      "community": 2,
       "norm_label": "app"
     },
     {
@@ -1296,7 +1305,7 @@
       "source_file": "scratch/migrate-to-firebase.js",
       "source_location": "L15",
       "id": "scratch_migrate_to_firebase_auth",
-      "community": 47,
+      "community": 2,
       "norm_label": "auth"
     },
     {
@@ -1305,7 +1314,7 @@
       "source_file": "scratch/migrate-to-firebase.js",
       "source_location": "L16",
       "id": "scratch_migrate_to_firebase_db",
-      "community": 47,
+      "community": 2,
       "norm_label": "db"
     },
     {
@@ -1314,7 +1323,7 @@
       "source_file": "scratch/migrate-to-firebase.js",
       "source_location": "L18",
       "id": "scratch_migrate_to_firebase_userstomigrate",
-      "community": 47,
+      "community": 2,
       "norm_label": "userstomigrate"
     },
     {
@@ -1386,7 +1395,7 @@
       "source_file": "scripts/create_firebase_users.js",
       "source_location": "L1",
       "id": "scripts_create_firebase_users_js",
-      "community": 47,
+      "community": 2,
       "norm_label": "create_firebase_users.js"
     },
     {
@@ -1395,7 +1404,7 @@
       "source_file": "scripts/create_firebase_users.js",
       "source_location": "L5",
       "id": "scripts_create_firebase_users_firebaseconfig",
-      "community": 47,
+      "community": 2,
       "norm_label": "firebaseconfig"
     },
     {
@@ -1404,7 +1413,7 @@
       "source_file": "scripts/create_firebase_users.js",
       "source_location": "L11",
       "id": "scripts_create_firebase_users_app",
-      "community": 47,
+      "community": 2,
       "norm_label": "app"
     },
     {
@@ -1413,7 +1422,7 @@
       "source_file": "scripts/create_firebase_users.js",
       "source_location": "L12",
       "id": "scripts_create_firebase_users_auth",
-      "community": 47,
+      "community": 2,
       "norm_label": "auth"
     },
     {
@@ -1422,7 +1431,7 @@
       "source_file": "scripts/create_firebase_users.js",
       "source_location": "L13",
       "id": "scripts_create_firebase_users_db",
-      "community": 47,
+      "community": 2,
       "norm_label": "db"
     },
     {
@@ -1431,7 +1440,7 @@
       "source_file": "scripts/create_firebase_users.js",
       "source_location": "L15",
       "id": "scripts_create_firebase_users_userstocreate",
-      "community": 47,
+      "community": 2,
       "norm_label": "userstocreate"
     },
     {
@@ -1746,7 +1755,7 @@
       "source_file": "scripts/test_firebase_users.js",
       "source_location": "L1",
       "id": "scripts_test_firebase_users_js",
-      "community": 47,
+      "community": 2,
       "norm_label": "test_firebase_users.js"
     },
     {
@@ -1755,7 +1764,7 @@
       "source_file": "scripts/test_firebase_users.js",
       "source_location": "L4",
       "id": "scripts_test_firebase_users_firebaseconfig",
-      "community": 47,
+      "community": 2,
       "norm_label": "firebaseconfig"
     },
     {
@@ -1764,7 +1773,7 @@
       "source_file": "scripts/test_firebase_users.js",
       "source_location": "L10",
       "id": "scripts_test_firebase_users_app",
-      "community": 47,
+      "community": 2,
       "norm_label": "app"
     },
     {
@@ -1773,7 +1782,7 @@
       "source_file": "scripts/test_firebase_users.js",
       "source_location": "L11",
       "id": "scripts_test_firebase_users_auth",
-      "community": 47,
+      "community": 2,
       "norm_label": "auth"
     },
     {
@@ -1782,7 +1791,7 @@
       "source_file": "scripts/test_firebase_users.js",
       "source_location": "L13",
       "id": "scripts_test_firebase_users_userstotest",
-      "community": 47,
+      "community": 2,
       "norm_label": "userstotest"
     },
     {
@@ -1791,7 +1800,7 @@
       "source_file": "scripts/test_firebase_users.js",
       "source_location": "L19",
       "id": "scripts_test_firebase_users_testusers",
-      "community": 47,
+      "community": 2,
       "norm_label": "testusers()"
     },
     {
@@ -1867,10 +1876,28 @@
       "norm_label": "main.js"
     },
     {
-      "label": "toastContainer",
+      "label": "savedTheme",
       "file_type": "code",
       "source_file": "src/main.js",
       "source_location": "L11",
+      "id": "src_main_savedtheme",
+      "community": 0,
+      "norm_label": "savedtheme"
+    },
+    {
+      "label": "toggleBtn",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L20",
+      "id": "src_main_togglebtn",
+      "community": 0,
+      "norm_label": "togglebtn"
+    },
+    {
+      "label": "toastContainer",
+      "file_type": "code",
+      "source_file": "src/main.js",
+      "source_location": "L36",
       "id": "src_main_toastcontainer",
       "community": 0,
       "norm_label": "toastcontainer"
@@ -1879,7 +1906,7 @@
       "label": "showToast()",
       "file_type": "code",
       "source_file": "src/main.js",
-      "source_location": "L15",
+      "source_location": "L40",
       "id": "src_main_showtoast",
       "community": 0,
       "norm_label": "showtoast()"
@@ -1888,7 +1915,7 @@
       "label": "appState",
       "file_type": "code",
       "source_file": "src/main.js",
-      "source_location": "L28",
+      "source_location": "L53",
       "id": "src_main_appstate",
       "community": 0,
       "norm_label": "appstate"
@@ -1897,7 +1924,7 @@
       "label": "root",
       "file_type": "code",
       "source_file": "src/main.js",
-      "source_location": "L99",
+      "source_location": "L126",
       "id": "src_main_root",
       "community": 0,
       "norm_label": "root"
@@ -2563,7 +2590,7 @@
       "label": "friendlyAuthError()",
       "file_type": "code",
       "source_file": "src/pages/login.js",
-      "source_location": "L182",
+      "source_location": "L279",
       "id": "pages_login_friendlyautherror",
       "community": 0,
       "norm_label": "friendlyautherror()"
@@ -2617,7 +2644,7 @@
       "label": "renderRecordBook()",
       "file_type": "code",
       "source_file": "src/pages/record-book.js",
-      "source_location": "L12",
+      "source_location": "L13",
       "id": "pages_record_book_renderrecordbook",
       "community": 6,
       "norm_label": "renderrecordbook()"
@@ -2635,7 +2662,7 @@
       "label": "render()",
       "file_type": "code",
       "source_file": "src/pages/register.js",
-      "source_location": "L8",
+      "source_location": "L9",
       "id": "pages_register_render",
       "community": 0,
       "norm_label": "render()"
@@ -2644,7 +2671,7 @@
       "label": "friendlyRegError()",
       "file_type": "code",
       "source_file": "src/pages/register.js",
-      "source_location": "L241",
+      "source_location": "L291",
       "id": "pages_register_friendlyregerror",
       "community": 0,
       "norm_label": "friendlyregerror()"
@@ -2754,7 +2781,7 @@
       "source_file": "src/pages/admin/moderation.js",
       "source_location": "L5",
       "id": "admin_moderation_render",
-      "community": 2,
+      "community": 0,
       "norm_label": "render()"
     },
     {
@@ -2776,21 +2803,30 @@
       "norm_label": "repo-mapping.js"
     },
     {
+      "label": "SAMPLE_LABS",
+      "file_type": "code",
+      "source_file": "src/pages/admin/repo-mapping.js",
+      "source_location": "L6",
+      "id": "admin_repo_mapping_sample_labs",
+      "community": 0,
+      "norm_label": "sample_labs"
+    },
+    {
       "label": "render()",
       "file_type": "code",
       "source_file": "src/pages/admin/repo-mapping.js",
-      "source_location": "L5",
+      "source_location": "L33",
       "id": "admin_repo_mapping_render",
-      "community": 0,
+      "community": 2,
       "norm_label": "render()"
     },
     {
       "label": "loadMappings()",
       "file_type": "code",
       "source_file": "src/pages/admin/repo-mapping.js",
-      "source_location": "L152",
+      "source_location": "L215",
       "id": "admin_repo_mapping_loadmappings",
-      "community": 0,
+      "community": 2,
       "norm_label": "loadmappings()"
     },
     {
@@ -2806,7 +2842,7 @@
       "label": "render()",
       "file_type": "code",
       "source_file": "src/pages/admin/students.js",
-      "source_location": "L5",
+      "source_location": "L6",
       "id": "admin_students_render",
       "community": 0,
       "norm_label": "render()"
@@ -3105,7 +3141,7 @@
       "source_file": "src/pages/student/dashboard.js",
       "source_location": "L203",
       "id": "student_dashboard_loaddashboarddata",
-      "community": 0,
+      "community": 2,
       "norm_label": "loaddashboarddata()"
     },
     {
@@ -3123,7 +3159,7 @@
       "source_file": "src/pages/student/dashboard.js",
       "source_location": "L313",
       "id": "student_dashboard_startcountdown",
-      "community": 0,
+      "community": 2,
       "norm_label": "startcountdown()"
     },
     {
@@ -3132,7 +3168,7 @@
       "source_file": "src/pages/student/dashboard.js",
       "source_location": "L346",
       "id": "student_dashboard_renderexamlist",
-      "community": 0,
+      "community": 2,
       "norm_label": "renderexamlist()"
     },
     {
@@ -3150,7 +3186,7 @@
       "source_file": "src/pages/student/dashboard.js",
       "source_location": "L379",
       "id": "student_dashboard_rendernoexams",
-      "community": 0,
+      "community": 2,
       "norm_label": "rendernoexams()"
     },
     {
@@ -3328,7 +3364,7 @@
       "label": "buildAttachmentHtml()",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L464",
+      "source_location": "L467",
       "id": "student_qa_board_buildattachmenthtml",
       "community": 14,
       "norm_label": "buildattachmenthtml()"
@@ -3337,7 +3373,7 @@
       "label": "openLightbox()",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L478",
+      "source_location": "L481",
       "id": "student_qa_board_openlightbox",
       "community": 14,
       "norm_label": "openlightbox()"
@@ -3346,7 +3382,7 @@
       "label": "renderTrending()",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L493",
+      "source_location": "L496",
       "id": "student_qa_board_rendertrending",
       "community": 14,
       "norm_label": "rendertrending()"
@@ -3355,7 +3391,7 @@
       "label": "setupFilters()",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L511",
+      "source_location": "L514",
       "id": "student_qa_board_setupfilters",
       "community": 14,
       "norm_label": "setupfilters()"
@@ -3364,7 +3400,7 @@
       "label": "setupPostForm()",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L537",
+      "source_location": "L540",
       "id": "student_qa_board_setuppostform",
       "community": 14,
       "norm_label": "setuppostform()"
@@ -3373,16 +3409,52 @@
       "label": "post",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L628",
+      "source_location": "L651",
       "id": "student_qa_board_post",
       "community": 14,
       "norm_label": "post"
     },
     {
+      "label": "typeRadio",
+      "file_type": "code",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L671",
+      "id": "student_qa_board_typeradio",
+      "community": 14,
+      "norm_label": "typeradio"
+    },
+    {
+      "label": "submitBtn",
+      "file_type": "code",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L674",
+      "id": "student_qa_board_submitbtn",
+      "community": 14,
+      "norm_label": "submitbtn"
+    },
+    {
+      "label": "cancelBtn",
+      "file_type": "code",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L677",
+      "id": "student_qa_board_cancelbtn",
+      "community": 14,
+      "norm_label": "cancelbtn"
+    },
+    {
+      "label": "form",
+      "file_type": "code",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L695",
+      "id": "student_qa_board_form",
+      "community": 14,
+      "norm_label": "form"
+    },
+    {
       "label": "getTimeAgo()",
       "file_type": "code",
       "source_file": "src/pages/student/qa-board.js",
-      "source_location": "L641",
+      "source_location": "L707",
       "id": "student_qa_board_gettimeago",
       "community": 14,
       "norm_label": "gettimeago()"
@@ -3454,7 +3526,7 @@
       "label": "runPipeline()",
       "file_type": "code",
       "source_file": "src/pages/student/record-book.js",
-      "source_location": "L771",
+      "source_location": "L772",
       "id": "student_record_book_runpipeline",
       "community": 6,
       "norm_label": "runpipeline()"
@@ -3463,7 +3535,7 @@
       "label": "buildEditor()",
       "file_type": "code",
       "source_file": "src/pages/student/record-book.js",
-      "source_location": "L976",
+      "source_location": "L995",
       "id": "student_record_book_buildeditor",
       "community": 6,
       "norm_label": "buildeditor()"
@@ -3472,7 +3544,7 @@
       "label": "addEditorRow()",
       "file_type": "code",
       "source_file": "src/pages/student/record-book.js",
-      "source_location": "L984",
+      "source_location": "L1003",
       "id": "student_record_book_addeditorrow",
       "community": 6,
       "norm_label": "addeditorrow()"
@@ -3481,7 +3553,7 @@
       "label": "buildPDFDoc()",
       "file_type": "code",
       "source_file": "src/pages/student/record-book.js",
-      "source_location": "L1135",
+      "source_location": "L1154",
       "id": "student_record_book_buildpdfdoc",
       "community": 6,
       "norm_label": "buildpdfdoc()"
@@ -3490,7 +3562,7 @@
       "label": "openPDFPreview()",
       "file_type": "code",
       "source_file": "src/pages/student/record-book.js",
-      "source_location": "L1174",
+      "source_location": "L1193",
       "id": "student_record_book_openpdfpreview",
       "community": 6,
       "norm_label": "openpdfpreview()"
@@ -3499,7 +3571,7 @@
       "label": "triggerDownload()",
       "file_type": "code",
       "source_file": "src/pages/student/record-book.js",
-      "source_location": "L1198",
+      "source_location": "L1217",
       "id": "student_record_book_triggerdownload",
       "community": 6,
       "norm_label": "triggerdownload()"
@@ -3688,7 +3760,7 @@
       "label": "examTime",
       "file_type": "code",
       "source_file": "src/pages/student/timetable.js",
-      "source_location": "L320",
+      "source_location": "L343",
       "id": "student_timetable_examtime",
       "community": 0,
       "norm_label": "examtime"
@@ -3697,7 +3769,7 @@
       "label": "now",
       "file_type": "code",
       "source_file": "src/pages/student/timetable.js",
-      "source_location": "L321",
+      "source_location": "L344",
       "id": "student_timetable_now",
       "community": 0,
       "norm_label": "now"
@@ -3706,7 +3778,7 @@
       "label": "formatDate()",
       "file_type": "code",
       "source_file": "src/pages/student/timetable.js",
-      "source_location": "L345",
+      "source_location": "L368",
       "id": "student_timetable_formatdate",
       "community": 0,
       "norm_label": "formatdate()"
@@ -4063,19 +4135,46 @@
       "norm_label": "github-service.js"
     },
     {
-      "label": "validateUsername()",
+      "label": "SAMPLE_FALLBACK_REPOS",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
       "source_location": "L17",
+      "id": "services_github_service_sample_fallback_repos",
+      "community": 6,
+      "norm_label": "sample_fallback_repos"
+    },
+    {
+      "label": "validateUsername()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L42",
       "id": "services_github_service_validateusername",
       "community": 6,
       "norm_label": "validateusername()"
     },
     {
+      "label": "GitHubRateLimitError",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L61",
+      "id": "services_github_service_githubratelimiterror",
+      "community": 6,
+      "norm_label": "githubratelimiterror"
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L62",
+      "id": "services_github_service_githubratelimiterror_constructor",
+      "community": 6,
+      "norm_label": ".constructor()"
+    },
+    {
       "label": "getUserRepos()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L31",
+      "source_location": "L68",
       "id": "services_github_service_getuserrepos",
       "community": 6,
       "norm_label": "getuserrepos()"
@@ -4084,7 +4183,7 @@
       "label": "normalize()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L61",
+      "source_location": "L104",
       "id": "services_github_service_normalize",
       "community": 6,
       "norm_label": "normalize()"
@@ -4093,79 +4192,16 @@
       "label": "repoSlugFromUrl()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L72",
+      "source_location": "L115",
       "id": "services_github_service_reposlugfromurl",
       "community": 6,
       "norm_label": "reposlugfromurl()"
     },
     {
-      "label": "extractAliases()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L79",
-      "id": "services_github_service_extractaliases",
-      "community": 6,
-      "norm_label": "extractaliases()"
-    },
-    {
-      "label": "extractExpNumber()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L90",
-      "id": "services_github_service_extractexpnumber",
-      "community": 6,
-      "norm_label": "extractexpnumber()"
-    },
-    {
-      "label": "tokenSetRatio()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L109",
-      "id": "services_github_service_tokensetratio",
-      "community": 6,
-      "norm_label": "tokensetratio()"
-    },
-    {
-      "label": "partialRatio()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L118",
-      "id": "services_github_service_partialratio",
-      "community": 6,
-      "norm_label": "partialratio()"
-    },
-    {
-      "label": "tokenSortRatio()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L133",
-      "id": "services_github_service_tokensortratio",
-      "community": 6,
-      "norm_label": "tokensortratio()"
-    },
-    {
-      "label": "isWholeWord()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L139",
-      "id": "services_github_service_iswholeword",
-      "community": 6,
-      "norm_label": "iswholeword()"
-    },
-    {
-      "label": "scoreRepoAgainstExperiment()",
-      "file_type": "code",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L151",
-      "id": "services_github_service_scorerepoagainstexperiment",
-      "community": 6,
-      "norm_label": "scorerepoagainstexperiment()"
-    },
-    {
       "label": "matchExperimentsToRepos()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L245",
+      "source_location": "L140",
       "id": "services_github_service_matchexperimentstorepos",
       "community": 6,
       "norm_label": "matchexperimentstorepos()"
@@ -4174,7 +4210,7 @@
       "label": "checkRepoLive()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L288",
+      "source_location": "L183",
       "id": "services_github_service_checkrepolive",
       "community": 6,
       "norm_label": "checkrepolive()"
@@ -4183,7 +4219,7 @@
       "label": "checkUrlLive()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L302",
+      "source_location": "L197",
       "id": "services_github_service_checkurllive",
       "community": 6,
       "norm_label": "checkurllive()"
@@ -4192,7 +4228,7 @@
       "label": "stringSimilarity()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L314",
+      "source_location": "L209",
       "id": "services_github_service_stringsimilarity",
       "community": 6,
       "norm_label": "stringsimilarity()"
@@ -4201,7 +4237,7 @@
       "label": "findBestMatchingRepo()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L322",
+      "source_location": "L216",
       "id": "services_github_service_findbestmatchingrepo",
       "community": 6,
       "norm_label": "findbestmatchingrepo()"
@@ -4210,7 +4246,7 @@
       "label": "validateAndFixMappingUrls()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L335",
+      "source_location": "L221",
       "id": "services_github_service_validateandfixmappingurls",
       "community": 6,
       "norm_label": "validateandfixmappingurls()"
@@ -4219,7 +4255,7 @@
       "label": "defaultSubjectRepoMap",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L339",
+      "source_location": "L225",
       "id": "services_github_service_defaultsubjectrepomap",
       "community": 6,
       "norm_label": "defaultsubjectrepomap"
@@ -4228,7 +4264,7 @@
       "label": "findBestRepo()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
-      "source_location": "L341",
+      "source_location": "L227",
       "id": "services_github_service_findbestrepo",
       "community": 6,
       "norm_label": "findbestrepo()"
@@ -4671,7 +4707,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L1",
       "id": "src_utils_timetable_scheduler_js",
-      "community": 3,
+      "community": 47,
       "norm_label": "timetable-scheduler.js"
     },
     {
@@ -4680,7 +4716,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L24",
       "id": "utils_timetable_scheduler_days",
-      "community": 3,
+      "community": 47,
       "norm_label": "days"
     },
     {
@@ -4689,7 +4725,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L25",
       "id": "utils_timetable_scheduler_times",
-      "community": 3,
+      "community": 47,
       "norm_label": "times"
     },
     {
@@ -4698,7 +4734,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L37",
       "id": "utils_timetable_scheduler_generatetimetables",
-      "community": 3,
+      "community": 47,
       "norm_label": "generatetimetables()"
     },
     {
@@ -4707,7 +4743,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L74",
       "id": "utils_timetable_scheduler_buildcandidates",
-      "community": 3,
+      "community": 47,
       "norm_label": "buildcandidates()"
     },
     {
@@ -4716,7 +4752,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L129",
       "id": "utils_timetable_scheduler_dfs",
-      "community": 3,
+      "community": 47,
       "norm_label": "dfs()"
     },
     {
@@ -4725,7 +4761,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L170",
       "id": "utils_timetable_scheduler_hasconflict",
-      "community": 3,
+      "community": 47,
       "norm_label": "hasconflict()"
     },
     {
@@ -4734,7 +4770,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L191",
       "id": "utils_timetable_scheduler_scoresolution",
-      "community": 3,
+      "community": 47,
       "norm_label": "scoresolution()"
     },
     {
@@ -4743,7 +4779,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L231",
       "id": "utils_timetable_scheduler_buildgrid",
-      "community": 3,
+      "community": 47,
       "norm_label": "buildgrid()"
     },
     {
@@ -4752,7 +4788,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L264",
       "id": "utils_timetable_scheduler_detectconflicts",
-      "community": 3,
+      "community": 47,
       "norm_label": "detectconflicts()"
     },
     {
@@ -4761,7 +4797,7 @@
       "source_file": "src/utils/timetable-scheduler.js",
       "source_location": "L279",
       "id": "utils_timetable_scheduler_deepclone",
-      "community": 3,
+      "community": 47,
       "norm_label": "deepclone()"
     },
     {
@@ -4831,7 +4867,7 @@
       "label": "renderStep1()",
       "file_type": "code",
       "source_file": "src/utils/timetable-wizard-ui.js",
-      "source_location": "L23",
+      "source_location": "L37",
       "id": "utils_timetable_wizard_ui_renderstep1",
       "community": 3,
       "norm_label": "renderstep1()"
@@ -4840,7 +4876,7 @@
       "label": "renderStep2()",
       "file_type": "code",
       "source_file": "src/utils/timetable-wizard-ui.js",
-      "source_location": "L51",
+      "source_location": "L65",
       "id": "utils_timetable_wizard_ui_renderstep2",
       "community": 3,
       "norm_label": "renderstep2()"
@@ -4849,7 +4885,7 @@
       "label": "renderStep3()",
       "file_type": "code",
       "source_file": "src/utils/timetable-wizard-ui.js",
-      "source_location": "L118",
+      "source_location": "L132",
       "id": "utils_timetable_wizard_ui_renderstep3",
       "community": 3,
       "norm_label": "renderstep3()"
@@ -4858,7 +4894,7 @@
       "label": "renderStep4()",
       "file_type": "code",
       "source_file": "src/utils/timetable-wizard-ui.js",
-      "source_location": "L208",
+      "source_location": "L222",
       "id": "utils_timetable_wizard_ui_renderstep4",
       "community": 3,
       "norm_label": "renderstep4()"
@@ -4867,7 +4903,7 @@
       "label": "renderStep5()",
       "file_type": "code",
       "source_file": "src/utils/timetable-wizard-ui.js",
-      "source_location": "L217",
+      "source_location": "L231",
       "id": "utils_timetable_wizard_ui_renderstep5",
       "community": 3,
       "norm_label": "renderstep5()"
@@ -6520,6 +6556,69 @@
       "norm_label": "student view"
     },
     {
+      "label": "extractAliases()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L79",
+      "community": 6,
+      "norm_label": "extractaliases()",
+      "id": "services_github_service_extractaliases"
+    },
+    {
+      "label": "extractExpNumber()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L90",
+      "community": 6,
+      "norm_label": "extractexpnumber()",
+      "id": "services_github_service_extractexpnumber"
+    },
+    {
+      "label": "tokenSetRatio()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L109",
+      "community": 6,
+      "norm_label": "tokensetratio()",
+      "id": "services_github_service_tokensetratio"
+    },
+    {
+      "label": "partialRatio()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L118",
+      "community": 6,
+      "norm_label": "partialratio()",
+      "id": "services_github_service_partialratio"
+    },
+    {
+      "label": "tokenSortRatio()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L133",
+      "community": 6,
+      "norm_label": "tokensortratio()",
+      "id": "services_github_service_tokensortratio"
+    },
+    {
+      "label": "isWholeWord()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L139",
+      "community": 6,
+      "norm_label": "iswholeword()",
+      "id": "services_github_service_iswholeword"
+    },
+    {
+      "label": "scoreRepoAgainstExperiment()",
+      "file_type": "code",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L151",
+      "community": 6,
+      "norm_label": "scorerepoagainstexperiment()",
+      "id": "services_github_service_scorerepoagainstexperiment"
+    },
+    {
       "label": "checkRepoExists()",
       "file_type": "code",
       "source_file": "src/services/github-service.js",
@@ -6539,6 +6638,16 @@
       "confidence_score": 1.0,
       "source": "firebase_json",
       "target": "clg_prodectivity_firebase_hosting"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "firebase.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "clg_prodectivity_firebase_hosting",
+      "target": "clg_prodectivity_firebase_hosting_site",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -8982,6 +9091,26 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.js",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_savedtheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "src_main_js",
+      "target": "src_main_togglebtn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.js",
       "source_location": "L9",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -9396,6 +9525,17 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/pages/register.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_pages_register_js",
+      "target": "src_main_appstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/pages/student/dashboard.js",
       "source_location": "L2",
       "weight": 1.0,
@@ -9545,6 +9685,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/pages/register.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_pages_register_js",
+      "target": "src_router_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/pages/student/dashboard.js",
       "source_location": "L12",
       "weight": 1.0,
@@ -9573,6 +9724,17 @@
       "confidence_score": 1.0,
       "source": "src_pages_login_js",
       "target": "src_router_router"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/register.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_pages_register_js",
+      "target": "src_router_router",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -12861,6 +13023,17 @@
       "target": "services_github_service_stringsimilarity"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/record-book.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_pages_record_book_js",
+      "target": "services_github_service_githubratelimiterror",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -13046,6 +13219,16 @@
       "weight": 1.0,
       "source": "admin_moderation_render",
       "target": "student_qa_board_renderposts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/repo-mapping.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_pages_admin_repo_mapping_js",
+      "target": "admin_repo_mapping_sample_labs",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -14031,6 +14214,46 @@
       "confidence_score": 1.0,
       "source": "src_pages_student_qa_board_js",
       "target": "student_qa_board_post"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L671",
+      "weight": 1.0,
+      "source": "src_pages_student_qa_board_js",
+      "target": "student_qa_board_typeradio",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L698",
+      "weight": 1.0,
+      "source": "src_pages_student_qa_board_js",
+      "target": "student_qa_board_submitbtn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L701",
+      "weight": 1.0,
+      "source": "src_pages_student_qa_board_js",
+      "target": "student_qa_board_cancelbtn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/student/qa-board.js",
+      "source_location": "L695",
+      "weight": 1.0,
+      "source": "src_pages_student_qa_board_js",
+      "target": "student_qa_board_form",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -15396,11 +15619,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/services/github-service.js",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_sample_fallback_repos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
       "source_location": "L6",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_services_github_service_js",
       "target": "services_github_service_validateusername"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_githubratelimiterror",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -15431,76 +15674,6 @@
       "confidence_score": 1.0,
       "source": "src_services_github_service_js",
       "target": "services_github_service_reposlugfromurl"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L79",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_extractaliases"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L90",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_extractexpnumber"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L109",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_tokensetratio"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L118",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_partialratio"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L133",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_tokensortratio"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L139",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_iswholeword"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L151",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_services_github_service_js",
-      "target": "services_github_service_scorerepoagainstexperiment"
     },
     {
       "relation": "contains",
@@ -15586,11 +15759,102 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/services/github-service.js",
+      "source_location": "L79",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_extractaliases"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L90",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_extractexpnumber"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L109",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_tokensetratio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L118",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_partialratio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L133",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_tokensortratio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L139",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_iswholeword"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L151",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_services_github_service_js",
+      "target": "services_github_service_scorerepoagainstexperiment"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
       "source_location": "L40",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_services_github_service_js",
       "target": "services_github_service_checkrepoexists"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "services_github_service_githubratelimiterror",
+      "target": "services_github_service_githubratelimiterror_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L316",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_stringsimilarity",
+      "target": "services_github_service_normalize"
     },
     {
       "relation": "calls",
@@ -15619,77 +15883,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/services/github-service.js",
-      "source_location": "L316",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_stringsimilarity",
-      "target": "services_github_service_normalize"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
       "source_location": "L162",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "services_github_service_scorerepoagainstexperiment",
       "target": "services_github_service_reposlugfromurl"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L166",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_scorerepoagainstexperiment",
-      "target": "services_github_service_extractaliases"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L172",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_scorerepoagainstexperiment",
-      "target": "services_github_service_extractexpnumber"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L126",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_partialratio",
-      "target": "services_github_service_tokensetratio"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L135",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_tokensortratio",
-      "target": "services_github_service_tokensetratio"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L211",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_scorerepoagainstexperiment",
-      "target": "services_github_service_tokensetratio"
     },
     {
       "relation": "calls",
@@ -15707,33 +15905,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/services/github-service.js",
-      "source_location": "L213",
+      "source_location": "L104",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "services_github_service_scorerepoagainstexperiment",
-      "target": "services_github_service_partialratio"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L212",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_scorerepoagainstexperiment",
-      "target": "services_github_service_tokensortratio"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L192",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_scorerepoagainstexperiment",
-      "target": "services_github_service_iswholeword"
+      "source": "services_github_service_findbestmatchingrepo",
+      "target": "services_github_service_stringsimilarity"
     },
     {
       "relation": "calls",
@@ -15756,17 +15932,6 @@
       "confidence_score": 1.0,
       "source": "services_github_service_findbestrepo",
       "target": "services_github_service_scorerepoagainstexperiment"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/services/github-service.js",
-      "source_location": "L104",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "services_github_service_findbestmatchingrepo",
-      "target": "services_github_service_stringsimilarity"
     },
     {
       "relation": "contains",
@@ -18303,8 +18468,96 @@
       "confidence_score": 1.0,
       "source": "scripts_readme_step_2_run_the_script",
       "target": "scripts_readme_codeblock_1"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L166",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_scorerepoagainstexperiment",
+      "target": "services_github_service_extractaliases"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L172",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_scorerepoagainstexperiment",
+      "target": "services_github_service_extractexpnumber"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L126",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_partialratio",
+      "target": "services_github_service_tokensetratio"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L135",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_tokensortratio",
+      "target": "services_github_service_tokensetratio"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L211",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_scorerepoagainstexperiment",
+      "target": "services_github_service_tokensetratio"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L213",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_scorerepoagainstexperiment",
+      "target": "services_github_service_partialratio"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L212",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_scorerepoagainstexperiment",
+      "target": "services_github_service_tokensortratio"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/github-service.js",
+      "source_location": "L192",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "services_github_service_scorerepoagainstexperiment",
+      "target": "services_github_service_iswholeword"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "9901d51c97ab1a163c666d94c19d3f04cbe963ff"
+  "built_at_commit": "34407090a525342609c1fd2abe4c83f87db95164"
 }

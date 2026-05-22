@@ -62,8 +62,8 @@ export function renderSidebar(container) {
       <div class="sidebar-user" id="sidebar-user-menu" style="position:relative;cursor:pointer" title="Account options">
         <div class="user-avatar" id="sidebar-avatar">${initials}</div>
         <div style="flex:1;min-width:0">
-          <div class="text-body-sm" style="font-weight:600;color:#1F1F1F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.name || 'User'}</div>
-          <div style="font-size:11px;color:#666666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.registerNumber || user?.email || ''}</div>
+          <div class="text-body-sm" style="font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.name || 'User'}</div>
+          <div style="font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user?.registerNumber || user?.email || ''}</div>
         </div>
         <button class="btn btn-sm" id="logout-btn" title="Logout" style="background:linear-gradient(135deg, #D89B29, #A86E11);color:white;border:none;border-radius:12px;padding:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(216,155,41,0.25);cursor:pointer;transition:all 0.2s;width:38px;height:38px;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
@@ -180,8 +180,8 @@ export function createLayout(title, content, breadcrumb = '') {
       <div class="flex items-center gap-4">
         <button class="btn btn-ghost btn-sm" id="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" style="display:none;border-radius:12px">☰</button>
         <div>
-          ${breadcrumb ? `<div class="text-label-sm text-muted" style="margin-bottom:2px;color:#666666">${breadcrumb}</div>` : ''}
-          <div style="font-size:26px;font-weight:800;color:#1F1F1F;letter-spacing:-0.5px;">${title}</div>
+          ${breadcrumb ? `<div class="text-label-sm text-muted" style="margin-bottom:2px;color:var(--text-secondary)">${breadcrumb}</div>` : ''}
+          <div style="font-size:26px;font-weight:800;color:var(--text-primary);letter-spacing:-0.5px;">${title}</div>
         </div>
       </div>
       <div class="flex items-center gap-3">

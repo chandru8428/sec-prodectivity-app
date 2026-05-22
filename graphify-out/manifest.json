@@ -1,8 +1,8 @@
 {
   "D:\\clg prodectivity\\firebase.json": {
-    "mtime": 1778948026.4875543,
-    "ast_hash": "f948c94cef0c4e773ee91ccd016ec3cc",
-    "semantic_hash": "f948c94cef0c4e773ee91ccd016ec3cc"
+    "mtime": 1779423394.8079174,
+    "ast_hash": "7b9ff3ea9df14b379308a0ae734351dd",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\package.json": {
     "mtime": 1778172015.8424058,
@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\main.js": {
-    "mtime": 1778949771.024259,
-    "ast_hash": "4549adcf8df187f7e741cd3b6e82d91e",
+    "mtime": 1779457412.5241911,
+    "ast_hash": "17f7f61e35e39dc34a72e5281bc69b55",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\router.js": {
-    "mtime": 1778952578.6349032,
-    "ast_hash": "296e598c31b34a9ac1de8ddd209e5d5b",
+    "mtime": 1779455190.4769125,
+    "ast_hash": "417555c27de9eca14f1af57f44a7e139",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\supabase-adapter.js": {
@@ -230,8 +230,8 @@
     "semantic_hash": "a1c0fc97c850f249a9e576511e3d4040"
   },
   "D:\\clg prodectivity\\src\\components\\sidebar.js": {
-    "mtime": 1778955963.6969545,
-    "ast_hash": "5fe74d8457f0ddef79ba70d98f9a56c6",
+    "mtime": 1779465251.7811,
+    "ast_hash": "ca4a89481032dc78f931cf40a017b33a",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\components\\toast.js": {
@@ -265,8 +265,8 @@
     "semantic_hash": "d6b21ce6b86093d048a1eb9335fe2015"
   },
   "D:\\clg prodectivity\\src\\pages\\login.js": {
-    "mtime": 1778956001.2504604,
-    "ast_hash": "e415afdfd474b98f14f2fd0bd8da0677",
+    "mtime": 1779458010.584843,
+    "ast_hash": "89cefe670fa4dbea72b36d99a15f6861",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\qna-board.js": {
@@ -275,13 +275,13 @@
     "semantic_hash": "376cc2304f384a50426e74e948db3888"
   },
   "D:\\clg prodectivity\\src\\pages\\record-book.js": {
-    "mtime": 1778834252.8641763,
-    "ast_hash": "4386e020acd5e73ea2078ac9c368fc77",
-    "semantic_hash": "4386e020acd5e73ea2078ac9c368fc77"
+    "mtime": 1779424322.7903116,
+    "ast_hash": "40b64f2273fcb110c33e4942087050db",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\register.js": {
-    "mtime": 1778953342.8994772,
-    "ast_hash": "df3617ef5f9004e88517fca1d61db9f9",
+    "mtime": 1779458023.186719,
+    "ast_hash": "f652f33e5a07ec3e7ed03d01f1866e5f",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\settings.js": {
@@ -310,14 +310,14 @@
     "semantic_hash": "7bc979948664009ed9cd4b6934fc5918"
   },
   "D:\\clg prodectivity\\src\\pages\\admin\\repo-mapping.js": {
-    "mtime": 1778330396.818283,
-    "ast_hash": "96f1f111fff7aad577a260f1b4237c8f",
-    "semantic_hash": "96f1f111fff7aad577a260f1b4237c8f"
+    "mtime": 1779423577.0090625,
+    "ast_hash": "d7dd771f351aa0439a4906d3a031aa2e",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\admin\\students.js": {
-    "mtime": 1778261480.2390358,
-    "ast_hash": "5d7cf9355445489a5be5c34a4b0925dd",
-    "semantic_hash": "5d7cf9355445489a5be5c34a4b0925dd"
+    "mtime": 1779437335.517304,
+    "ast_hash": "c016679be2ea4ea3fdaa9787bafdaa1c",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\admin\\upload-timetable.js": {
     "mtime": 1778330392.834188,
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\student\\dashboard.js": {
-    "mtime": 1778840946.64659,
-    "ast_hash": "8e4edfa285e0c173270fbe184705f66e",
-    "semantic_hash": "8e4edfa285e0c173270fbe184705f66e"
+    "mtime": 1779353609.3989174,
+    "ast_hash": "bd8b6570fc64a4dadd052aaf10004a54",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\student\\gpa.js": {
     "mtime": 1778952611.8765402,
@@ -345,13 +345,13 @@
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\student\\qa-board.js": {
-    "mtime": 1778957252.7654953,
-    "ast_hash": "3faca6c696f57951757f78b82e509911",
+    "mtime": 1779444817.4507434,
+    "ast_hash": "200c65fb6b8dacc770a96ff7ce3f1325",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\student\\record-book.js": {
-    "mtime": 1779040176.6018164,
-    "ast_hash": "da84011f959ca2e84eac1d3c2e82692b",
+    "mtime": 1779384094.2681644,
+    "ast_hash": "f7ee0b39118405ccd87079d30d1c401f",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\pages\\student\\timetable-maker.js": {
@@ -360,8 +360,8 @@
     "semantic_hash": "15e7f20de0165628caa2f766421b3293"
   },
   "D:\\clg prodectivity\\src\\pages\\student\\timetable.js": {
-    "mtime": 1779040881.3783722,
-    "ast_hash": "21071b6d9d69404effc8f2764a315c18",
+    "mtime": 1779442383.393996,
+    "ast_hash": "ebbe3406716d28959421a783a7bdee3b",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\services\\auth-service.js": {
@@ -380,8 +380,8 @@
     "semantic_hash": "4aaa72c329975dd83e05f1f1f176918b"
   },
   "D:\\clg prodectivity\\src\\services\\github-service.js": {
-    "mtime": 1779039369.8959472,
-    "ast_hash": "c923d091f59781bb45479114fa2cbf26",
+    "mtime": 1779423746.1538308,
+    "ast_hash": "c23273837904da4dc9c31bb236cd7413",
     "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\services\\timetable-ai.js": {
@@ -405,9 +405,9 @@
     "semantic_hash": "d5ed83a08f02d4b24b00d6464969f15d"
   },
   "D:\\clg prodectivity\\src\\utils\\pdf-generator.js": {
-    "mtime": 1778344810.1037571,
-    "ast_hash": "095924f8bf80266f14417404a6e1882d",
-    "semantic_hash": "095924f8bf80266f14417404a6e1882d"
+    "mtime": 1779353609.4070163,
+    "ast_hash": "2fe0e171d4d779873fa21effdfb6f272",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\src\\utils\\timetable-algo.js": {
     "mtime": 1776267212.264965,
@@ -430,9 +430,9 @@
     "semantic_hash": "05823d569ba9970dfab2d70c9585b314"
   },
   "D:\\clg prodectivity\\src\\utils\\timetable-wizard-ui.js": {
-    "mtime": 1778750504.1151352,
-    "ast_hash": "54c6c22fc1ea20f542cfd9a4f55d86c7",
-    "semantic_hash": "54c6c22fc1ea20f542cfd9a4f55d86c7"
+    "mtime": 1779384239.0226572,
+    "ast_hash": "12b0359c4eaccf1d837deb3f900e28f6",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\AI_TIMETABLE_BUILDER_README.md": {
     "mtime": 1777530390.6321514,
@@ -445,9 +445,9 @@
     "semantic_hash": "b75aa621e1b6aa7c65515cdeb9238a49"
   },
   "D:\\clg prodectivity\\index.html": {
-    "mtime": 1778219108.235842,
-    "ast_hash": "420b56f637a45a02788391122c3ddfc9",
-    "semantic_hash": "420b56f637a45a02788391122c3ddfc9"
+    "mtime": 1779457364.7668295,
+    "ast_hash": "e9f78020e7ce17c12465eedadf3907c2",
+    "semantic_hash": ""
   },
   "D:\\clg prodectivity\\README.md": {
     "mtime": 1778777848.974506,

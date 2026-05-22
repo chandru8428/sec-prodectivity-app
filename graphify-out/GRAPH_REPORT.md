@@ -1,16 +1,16 @@
-# Graph Report - clg prodectivity  (2026-05-17)
+# Graph Report - clg prodectivity  (2026-05-22)
 
 ## Corpus Check
-- 95 files · ~66,347 words
+- 95 files · ~68,486 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 725 nodes · 1128 edges · 54 communities (45 shown, 9 thin omitted)
+- 736 nodes · 1143 edges · 54 communities (45 shown, 9 thin omitted)
 - Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 127 edges (avg confidence: 0.79)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9901d51c`
+- Built from commit: `34407090`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -68,7 +68,7 @@
 7. `Design` - 14 edges
 8. `UI/UX Pro Max - Design Intelligence` - 13 edges
 9. `query()` - 12 edges
-10. `setDoc()` - 11 edges
+10. `appState` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `testUsers()` --calls--> `signInWithEmailAndPassword()`  [INFERRED]
@@ -86,19 +86,19 @@
 
 ### Community 0 - "Calendar and Moderation"
 Cohesion: 0.07
-Nodes (38): render(), render(), loadMappings(), render(), render(), adminNavItems, createLayout(), renderSidebar() (+30 more)
+Nodes (36): render(), render(), render(), SAMPLE_LABS, render(), adminNavItems, createLayout(), renderSidebar() (+28 more)
 
 ### Community 1 - "Chart Components"
 Cohesion: 0.07
 Nodes (28): createChart(), darkDefaults, deepMerge(), showModal(), ensureContainer(), showToast(), demoSubjects, demoAttendance (+20 more)
 
 ### Community 2 - "Firebase Scripts"
-Cohesion: 0.08
-Nodes (62): loadAdminStats(), render(), uploadRows(), renderDashboard(), migrateUsers(), createUsers(), getUserProfile(), onAuth() (+54 more)
+Cohesion: 0.05
+Nodes (82): loadAdminStats(), loadMappings(), render(), uploadRows(), renderDashboard(), app, auth, db (+74 more)
 
 ### Community 3 - "Timetable AI"
-Cohesion: 0.07
-Nodes (43): aiCall(), aiRepairParse(), extractSubjects(), getModel(), pdfToText(), $(), loadS(), nav() (+35 more)
+Cohesion: 0.08
+Nodes (35): aiCall(), aiRepairParse(), extractSubjects(), getModel(), pdfToText(), $(), loadS(), nav() (+27 more)
 
 ### Community 4 - "Django Models"
 Cohesion: 0.1
@@ -109,8 +109,8 @@ Cohesion: 0.04
 Nodes (45): Banner Design (Built-in), Banner: Design Rules, Banner: Quick Size Reference, Banner: Top Art Styles, Banner: Workflow, CIP Design (Built-in), CIP: Generate Brief, CIP: Generate Mockups (+37 more)
 
 ### Community 6 - "Record Book & Github"
-Cohesion: 0.1
-Nodes (31): checkUrlLive(), defaultSubjectRepoMap, extractAliases(), extractExpNumber(), findBestMatchingRepo(), findBestRepo(), getUserRepos(), isWholeWord() (+23 more)
+Cohesion: 0.09
+Nodes (33): checkUrlLive(), defaultSubjectRepoMap, extractAliases(), extractExpNumber(), findBestMatchingRepo(), findBestRepo(), getUserRepos(), GitHubRateLimitError (+25 more)
 
 ### Community 7 - "Frontend Deps"
 Cohesion: 0.09
@@ -141,16 +141,16 @@ Cohesion: 0.17
 Nodes (11): auth_provider_x509_cert_url, auth_uri, client_email, client_id, client_x509_cert_url, private_key, private_key_id, project_id (+3 more)
 
 ### Community 14 - "Timetable Scheduler"
-Cohesion: 0.14
-Nodes (14): compressImage(), formatBytes(), uploadToCloudinary(), uploadToCloudinaryRaw(), currentFilter, loadPosts(), pendingFiles, post (+6 more)
+Cohesion: 0.11
+Nodes (18): compressImage(), formatBytes(), uploadToCloudinary(), uploadToCloudinaryRaw(), cancelBtn, currentFilter, form, loadPosts() (+10 more)
 
 ### Community 15 - "Full Parse Test"
 Cohesion: 0.28
 Nodes (7): cleaned, days, isNoise(), NOISE, parseText(), startHourToSlot(), subjects
 
 ### Community 16 - "Firebase Hosting"
-Cohesion: 0.33
-Nodes (5): hosting, headers, ignore, public, rewrites
+Cohesion: 0.29
+Nodes (6): hosting, headers, ignore, public, rewrites, site
 
 ### Community 17 - "Firebase Migrate"
 Cohesion: 0.06
@@ -197,8 +197,8 @@ Cohesion: 0.33
 Nodes (6): Accessibility, Interaction, Layout, Light/Dark Mode, Pre-Delivery Checklist, Visual Quality
 
 ### Community 47 - "Community 47"
-Cohesion: 0.1
-Nodes (15): app, auth, db, firebaseConfig, usersToMigrate, app, auth, db (+7 more)
+Cohesion: 0.27
+Nodes (8): buildCandidates(), DAYS, deepClone(), dfs(), generateTimetables(), hasConflict(), scoreSolution(), TIMES
 
 ### Community 48 - "Community 48"
 Cohesion: 0.4
@@ -217,7 +217,7 @@ Cohesion: 0.5
 Nodes (4): Must Use, Recommended, Skip, When to Apply
 
 ## Knowledge Gaps
-- **255 isolated node(s):** `public`, `ignore`, `rewrites`, `headers`, `name` (+250 more)
+- **264 isolated node(s):** `site`, `public`, `ignore`, `rewrites`, `headers` (+259 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -236,5 +236,5 @@ _Questions this graph is uniquely positioned to answer:_
   _`getDocs()` has 16 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 15 inferred relationships involving `doc()` (e.g. with `migrateUsers()` and `createUsers()`) actually correct?**
   _`doc()` has 15 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `public`, `ignore`, `rewrites` to the rest of the system?**
-  _255 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `site`, `public`, `ignore` to the rest of the system?**
+  _264 weakly-connected nodes found - possible documentation gaps or missing edges._
