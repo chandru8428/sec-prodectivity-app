@@ -31,7 +31,9 @@ export function render(root) {
 
       <div style="width:100%;max-width:500px">
         <div style="text-align:center;margin-bottom:var(--space-8)">
-          <div style="width:64px;height:64px;border-radius:var(--radius-xl);background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto var(--space-4);box-shadow:var(--shadow-glow-primary)">🎓</div>
+          <div style="width:64px;height:64px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-4);box-shadow:var(--shadow-glow-primary);overflow:hidden;background:white;">
+            <img src="/logo.png" alt="EduSync Logo" style="width:100%;height:100%;object-fit:contain;" />
+          </div>
           <h1 style="font-size:2rem;font-weight:900;letter-spacing:-0.02em;background:var(--gradient-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Create Account</h1>
           <p style="color:var(--color-on-surface-variant);margin-top:var(--space-2);font-size:var(--font-body-sm)">Join EduSync — Your Academic Command Center</p>
         </div>

@@ -41,7 +41,9 @@ export function renderSidebar(container) {
 
   sidebar.innerHTML = `
     <a class="sidebar-logo" href="#/student/dashboard" data-link>
-      <div class="logo-icon">🎓</div>
+      <div class="logo-icon" style="background:transparent;display:flex;align-items:center;justify-content:center;">
+        <img src="/logo.png" alt="EduSync" style="width:100%;height:100%;object-fit:contain;background:white;border-radius:8px;" />
+      </div>
       <div class="logo-text">
         <div class="app-name">EduSync</div>
         <div class="app-sub">${role === 'admin' ? 'Admin Panel' : 'Student Hub'}</div>
