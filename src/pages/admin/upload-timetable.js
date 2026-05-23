@@ -414,8 +414,8 @@ function normalizeSession(val) {
 }
 
 function sessionToTime(session) {
-  if (session === 'FN') return ['10:00','13:00'];
-  if (session === 'AN') return ['14:00','17:00'];
+  if (session === 'FN') return ['09:00','12:00'];
+  if (session === 'AN') return ['13:00','16:00'];
   return ['',''];
 }
 

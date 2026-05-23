@@ -184,7 +184,7 @@ function renderExamPanel(panel, exams, today) {
       const accentColor = isPractical ? 'var(--accent-secondary)' : 'var(--accent-primary)';
       const typeLabel   = isPractical ? '🧪 Practical' : '📝 Theory';
 
-      const target  = new Date(`${exam.examDate}T${exam.startTime || '10:00'}:00`);
+      const target  = new Date(`${exam.examDate}T${exam.startTime || '09:00'}:00`);
       const diffMs  = target - new Date();
       const daysLeft = Math.ceil(diffMs / 86400000);
       const isToday  = daysLeft <= 0;
@@ -227,14 +227,14 @@ function renderExamPanel(panel, exams, today) {
             <div class="flex flex-wrap gap-3" style="font-size:13px">
               <span style="color:var(--text-secondary)">📅 ${formatDate(exam.examDate)}</span>
               ${exam.session
-                ? `<span style="color:var(--text-secondary)">⏰ <span class="badge ${exam.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:10px">${exam.session==='FN'?'FN · 10:00 AM – 1:00 PM':'AN · 2:00 PM – 5:00 PM'}</span></span>`
+                ? `<span style="color:var(--text-secondary)">⏰ <span class="badge ${exam.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:10px">${exam.session==='FN'?'FN · 9:00 AM – 12:00 PM':'AN · 1:00 PM – 4:00 PM'}</span></span>`
                 : exam.startTime ? `<span style="color:var(--text-secondary)">🕐 ${exam.startTime} – ${exam.endTime}</span>` : ''}
               ${exam.hall ? `<span style="color:var(--text-secondary)">🏛️ Hall: <strong>${exam.hall}</strong></span>` : ''}
             </div>
             <!-- Action buttons -->
             <div class="flex gap-2 mt-3 flex-wrap">
               <button class="btn btn-secondary btn-sm"
-                onclick="addToCalendar('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}','${exam.startTime||'10:00'}','${exam.endTime||'13:00'}')">
+                onclick="addToCalendar('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}','${exam.startTime||'09:00'}','${exam.endTime||'12:00'}')">
                 📆 Add to Calendar
               </button>
               <button class="btn btn-ghost btn-sm" onclick="notifyExam('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}')">

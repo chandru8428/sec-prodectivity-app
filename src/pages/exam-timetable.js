@@ -215,7 +215,7 @@ export default async function renderExamTimetable(container) {
         <div class="form-group"><label>Subject Name</label><input type="text" id="m-name" value="${exam?.subjectName || ''}"></div>
         <div class="form-row">
           <div class="form-group"><label>Date</label><input type="date" id="m-date" value="${exam?.date || ''}"></div>
-          <div class="form-group"><label>Time</label><input type="text" id="m-time" value="${exam?.time || '10:00 AM'}"></div>
+          <div class="form-group"><label>Time</label><input type="text" id="m-time" value="${exam?.time || '09:00 AM'}"></div>
         </div>
         <div class="form-row">
           <div class="form-group"><label>Venue</label><input type="text" id="m-venue" value="${exam?.venue || ''}"></div>

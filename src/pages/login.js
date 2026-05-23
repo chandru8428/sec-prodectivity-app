@@ -92,7 +92,7 @@ export function render(root) {
           
           <div style="text-align:center;margin-bottom:32px;">
             <div style="width:72px;height:72px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:var(--shadow-glow-primary);overflow:hidden;background:white;">
-              <img src="/logo.png" alt="EduSync Logo" style="width:100%;height:100%;object-fit:contain;" />
+              <img src="/logo-new.png" alt="EduSync Logo" style="width:100%;height:100%;object-fit:contain;" />
             </div>
             <div style="text-align:left;">
               <h2 style="font-size:28px;font-weight:400;font-family:Georgia, serif;margin-bottom:8px;color:var(--color-on-surface);">Sign in</h2>
