@@ -66,7 +66,7 @@ COL_MAP = {
     ],
     "session": [
         "session", "sess", "fn/an", "fn", "an", "slot",
-        "exam session", "time slot"
+        "exam session", "time slot", "time","Time","TIME"
     ],
     "subject": [
         "subject name", "subjectname", "subject", "course name",
@@ -122,19 +122,64 @@ def parse_date(val):
     except Exception:
         return val
 
+def parse_time_range(val):
+    """
+    Parse a time range string like "01:00pm to 3:00pm" or "10:00 to 13:00".
+    Returns (start_str, end_str, session) where session is "FN" or "AN".
+    Returns None if the value doesn't look like a time range.
+    """
+    if pd.isna(val) or str(val).strip() == "":
+        return None
+    v = str(val).strip()
+    # Match patterns like "1:00pm to 3:00pm", "01:00 PM to 03:00 PM", "10:00 to 13:00"
+    m = re.match(
+        r"(\d{1,2})[:\.]?(\d{2})?\s*(am|pm)?\s*(?:to|-)\s*(\d{1,2})[:\.]?(\d{2})?\s*(am|pm)?",
+        v, re.IGNORECASE
+    )
+    if not m:
+        return None
+    sh, sm, sampm, eh, em, eampm = m.groups()
+    sh, eh = int(sh), int(eh)
+    sm = int(sm) if sm else 0
+    em = int(em) if em else 0
+    # Resolve 12-hour clock
+    if sampm and sampm.lower() == "pm" and sh != 12:
+        sh += 12
+    if sampm and sampm.lower() == "am" and sh == 12:
+        sh = 0
+    if eampm and eampm.lower() == "pm" and eh != 12:
+        eh += 12
+    if eampm and eampm.lower() == "am" and eh == 12:
+        eh = 0
+    start_str = f"{sh:02d}:{sm:02d}"
+    end_str   = f"{eh:02d}:{em:02d}"
+    # Derive FN/AN: morning sessions start before 12:00
+    session = "FN" if sh < 12 else "AN"
+    return start_str, end_str, session
+
+
 def normalize_session(val):
-    """Normalize FN/AN session field."""
+    """Normalize FN/AN session field (handles time-range strings too)."""
     if pd.isna(val) or str(val).strip() == "":
         return ""
+    # First try to parse as a time range
+    parsed = parse_time_range(val)
+    if parsed:
+        return parsed[2]  # return "FN" or "AN"
     v = str(val).strip().upper()
-    if "FN" in v or "FORE" in v or "MORN" in v or "AM" in v:
+    if "FN" in v or "FORE" in v or "MORN" in v:
         return "FN"
-    if "AN" in v or "AFTER" in v or "PM" in v:
+    if "AN" in v or "AFTER" in v:
         return "AN"
     return v
 
-def session_to_time(session):
-    """Convert FN/AN to start/end times."""
+
+def session_to_time(session, raw_val=""):
+    """Convert FN/AN to start/end times, using raw time-range string when available."""
+    # If the raw value is a time range, parse it directly
+    parsed = parse_time_range(raw_val)
+    if parsed:
+        return parsed[0], parsed[1]
     if session == "FN":
         return "10:00", "13:00"
     if session == "AN":
@@ -176,8 +221,9 @@ def extract_rows(filepath, sheet=0):
         if not reg_no:
             continue   # Skip rows with no register number
 
-        session    = normalize_session(get("session"))
-        start, end = session_to_time(session)
+        raw_session = get("session")
+        session     = normalize_session(raw_session)
+        start, end  = session_to_time(session, raw_val=raw_session)
         exam_date  = parse_date(get("examDate"))
 
         record = {
