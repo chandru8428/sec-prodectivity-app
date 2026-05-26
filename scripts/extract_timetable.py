@@ -74,7 +74,7 @@ COL_MAP = {
     ],
     "hall": [
         "location", "hall", "room", "venue", "exam hall",
-        "exam center", "room no", "hall no", "exam venue"
+        "exam center", "room no", "hall no", "exam venue","Location"
     ],
 }
 

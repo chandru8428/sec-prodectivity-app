@@ -1,8 +1,7 @@
 {
   "hosting": {
-    "site": "edusync-auth-qa-2026",
     "public": "dist",
-
+    "site": "edusync-auth-qa-2026",
     "ignore": [
       "firebase.json",
       "**/.*",

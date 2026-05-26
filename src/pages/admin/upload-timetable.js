@@ -336,9 +336,9 @@ const COL_ALIASES = {
   studentName:    ['name','student name','studentname','candidate name','full name','fullname','student_name'],
   examDate:       ['date','exam date','examdate','examination date','exam_date','date of exam'],
   subjectCode:    ['subject code','subjectcode','sub code','subcode','course code','subject_code','code','r 2019','r 2024','r2019','r2024','reg 2019','reg 2024','R 2019/R 2024','R 2019/R 2024','r 2019/r 2024','r 2019/r 2024'],
-  session:        ['session','sess','fn/an','fn','an','slot','exam session','time slot'],
+  session:        ['session','sess','fn/an','fn','an','slot','exam session','time slot','time','Time','TIME','Time slot'],
   subject:        ['subject name','subjectname','subject','course name','paper name','course','subject_name','paper'],
-  hall:           ['location','hall','room','venue','exam hall','exam center','room no','hall no','exam venue'],
+  hall:           ['location','hall','room','venue','exam hall','exam center','room no','hall no','exam venue','location','Location','LOCATION'],
 };
 
 // Detect if a value looks like a register number (handles R2019/, R2024, R 2019, plain 212224xxxxxx etc.)
@@ -405,15 +405,50 @@ function parseDate(val) {
   return val;
 }
 
+/**
+ * Parse a time-range string like "01:00pm to 3:00pm" or "10:00 to 13:00".
+ * Returns { session:'FN'|'AN', startTime:'HH:MM', endTime:'HH:MM' } or null.
+ */
+function parseTimeRange(val) {
+  if (!val) return null;
+  const v = String(val).trim();
+  // Match: 1:00pm to 3:00pm  |  01:00 PM to 03:00 PM  |  10:00 to 13:00
+  const m = v.match(
+    /^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:to|-)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i
+  );
+  if (!m) return null;
+  let sh = parseInt(m[1],10), sm = parseInt(m[2]||'0',10);
+  let eh = parseInt(m[4],10), em = parseInt(m[5]||'0',10);
+  const sampm = (m[3]||'').toLowerCase();
+  const eampm = (m[6]||'').toLowerCase();
+  // Resolve 12-hour clock
+  if (sampm === 'pm' && sh !== 12) sh += 12;
+  if (sampm === 'am' && sh === 12) sh = 0;
+  if (eampm === 'pm' && eh !== 12) eh += 12;
+  if (eampm === 'am' && eh === 12) eh = 0;
+  const startTime = `${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`;
+  const endTime   = `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
+  const session   = sh < 12 ? 'FN' : 'AN';
+  return { session, startTime, endTime };
+}
+
 function normalizeSession(val) {
   if (!val) return '';
+  // First try to detect from time-range string
+  const parsed = parseTimeRange(val);
+  if (parsed) return parsed.session;
   const v = String(val).trim().toUpperCase();
-  if (v.includes('FN')||v.includes('FORE')||v.includes('MORN')||v.includes('AM')) return 'FN';
-  if (v.includes('AN')||v.includes('AFTER')||v.includes('PM')) return 'AN';
+  if (v.includes('FN')||v.includes('FORE')||v.includes('MORN')) return 'FN';
+  if (v.includes('AN')||v.includes('AFTER')) return 'AN';
   return v;
 }
 
-function sessionToTime(session) {
+function sessionToTime(session, rawVal) {
+  // If raw value is a time-range string, extract times directly
+  if (rawVal) {
+    const parsed = parseTimeRange(rawVal);
+    if (parsed) return [parsed.startTime, parsed.endTime];
+  }
   if (session === 'FN') return ['09:00','12:00'];
   if (session === 'AN') return ['13:00','16:00'];
   return ['',''];
@@ -429,8 +464,9 @@ function mapRows(rawRows, colMap) {
   return rawRows.map(row => {
     const reg = get(row,'registerNumber');
     if (!reg) return null;
-    const session = normalizeSession(get(row,'session'));
-    const [start,end] = sessionToTime(session);
+    const rawSession = get(row,'session');
+    const session    = normalizeSession(rawSession);
+    const [start,end] = sessionToTime(session, rawSession);
     return {
       registerNumber: reg.toUpperCase(),
       studentName:    get(row,'studentName'),
@@ -494,17 +530,22 @@ function handleFile(file, main, type, onParsed) {
         ? '<span class="badge badge-primary">📝 Theory</span>'
         : '<span class="badge" style="background:rgba(0,163,200,0.2);color:#00a3c8">🧪 Practical</span>';
       main.querySelector('#preview-count').textContent = rows.length;
-      main.querySelector('#preview-tbody').innerHTML = rows.slice(0,30).map(r => `
+      main.querySelector('#preview-tbody').innerHTML = rows.slice(0,30).map(r => {
+        const timeStr = r.startTime && r.endTime ? `${r.startTime}–${r.endTime}` : '';
+        return `
         <tr>
           <td><span class="badge badge-primary" style="font-size:10px">${r.registerNumber}</span></td>
           <td style="font-size:12px;font-weight:500">${r.studentName||'—'}</td>
           <td style="font-size:12px">${r.examDate||'—'}</td>
           <td><span class="badge badge-secondary" style="font-size:10px">${r.subjectCode||'—'}</span></td>
-          <td style="text-align:center"><span class="badge ${r.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:10px">${r.session||'—'}</span></td>
+          <td style="text-align:center">
+            <span class="badge ${r.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:10px">${r.session||'—'}</span>
+            ${timeStr ? `<div style="font-size:10px;color:var(--color-on-surface-variant);margin-top:2px">${timeStr}</div>` : ''}
+          </td>
           <td style="font-size:12px;max-width:160px" class="truncate">${r.subject||'—'}</td>
           <td style="font-size:12px">${r.hall||'—'}</td>
-        </tr>
-      `).join('');
+        </tr>`;
+      }).join('');
 
       // Show preview info panel
       const infoPanel = main.querySelector(`#${type}-preview-info`);
@@ -543,6 +584,7 @@ async function loadSchedules(main, filterReg = '', filterType = '') {
     container.innerHTML = records.slice(0,80).map(r => {
       const typeColor = r.examType === 'theory' ? 'rgba(67,97,238,0.2)' : 'rgba(0,163,200,0.2)';
       const typeIcon  = r.examType === 'theory' ? '📝' : '🧪';
+      const timeStr   = r.startTime && r.endTime ? `${r.startTime}–${r.endTime}` : '';
       return `
       <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-container-high);border-left:3px solid ${typeColor}">
         <span style="font-size:1.2rem">${typeIcon}</span>
@@ -553,6 +595,7 @@ async function loadSchedules(main, filterReg = '', filterType = '') {
             ${r.studentName ? `· ${r.studentName}` : ''}
             · ${r.examDate||'—'}
             ${r.session ? `· <span class="badge ${r.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:9px">${r.session}</span>` : ''}
+            ${timeStr ? `· <span style="color:var(--color-on-surface-variant)">⏰ ${timeStr}</span>` : ''}
             · ${r.hall ? `Hall: ${r.hall}` : '—'}
           </div>
         </div>
