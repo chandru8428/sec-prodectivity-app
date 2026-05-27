@@ -12,6 +12,7 @@ const studentNavItems = [
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>', label: 'Record Book Forge', path: '/student/record-book' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>', label: 'Attendance',      path: '/student/attendance' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'My Profile',      path: '/student/profile' },
+  { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>', label: 'Feedback',          url: 'https://docs.google.com/forms/d/e/1FAIpQLSelc0s6bqtjJ3IFp8Ckv2flGScOHjOz3GSERGsC0gQv-DLRjA/viewform?usp=publish-editor' },
 ];
 
 const adminNavItems = [
@@ -52,12 +53,22 @@ export function renderSidebar(container) {
 
     <nav class="sidebar-nav" id="sidebar-nav">
       <span class="nav-section-label">Navigation</span>
-      ${navItems.map(item => `
-        <button class="nav-item ${current === item.path ? 'active' : ''}" data-path="${item.path}">
-          <span class="nav-icon">${item.icon}</span>
-          <span>${item.label}</span>
-        </button>
-      `).join('')}
+      ${navItems.map(item => {
+        if (item.url) {
+          return `
+            <a href="${item.url}" target="_blank" class="nav-item" style="text-decoration:none">
+              <span class="nav-icon">${item.icon}</span>
+              <span>${item.label}</span>
+            </a>
+          `;
+        }
+        return `
+          <button class="nav-item ${current === item.path ? 'active' : ''}" data-path="${item.path}">
+            <span class="nav-icon">${item.icon}</span>
+            <span>${item.label}</span>
+          </button>
+        `;
+      }).join('')}
     </nav>
 
 
@@ -277,7 +288,7 @@ export function createLayout(title, content, breadcrumb = '') {
   // Close sidebar when clicking a nav link on mobile
   const sidebarNav = wrapper.querySelector('#sidebar .sidebar-nav');
   if (sidebarNav) {
-    const sidebarLinks = sidebarNav.querySelectorAll('button');
+    const sidebarLinks = sidebarNav.querySelectorAll('.nav-item');
     sidebarLinks.forEach(link => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
