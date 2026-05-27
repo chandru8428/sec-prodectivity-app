@@ -213,8 +213,19 @@ async function loadDashboardData(main) {
     const examsRef = sbCollection(supabaseDb, 'examSchedules');
     const q = sbQuery(examsRef, sbWhere('registerNumber', '==', user.registerNumber));
     const snap = await sbGetDocs(q);
-    const exams = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
+    
+    // Fetch academic calendar events
+    const acSnap = await getDocs(collection(db, 'academicCalendar'));
+    const acEvents = acSnap.docs.map(d => ({
+      id: d.id,
+      subject: d.data().name,
+      examDate: d.id,
+      examType: d.data().type,
+      uploadedBy: 'admin',
+      isGlobal: true
+    }));
+
+    const exams = [...snap.docs.map(d => ({ id: d.id, ...d.data() })), ...acEvents]
       .filter(e => e.examDate >= today)
       .sort((a, b) => a.examDate.localeCompare(b.examDate))
       .slice(0, 5);

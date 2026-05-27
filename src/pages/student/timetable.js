@@ -1,6 +1,7 @@
 import { createLayout } from '../../components/sidebar.js';
 import { appState } from '../../main.js';
 import { supabase } from '/src/supabase.js';
+import { db, collection, getDocs } from '/src/firebase.js';
 
 let countdownIntervals = [];
 
@@ -62,16 +63,26 @@ async function loadExams(container) {
     const regNo = String(user.registerNumber).trim().toUpperCase();
 
     // Direct Supabase query — no adapter abstraction
-    const { data: all, error: qErr } = await supabase
+    const { data: sbExams, error: qErr } = await supabase
       .from('examSchedules')
       .select('*')
-      .eq('registerNumber', regNo)
-      .order('examDate', { ascending: true });
+      .eq('registerNumber', regNo);
 
     if (qErr) throw qErr;
 
+    const acSnap = await getDocs(collection(db, 'academicCalendar'));
+    const acEvents = acSnap.docs.map(d => ({
+      id: d.id,
+      subject: d.data().name,
+      examDate: d.id,
+      examType: d.data().type,
+      uploadedBy: 'admin',
+      isGlobal: true
+    }));
 
-    const theory    = all.filter(e => !e.examType || e.examType === 'theory');
+    const all = [...(sbExams || []), ...acEvents].sort((a, b) => a.examDate.localeCompare(b.examDate));
+
+    const theory    = all.filter(e => !e.examType || e.examType === 'theory' || e.isGlobal);
     const practical = all.filter(e => e.examType === 'practical');
 
     if (all.length === 0) {
@@ -181,8 +192,27 @@ function renderExamPanel(panel, exams, today) {
     const upcomingList = panel.querySelector(`#${panel.id}-upcoming`);
     upcoming.forEach((exam, i) => {
       const isPractical = exam.examType === 'practical';
-      const accentColor = isPractical ? 'var(--accent-secondary)' : 'var(--accent-primary)';
-      const typeLabel   = isPractical ? '🧪 Practical' : '📝 Theory';
+      let accentColor = isPractical ? '#7C3AED' : 'var(--color-primary)';
+      let typeLabel   = isPractical ? '🧪 Practical' : '📝 Theory';
+      let bgColor     = isPractical ? '#F5F3FF' : '#EEF2FF';
+      let fgColor     = isPractical ? '#7C3AED' : '#4F46E5';
+
+      if (exam.examType === 'holiday') {
+        typeLabel = '🔴 Holiday';
+        accentColor = 'var(--color-danger)';
+        bgColor = '#FEF2F2';
+        fgColor = 'var(--color-danger)';
+      } else if (exam.examType === 'event') {
+        typeLabel = '🔵 Event';
+        accentColor = 'var(--color-secondary)';
+        bgColor = '#F0F9FF';
+        fgColor = 'var(--color-secondary)';
+      } else if (exam.examType === 'exam' && exam.isGlobal) {
+        typeLabel = '🟣 Exam';
+        accentColor = '#c77dff';
+        bgColor = '#FAF5FF';
+        fgColor = '#c77dff';
+      }
 
       const target  = new Date(`${exam.examDate}T${exam.startTime || '09:00'}:00`);
       const diffMs  = target - new Date();
@@ -208,7 +238,7 @@ function renderExamPanel(panel, exams, today) {
       card.className = 'glass-card exam-card-upcoming';
       card.setAttribute('data-type', isPractical ? 'practical' : 'theory');
       card.style.cssText = `
-        border-left: 5px solid ${isPractical ? '#7C3AED' : 'var(--color-primary)'};
+        border-left: 5px solid ${accentColor};
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       `;
 
@@ -219,7 +249,7 @@ function renderExamPanel(panel, exams, today) {
             <div class="flex items-center gap-2 mb-2 flex-wrap">
               <span class="text-title" style="font-size:1.1rem;color:var(--text-primary)">${exam.subject || '—'}</span>
               ${exam.subjectCode ? `<span class="badge" style="background:#F1F5F9;color:#475569;font-size:10px">${exam.subjectCode}</span>` : ''}
-              <span class="badge" style="background:${isPractical?'#F5F3FF':'#EEF2FF'};color:${isPractical?'#7C3AED':'#4F46E5'};font-size:10px">${typeLabel}</span>
+              <span class="badge" style="background:${bgColor};color:${fgColor};font-size:10px">${typeLabel}</span>
               ${exam.uploadedBy === 'student' ? '<span class="badge" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;font-size:10px">🌟 Personal Event</span>' : ''}
               ${i === 0 ? '<span class="badge" style="background:#FFF7ED;color:#C2410C">Next Up</span>' : ''}
             </div>
@@ -281,15 +311,21 @@ function renderExamPanel(panel, exams, today) {
   if (past.length > 0) {
     const pastList = panel.querySelector(`#${panel.id}-past`);
     pastList.innerHTML = past.map(exam => {
-      const isPractical = exam.examType === 'practical';
-      const accentColor = isPractical ? '#7C3AED' : 'var(--color-primary)';
+      let isPractical = exam.examType === 'practical';
+      let accentColor = isPractical ? '#7C3AED' : 'var(--color-primary)';
+      let icon = isPractical ? '🧪' : '📝';
+      
+      if (exam.examType === 'holiday') { accentColor = 'var(--color-danger)'; icon = '🔴'; }
+      else if (exam.examType === 'event') { accentColor = 'var(--color-secondary)'; icon = '🔵'; }
+      else if (exam.examType === 'exam' && exam.isGlobal) { accentColor = '#c77dff'; icon = '🟣'; }
+
       return `
         <div class="exam-card-past" style="display:flex;align-items:center;gap:var(--space-4);padding:12px 16px;border-radius:12px;
           border-left: 4px solid ${accentColor};
           opacity: 0.9;
           transition: transform 0.2s ease;
         ">
-          <span style="font-size:1.4rem">${isPractical?'🧪':'📝'}</span>
+          <span style="font-size:1.4rem">${icon}</span>
           <div style="flex:1">
             <div style="font-weight:600;color:var(--color-on-surface)">${exam.subject||'—'}</div>
             <div style="font-size:12px;color:var(--color-on-surface-variant)">
