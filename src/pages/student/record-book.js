@@ -305,6 +305,12 @@ export function render(root) {
             <button id="modal-close-btn">✕ Close</button>
           </div>
         </div>
+        <div id="pdf-fallback-msg" style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 24px; color: var(--color-on-surface-variant);">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px; opacity:0.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--color-on-surface); margin-bottom: 8px;">Preview Not Supported</h3>
+          <p style="font-size: 14px; margin-bottom: 24px; max-width: 280px; line-height: 1.5;">Mobile browsers cannot preview PDFs directly inside the app. Please download the file to view it.</p>
+          <button id="fallback-download-btn" class="btn btn-primary" style="padding: 12px 24px;">📥 Download PDF</button>
+        </div>
         <iframe id="pdf-iframe" title="PDF Preview"></iframe>
       </div>
     </div>
@@ -1200,9 +1206,22 @@ async function openPDFPreview(main) {
     const url  = URL.createObjectURL(blob);
 
     const iframe = main.querySelector('#pdf-iframe');
-    if (iframe._blobUrl) URL.revokeObjectURL(iframe._blobUrl);
-    iframe._blobUrl = url;
-    iframe.src = url;
+    const fallback = main.querySelector('#pdf-fallback-msg');
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    if (isMobile) {
+      iframe.style.display = 'none';
+      if (fallback) {
+        fallback.style.display = 'flex';
+        main.querySelector('#fallback-download-btn').onclick = () => { triggerDownload(main); };
+      }
+    } else {
+      iframe.style.display = 'block';
+      if (fallback) fallback.style.display = 'none';
+      if (iframe._blobUrl) URL.revokeObjectURL(iframe._blobUrl);
+      iframe._blobUrl = url;
+      iframe.src = url;
+    }
 
     main.querySelector('#pdf-modal').classList.add('open');
   } catch (err) {
