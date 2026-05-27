@@ -336,13 +336,13 @@ export function render(root) {
           <form id="record-form" class="flex flex-col gap-4">
             <div class="form-group">
               <label class="form-label">Student Name</label>
-              <input class="form-input" id="student-name" type="text" placeholder="e.g. John Doe" required
+              <input class="form-input" id="student-name" type="text" placeholder="e.g. aravind p" required
                 value="${sessionStorage.getItem('rb_student_name') || appState.userData?.name || ''}" />
             </div>
 
             <div class="form-group">
               <label class="form-label">Register Number</label>
-              <input class="form-input" id="register-number" type="text" placeholder="e.g. 211301110" required
+              <input class="form-input" id="register-number" type="text" placeholder="e.g. 212224240015" required
                 value="${sessionStorage.getItem('rb_reg_no') || appState.userData?.registerNumber || ''}" />
             </div>
 
@@ -350,7 +350,7 @@ export function render(root) {
               <label class="form-label">GitHub Username</label>
               <div class="form-input-wrapper">
                 <span class="input-icon icon-left">@</span>
-                <input class="form-input" id="gh-username" type="text" placeholder="e.g. student_github" required
+                <input class="form-input" id="gh-username" type="text" placeholder="e.g. aravind8428" required
                   value="${sessionStorage.getItem('rb_username') || ''}" />
               </div>
             </div>

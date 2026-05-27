@@ -228,18 +228,22 @@ export function renderStep4() {
   </div>`;
 }
 
-export function renderStep5(results, selectedSubjects, leaveDay, clashWarning) {
+export function renderStep5(results, selectedSubjects, leaveDay, clashWarning, resultIndex = 0) {
   if (!results || !results.length) {
     return `<div class="glass-card fade-in">
+      <div class="flex justify-between items-center mb-5 flex-wrap gap-2 no-print" style="background:var(--bg-secondary);padding:10px 14px;border-radius:var(--radius-md);border:1px solid var(--border-color)">
+        <button class="btn btn-secondary btn-sm" id="back-3">← Adjust Preferences</button>
+        <button class="btn btn-ghost btn-sm" id="new-btn" style="color:var(--color-danger);font-weight:600">🔄 Start Over</button>
+      </div>
       <h2 class="text-title-lg mb-4">❌ No Valid Timetable Found</h2>
       ${clashWarning ? `<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.4);color:var(--on-surface);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.6">${clashWarning}</div>` : ''}
       <p class="text-muted mb-4">Even after relaxing all preferences and trying to remove individual subjects, no conflict-free schedule could be found. Please go back and select a different combination of subjects.</p>
-      <button class="btn btn-secondary" id="back-3">← Adjust Preferences</button>
     </div>`;
   }
 
-  const best = results[0];
+  const best = results[resultIndex || 0];
   const grid = best.grid;
+
 
   const colorMap = {};
   (selectedSubjects||[]).forEach((s, i) => { colorMap[s.subject_code||s.subject_name] = getSubjectColor(i); });
@@ -313,10 +317,15 @@ export function renderStep5(results, selectedSubjects, leaveDay, clashWarning) {
   </style>`;
 
   return `${printCss}<div class="glass-card fade-in" id="printable-area">
+    <div class="flex justify-between items-center mb-5 flex-wrap gap-2 no-print" style="background:var(--bg-secondary);padding:10px 14px;border-radius:var(--radius-md);border:1px solid var(--border-color)">
+      <button class="btn btn-secondary btn-sm" id="back-3">← Adjust Preferences</button>
+      <button class="btn btn-ghost btn-sm" id="new-btn" style="color:var(--color-danger);font-weight:600">🔄 Start Over</button>
+    </div>
+
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2 no-print">
       <h2 class="text-title-lg">✅ Your Optimal Timetable</h2>
       <div class="flex gap-2 flex-wrap">
-        ${results.length>1?`<select id="alt-select" class="btn btn-sm" style="width:auto;cursor:pointer;appearance:none;padding-left:16px;padding-right:32px;border:none;outline:none;background:linear-gradient(135deg, #6366f1, #a855f7, #ec4899);color:#fff;box-shadow:0 4px 15px rgba(168,85,247,0.4);border-radius:12px;font-weight:700;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23ffffff%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(168,85,247,0.6)';" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(168,85,247,0.4)';">${results.map((r,i)=>`<option value="${i}" style="color:#333;background:#fff;font-weight:600;">✨ Option ${i+1} — Score ${Math.min(100, Math.max(0, Math.round((r.score / (1000 + ((selectedSubjects||[]).length * 15) + 30)) * 100)))}%</option>`).join('')}</select>`:''}
+        ${results.length>1?`<select id="alt-select" class="btn btn-sm" style="width:auto;cursor:pointer;appearance:none;padding-left:16px;padding-right:32px;border:none;outline:none;background:linear-gradient(135deg, #6366f1, #a855f7, #ec4899);color:#fff;box-shadow:0 4px 15px rgba(168,85,247,0.4);border-radius:12px;font-weight:700;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23ffffff%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/></svg>');background-repeat:no-repeat;background-position:right 4px center;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(168,85,247,0.6)';" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(168,85,247,0.4)';">${results.map((r,i)=>`<option value="${i}" ${i === resultIndex ? 'selected' : ''} style="color:#333;background:#fff;font-weight:600;">✨ Option ${i+1} — Score ${Math.min(100, Math.max(0, Math.round((r.score / (1000 + ((selectedSubjects||[]).length * 15) + 30)) * 100)))}%</option>`).join('')}</select>`:''}
         <button class="btn btn-secondary btn-sm no-print" id="regen-btn">🔄 Regenerate</button>
         <button class="btn btn-primary btn-sm no-print" id="print-btn">🖨️ Print</button>
         <button class="btn btn-primary btn-sm" id="save-btn">💾 Save</button>
@@ -325,7 +334,6 @@ export function renderStep5(results, selectedSubjects, leaveDay, clashWarning) {
 
     ${!hasAnyData?`<div style="background:rgba(247,37,133,0.1);border:1px solid rgba(247,37,133,0.3);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;font-size:13px">
       ⚠️ <strong>Grid is empty</strong> — class timing data not found. Please go back and re-parse your timetable text.
-      <button class="btn btn-secondary btn-sm no-print" style="margin-left:12px" id="back-3">← Go Back</button>
     </div>`:''}
 
     ${clashWarning?`<div class="no-print" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.4);color:#b45309;border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
@@ -347,11 +355,6 @@ export function renderStep5(results, selectedSubjects, leaveDay, clashWarning) {
       <h3 style="font-size:14px;font-weight:700;margin-bottom:8px">📋 Selected Slots</h3>
       <p style="font-size:12px;color:var(--color-on-surface-variant);margin-bottom:14px">Your pinned slot for each subject with the full weekly schedule.</p>
       ${breakdown||'<div class="text-muted">No subjects assigned.</div>'}
-    </div>
-
-    <div class="flex justify-between mt-6 no-print">
-      <button class="btn btn-secondary" id="back-3">← Adjust Preferences</button>
-      <button class="btn btn-ghost btn-sm" id="new-btn">🔄 Start Over</button>
     </div>
   </div>`;
 }

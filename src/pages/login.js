@@ -105,7 +105,7 @@ export function render(root) {
               <label class="form-label" for="student-identifier">Username</label>
               <div class="form-input-wrapper">
                 <span class="input-icon icon-left" aria-hidden="true">👤</span>
-                <input class="form-input" id="student-identifier" type="text" placeholder="e.g. 24013579 or email" required autocomplete="username" />
+                <input class="form-input" id="student-identifier" type="text" placeholder="e.g. 212224240015 or aravind.p@email.com" required autocomplete="username" />
               </div>
             </div>
             <div class="form-group">
@@ -230,7 +230,7 @@ export function render(root) {
           throw new Error('NOT_REGISTERED');
         }
 
-        showToast(`Welcome back, ${profile.name || 'Student'}! 👋`, 'success');
+        showToast(`Welcome back, ${profile.name || 'aravind p'}! 👋`, 'success');
         router.navigate(profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
       }
     } catch (err) {
@@ -266,7 +266,7 @@ export function render(root) {
         return;
       }
 
-      showToast(`Welcome, ${profile.name || user.displayName || 'Student'}! 🎉`, 'success');
+      showToast(`Welcome, ${profile.name || user.displayName || 'aravind p'}! 🎉`, 'success');
       router.navigate(profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
     } catch (err) {
       showToast(friendlyAuthError(err), 'error');

@@ -23,7 +23,7 @@ const demoAttendance = [
 export default async function renderDashboard(container) {
   const user = window.__currentUser;
   const isAdmin = user?.role === 'admin' || user?.uid === '212224220017';
-  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Student';
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'aravind p';
   const firstName = displayName.split(' ')[0];
   const regNo = (user?.regNo || user?.uid || '').toLowerCase();
 

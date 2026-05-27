@@ -20,7 +20,7 @@ export function render(root) {
   const user = appState.userData;
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
-  const firstName = user?.name?.split(' ')[0] || 'Student';
+  const firstName = user?.name?.split(' ')[0] || 'aravind p';
 
   const layout = createLayout('Dashboard', '');
   root.appendChild(layout);
@@ -132,7 +132,7 @@ export function render(root) {
         ${[
           { icon:'🗓️', label:'AI Schedule Crafter', desc:'Auto-generate conflict-free schedule', path:'/student/timetable-maker', color:'rgba(67,97,238,0.15)', border:'rgba(67,97,238,0.3)' },
           { icon:'📄', label:'Record Book Forge', desc:'Generate with GitHub + QR codes', path:'/student/record-book', color:'rgba(91,213,252,0.1)', border:'rgba(91,213,252,0.25)' },
-          { icon:'✅', label:'Attendance Calculator', desc:'Track your 85% mandate', path:'/student/attendance', color:'rgba(74,222,128,0.1)', border:'rgba(74,222,128,0.25)' },
+          { icon:'✅', label:'Attendance Calculator', desc:'Track your 80% mandate', path:'/student/attendance', color:'rgba(74,222,128,0.1)', border:'rgba(74,222,128,0.25)' },
           { icon:'📊', label:'CGPA / GPA', desc:'Anna University grading system', path:'/student/gpa', color:'rgba(255,182,146,0.1)', border:'rgba(255,182,146,0.25)' },
           { icon:'💬', label:'Knowledge Exchange', desc:'Post questions and tips', path:'/student/qa-board', color:'rgba(186,67,255,0.1)', border:'rgba(186,67,255,0.25)' },
         ].map(a => `
@@ -146,7 +146,7 @@ export function render(root) {
           </button>
         `).join('')}
 
-        <!-- Attendance Warning (shown if < 85%) -->
+        <!-- Attendance Warning (shown if < 80%) -->
         <div id="attendance-warning" class="alert alert-warning hidden" style="margin-top:var(--space-2)">
           <span>⚠️</span>
           <div>
@@ -277,14 +277,14 @@ async function loadDashboardData(main) {
         attMsg.textContent = '⚠️ Critical — below 75%';
         main.querySelector('#attendance-warning').classList.remove('hidden');
         main.querySelector('#attendance-warning-msg').textContent = `Your attendance is ${pct}%. Attend all remaining classes immediately.`;
-      } else if (pct < 85) {
+      } else if (pct < 80) {
         attMsg.className = 'stat-change text-warning';
-        attMsg.textContent = '⚠️ Below 85% mandate';
+        attMsg.textContent = '⚠️ Below 80% mandate';
         main.querySelector('#attendance-warning').classList.remove('hidden');
-        main.querySelector('#attendance-warning-msg').textContent = `Your attendance is ${pct}% — below the 85% mandate. Please attend classes.`;
+        main.querySelector('#attendance-warning-msg').textContent = `Your attendance is ${pct}% — below the 80% mandate. Please attend classes.`;
       } else {
         attMsg.className = 'stat-change text-success';
-        attMsg.textContent = '✓ Above 85% mandate';
+        attMsg.textContent = '✓ Above 80% mandate';
       }
     } else {
       main.querySelector('#stat-attendance').textContent = 'N/A';

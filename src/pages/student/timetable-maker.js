@@ -16,7 +16,7 @@ const S_DEF = {
   leaveDay: 'None', avoidSlots: [],
   staffPrefs: {},   // { subjectKey: staffName | 'Any' }
   slotPrefs: {},    // { subjectKey: slotName  | 'Any' }
-  results: null, confidence: 0, clashWarning: null, droppedSubject: null
+  results: null, resultIndex: 0, confidence: 0, clashWarning: null, droppedSubject: null
 };
 let S = { ...S_DEF };
 
@@ -287,7 +287,7 @@ function wireStep3(wiz) {
           }
         }
         
-        S.results = results; S.clashWarning = clashWarning; saveS(); nav(5);
+        S.results = results; S.clashWarning = clashWarning; S.resultIndex = 0; saveS(); nav(5);
       } catch (err) { showToast('Scheduling error: '+err.message,'error'); nav(3); }
     }, 300);
   };
@@ -299,12 +299,12 @@ function wireStep4(wiz) { wiz.innerHTML = renderStep4(); }
 // ── Step 5 ────────────────────────────────────────────────────────────────────
 function wireStep5(wiz) {
   const selSubjects = S.selected.map(i => S.subjects[i]).filter(Boolean);
-  wiz.innerHTML = renderStep5(S.results, selSubjects, S.leaveDay, S.clashWarning);
+  wiz.innerHTML = renderStep5(S.results, selSubjects, S.leaveDay, S.clashWarning, S.resultIndex || 0);
 
   // Alternate timetable selector
   $('alt-select')?.addEventListener('change', e => {
     const idx = parseInt(e.target.value);
-    if (S.results[idx]) { [S.results[0],S.results[idx]] = [S.results[idx],S.results[0]]; wireStep5(wiz); }
+    if (S.results[idx]) { S.resultIndex = idx; saveS(); wireStep5(wiz); }
   });
 
   // Regenerate
@@ -313,7 +313,7 @@ function wireStep5(wiz) {
     setTimeout(() => {
       try {
         const results = generateTimetables(selSubjects, { leaveDay:S.leaveDay, avoidSlots:S.avoidSlots, staffPrefs:S.staffPrefs||{}, slotPrefs:S.slotPrefs||{} }, 3);
-        S.results = results; saveS(); nav(5);
+        S.results = results; S.resultIndex = 0; saveS(); nav(5);
       } catch (err) { showToast('Error: '+err.message,'error'); nav(3); }
     }, 300);
   });
@@ -346,7 +346,7 @@ function wireStep5(wiz) {
   // Save to Firestore
   $('save-btn')?.addEventListener('click', async () => {
     try {
-      const best = S.results[0];
+      const best = S.results[S.resultIndex || 0];
       await addDoc(collection(db, 'timetables'), {
         title: 'Weekly Schedule',
         schedule: best.grid,

@@ -6,7 +6,7 @@ import {
 } from '/src/firebase.js';
 import { uploadToCloudinary, compressImage, formatBytes } from '../../services/cloudinary-service.js';
 
-let currentFilter = { type: 'all', subject: '', semester: '' };
+let currentFilter = { type: 'all', subject: '' };
 
 // ── Pending attachments for the current draft post ──────────────────────────
 let pendingFiles = []; // { file, previewUrl, type: 'image'|'pdf' }
@@ -188,6 +188,66 @@ export function render(root) {
         border:none; color:#fff; border-radius:50%; width:36px; height:36px;
         font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center;
       }
+
+      /* ── Modal & Glassmorphism ── */
+      .modal-backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+        z-index: 1000; display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+      }
+      .modal-backdrop.show { opacity: 1; pointer-events: auto; }
+      body.modal-open { overflow: hidden; }
+      
+      .modal-content {
+        background: var(--color-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-2xl);
+        width: 100%; max-width: 540px;
+        padding: 24px; margin: 20px;
+        transform: translateY(20px) scale(0.95);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+        max-height: 90vh; overflow-y: auto;
+      }
+      .modal-backdrop.show .modal-content {
+        transform: translateY(0) scale(1);
+      }
+      .modal-header {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+      }
+      .modal-close {
+        background: var(--color-surface-container-high); border: none; color: var(--color-on-surface-variant);
+        width: 32px; height: 32px; border-radius: 50%;
+        font-size: 16px; cursor: pointer; transition: all 0.2s; 
+        display: flex; align-items: center; justify-content: center;
+      }
+      .modal-close:hover { color: var(--color-on-surface); background: var(--color-surface-container-highest); transform: scale(1.1); }
+      
+      .btn-glow {
+        position: relative; overflow: hidden;
+      }
+      .btn-glow::after {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+        opacity: 0; transition: opacity 0.3s; transform: scale(0.5); pointer-events:none;
+      }
+      .btn-glow:hover::after { opacity: 1; transform: scale(1); }
+
+      /* ── FAB ── */
+      .fab-create {
+        position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
+        border-radius: 50%; background: var(--gradient-primary, var(--color-primary)); color: white;
+        display: none; align-items: center; justify-content: center; font-size: 28px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: none; cursor: pointer;
+        z-index: 990; transition: transform 0.2s, box-shadow 0.2s;
+        line-height: 1; padding-bottom: 4px;
+      }
+      .fab-create:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+      @media (max-width: 768px) {
+        .fab-create { display: flex; }
+        .desktop-create-btn { display: none !important; }
+        .qa-filter-bar { padding: 12px; }
+      }
     </style>
 
     <div class="page-header" style="margin-bottom:4px">
@@ -206,13 +266,13 @@ export function render(root) {
         <button class="qa-chip" data-type="tip">💡 Tips</button>
         <button class="qa-chip" data-type="answer">✅ Answer Keys</button>
       </div>
-      <select class="qa-sem-sel" id="sem-filter">
-        <option value="">All Sems</option>
-        ${[1,2,3,4,5,6,7,8].map(s=>`<option value="${s}">Sem ${s}</option>`).join('')}
-      </select>
+      <button class="btn btn-primary desktop-create-btn btn-glow" id="open-create-modal" style="margin-left:auto; border-radius:var(--radius-full); padding:8px 16px; font-weight:600;">
+        <span style="font-size:16px; margin-right:4px;">+</span> Create Post
+      </button>
     </div>
 
-    <div class="grid gap-6" style="grid-template-columns:1fr 340px;align-items:start">
+    <!-- Layout: Single column or Two columns if we want trending on the right. Let's make feed wider and trending on right -->
+    <div class="grid gap-6" style="grid-template-columns:1fr 300px;align-items:start">
 
       <!-- Left: Feed -->
       <div>
@@ -223,70 +283,8 @@ export function render(root) {
         </div>
       </div>
 
-
-      <!-- Right: Post form + Trending -->
+      <!-- Right: Trending -->
       <div class="flex flex-col gap-4" style="position:sticky;top:80px">
-        <div class="glass-card">
-          <h3 class="text-title mb-4">✏️ Post Something</h3>
-          <form id="post-form" class="flex flex-col gap-3">
-            <div class="form-group">
-              <label class="form-label">Title</label>
-              <input class="form-input" id="post-title" type="text" placeholder="What's your question or tip?" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Content</label>
-              <textarea class="form-textarea" id="post-content" placeholder="Write your detailed post here..." required rows="4"></textarea>
-            </div>
-            <div class="grid grid-2 gap-3">
-              <div class="form-group">
-                <label class="form-label">Subject</label>
-                <input class="form-input" id="post-subject" type="text" placeholder="Subject name" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Semester</label>
-                <select class="form-select" id="post-sem">
-                  ${[1,2,3,4,5,6,7,8].map(s=>`<option value="${s}">Semester ${s}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Post Type</label>
-              <div class="flex gap-2">
-                ${['question','tip','answer'].map(t => `
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--font-body-sm);color:var(--color-on-surface-variant)">
-                    <input type="radio" name="post-type" value="${t}" ${t==='question'?'checked':''} style="accent-color:var(--color-primary-container)">
-                    ${t==='question'?'❓ Question':t==='tip'?'💡 Tip':'✅ Answer Key'}
-                  </label>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- ── Attach files ── -->
-            <div class="form-group">
-              <label class="form-label">📎 Attachments <span style="font-weight:400;color:var(--color-on-surface-variant)">(images & PDFs, max 5)</span></label>
-              <div class="drop-zone" id="drop-zone">
-                <input type="file" id="file-input" accept="image/*,.pdf" multiple />
-                <div style="pointer-events:none">
-                  <div style="font-size:28px;margin-bottom:4px">📂</div>
-                  <p style="font-size:var(--font-body-sm);color:var(--color-on-surface-variant);margin:0">
-                    Drag & drop or <strong>click to browse</strong>
-                  </p>
-                  <p style="font-size:11px;color:var(--color-on-surface-variant);margin:4px 0 0">
-                    Images are auto-compressed · PDFs up to 10 MB
-                  </p>
-                </div>
-              </div>
-              <div class="attach-preview-grid" id="attach-preview"></div>
-              <div class="upload-progress-bar" id="progress-wrap" style="display:none">
-                <div class="fill" id="progress-fill"></div>
-              </div>
-              <p id="upload-status" style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px;display:none"></p>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-full" id="post-submit-btn">🚀 Post</button>
-          </form>
-        </div>
-
         <div class="glass-card">
           <h3 class="text-title mb-4">🔥 Trending Topics</h3>
           <div id="trending-list" class="flex flex-col gap-2">
@@ -295,12 +293,118 @@ export function render(root) {
         </div>
       </div>
     </div>
+    
+    <!-- Mobile FAB -->
+    <button class="fab-create" id="mobile-create-fab">+</button>
+
+    <!-- ── Create Post Modal ── -->
+    <div class="modal-backdrop" id="create-post-modal">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="text-title" style="margin:0; font-size:1.25rem;">✏️ Create Post</h3>
+          <button class="modal-close" id="close-modal-btn">✕</button>
+        </div>
+        
+        <form id="post-form" class="flex flex-col gap-3">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input class="form-input" id="post-title" type="text" placeholder="What's your question or tip?" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Content</label>
+            <textarea class="form-textarea" id="post-content" placeholder="Write your detailed post here..." required rows="4"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input class="form-input" id="post-subject" type="text" placeholder="Subject name" required />
+          </div>
+            
+          <div class="form-group">
+            <label class="form-label">Post Type</label>
+            <div class="flex gap-2">
+              ${['question','tip','answer'].map(t => `
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--font-body-sm);color:var(--color-on-surface-variant)">
+                  <input type="radio" name="post-type" value="${t}" ${t==='question'?'checked':''} style="accent-color:var(--color-primary-container)">
+                  ${t==='question'?'❓ Question':t==='tip'?'💡 Tip':'✅ Answer Key'}
+                </label>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- ── Attach files ── -->
+          <div class="form-group">
+            <label class="form-label">📎 Attachments <span style="font-weight:400;color:var(--color-on-surface-variant)">(images & PDFs, max 5)</span></label>
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="file-input" accept="image/*,.pdf" multiple />
+              <div style="pointer-events:none">
+                <div style="font-size:28px;margin-bottom:4px">📂</div>
+                <p style="font-size:var(--font-body-sm);color:var(--color-on-surface-variant);margin:0">
+                  Drag & drop or <strong>click to browse</strong>
+                </p>
+                <p style="font-size:11px;color:var(--color-on-surface-variant);margin:4px 0 0">
+                  Images are auto-compressed · PDFs up to 10 MB
+                </p>
+              </div>
+            </div>
+            <div class="attach-preview-grid" id="attach-preview"></div>
+            <div class="upload-progress-bar" id="progress-wrap" style="display:none">
+              <div class="fill" id="progress-fill"></div>
+            </div>
+            <p id="upload-status" style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px;display:none"></p>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full btn-glow" id="post-submit-btn" style="margin-top:8px; padding:10px; font-weight:600;">🚀 Post</button>
+        </form>
+      </div>
+    </div>
   `;
 
   loadPosts(main);
   setupFilters(main);
   setupPostForm(main);
   setupDropZone(main);
+  setupModal(main);
+}
+
+function setupModal(main) {
+  const modal = main.querySelector('#create-post-modal');
+  const openBtn = main.querySelector('#open-create-modal');
+  const fabBtn = main.querySelector('#mobile-create-fab');
+  const closeBtn = main.querySelector('#close-modal-btn');
+  const titleInput = main.querySelector('#post-title');
+  
+  const openModal = () => {
+    modal.classList.add('show');
+    document.body.classList.add('modal-open');
+    setTimeout(() => titleInput.focus(), 300); // Focus after animation
+    
+    // Reset if it was an edit modal and they just clicked "Create"
+    if (window._editingPostId) {
+      window.cancelEdit();
+    }
+  };
+  
+  const closeModal = () => {
+    modal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    window.cancelEdit(); // Reset form state just in case
+  };
+  
+  openBtn.addEventListener('click', openModal);
+  fabBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+  });
+  
+  window._openPostModal = openModal;
+  window._closePostModal = closeModal;
 }
 
 // ── File attachment drop-zone ────────────────────────────────────────────────
@@ -379,13 +483,11 @@ async function loadPosts(main) {
 function renderPosts(container, posts, main) {
   const search   = main.querySelector('#qa-search').value.toLowerCase();
   const type     = currentFilter.type;
-  const semester = currentFilter.semester;
 
   let filtered = posts.filter(p => {
     const matchSearch   = !search || p.title?.toLowerCase().includes(search) || p.content?.toLowerCase().includes(search);
     const matchType     = type === 'all' || p.type === type;
-    const matchSemester = !semester || String(p.semester) === semester;
-    return matchSearch && matchType && matchSemester;
+    return matchSearch && matchType;
   });
 
   if (filtered.length === 0) {
@@ -414,10 +516,10 @@ function renderPosts(container, posts, main) {
       <div class="qa-card ${pinned ? 'pinned' : ''}" id="post-${post.id}">
         <div class="qa-card-head">
           <div class="qa-author">
-            <div class="qa-avatar">${(post.authorName||'?')[0].toUpperCase()}</div>
+            <div class="qa-avatar">${(post.authorName||'a')[0].toUpperCase()}</div>
             <div>
-              <div class="qa-author-name">${post.authorName||'Anonymous'}${pinned ? ' <span title="Pinned">📌</span>' : ''}</div>
-              ${post.registerNumber ? `<div class="qa-author-reg">${post.registerNumber}</div>` : ''}
+              <div class="qa-author-name">${post.authorName||'aravind p'}${pinned ? ' <span title="Pinned">📌</span>' : ''}</div>
+              <div class="qa-author-reg">${post.registerNumber||'212224240015'}</div>
             </div>
           </div>
           <span class="qa-type-pill ${tc}">${tl}</span>
@@ -427,7 +529,7 @@ function renderPosts(container, posts, main) {
         ${attachHtml}
         <div class="qa-footer">
           <span class="qa-tag qa-tag-subj">📚 ${post.subject}</span>
-          <span class="qa-tag qa-tag-sem">Sem ${post.semester}</span>
+          ${post.semester ? `<span class="qa-tag qa-tag-sem">Sem ${post.semester}</span>` : ''}
           <span class="qa-time">${timeAgo}</span>
           <button class="qa-vote upvote-btn" data-id="${post.id}" data-votes="${post.votes||0}">
             ▲ <span class="vote-count">${post.votes||0}</span>
@@ -528,11 +630,6 @@ function setupFilters(main) {
       renderPosts(main.querySelector('#posts-list'), window._allPosts || [], main);
     });
   });
-
-  main.querySelector('#sem-filter').addEventListener('change', (e) => {
-    currentFilter.semester = e.target.value;
-    renderPosts(main.querySelector('#posts-list'), window._allPosts || [], main);
-  });
 }
 
 // ── Post form submit ──────────────────────────────────────────────────────────
@@ -549,7 +646,6 @@ function setupPostForm(main) {
     const title    = main.querySelector('#post-title').value.trim();
     const content  = main.querySelector('#post-content').value.trim();
     const subject  = main.querySelector('#post-subject').value.trim();
-    const semester = parseInt(main.querySelector('#post-sem').value);
     const type     = main.querySelector('input[name="post-type"]:checked').value;
 
     submitBtn.disabled = true;
@@ -592,7 +688,7 @@ function setupPostForm(main) {
         if (attachments.length > 0) finalAttachments = [...finalAttachments, ...attachments];
 
         const updatedFields = {
-          title, content, subject, semester, type,
+          title, content, subject, type,
           attachments: finalAttachments
         };
         await updateDoc(doc(db, 'posts', window._editingPostId), updatedFields);
@@ -605,10 +701,10 @@ function setupPostForm(main) {
       } else {
         // ── Save new to Firestore ──────────────────────────────────────────────
         const newPost = {
-          title, content, subject, semester, type,
-          authorName:     user?.name || 'Anonymous',
+          title, content, subject, type,
+          authorName:     user?.name || 'aravind p',
           authorId:       appState.currentUser?.uid,
-          registerNumber: user?.registerNumber || '',
+          registerNumber: user?.registerNumber || '212224240015',
           votes: 0, pinned: false,
           attachments,
           createdAt: serverTimestamp(),
@@ -624,9 +720,11 @@ function setupPostForm(main) {
         pendingFiles = [];
         main.querySelector('#attach-preview').innerHTML = '';
         showToast('Post published! 🎉', 'success');
+        if (window._closePostModal) window._closePostModal();
       }
 
       renderPosts(main.querySelector('#posts-list'), window._allPosts, main);
+      if (window._editingPostId && window._closePostModal) window._closePostModal();
 
     } catch (err) {
       showToast('Failed to post: ' + err.message, 'error');
@@ -667,27 +765,13 @@ window.editPost = function(id) {
   document.getElementById('post-title').value = post.title || '';
   document.getElementById('post-content').value = post.content || '';
   document.getElementById('post-subject').value = post.subject || '';
-  document.getElementById('post-sem').value = post.semester || '';
   const typeRadio = document.querySelector(`input[name="post-type"][value="${post.type}"]`);
   if (typeRadio) typeRadio.checked = true;
 
   const submitBtn = document.getElementById('post-submit-btn');
   submitBtn.innerHTML = '📝 Update Post';
   
-  let cancelBtn = document.getElementById('post-cancel-btn');
-  if (!cancelBtn) {
-    cancelBtn = document.createElement('button');
-    cancelBtn.id = 'post-cancel-btn';
-    cancelBtn.type = 'button';
-    cancelBtn.className = 'btn btn-secondary w-full';
-    cancelBtn.innerHTML = '❌ Cancel Edit';
-    cancelBtn.style.marginTop = '8px';
-    cancelBtn.onclick = window.cancelEdit;
-    submitBtn.parentNode.appendChild(cancelBtn);
-  }
-  cancelBtn.style.display = 'block';
-
-  document.getElementById('post-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (window._openPostModal) window._openPostModal();
 };
 
 window.cancelEdit = function() {
@@ -697,9 +781,6 @@ window.cancelEdit = function() {
   
   const submitBtn = document.getElementById('post-submit-btn');
   if (submitBtn) submitBtn.innerHTML = '🚀 Post';
-  
-  const cancelBtn = document.getElementById('post-cancel-btn');
-  if (cancelBtn) cancelBtn.style.display = 'none';
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

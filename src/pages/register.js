@@ -51,11 +51,11 @@ export function render(root) {
               <div class="grid grid-2 gap-4">
                 <div class="form-group">
                   <label class="form-label">First Name</label>
-                  <input class="form-input" id="first-name" type="text" placeholder="e.g. Arjun" required value="${prefillFirst}" />
+                  <input class="form-input" id="first-name" type="text" placeholder="e.g. aravind" required value="${prefillFirst}" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Last Name</label>
-                  <input class="form-input" id="last-name" type="text" placeholder="e.g. S" value="${prefillLast}" />
+                  <input class="form-input" id="last-name" type="text" placeholder="e.g. p" value="${prefillLast}" />
                 </div>
               </div>
 
@@ -63,7 +63,7 @@ export function render(root) {
                 <label class="form-label">College Email <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
                   <span class="input-icon icon-left">📧</span>
-                  <input class="form-input" id="reg-email" type="email" placeholder="yourname@example.com" required autocomplete="email" value="${prefillEmail}" ${isGoogleUser ? 'readonly style="opacity:0.7;cursor:not-allowed;"' : ''} />
+                  <input class="form-input" id="reg-email" type="email" placeholder="aravind.p@email.com" required autocomplete="email" value="${prefillEmail}" ${isGoogleUser ? 'readonly style="opacity:0.7;cursor:not-allowed;"' : ''} />
                 </div>
                 <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px">Use any valid email address</div>
               </div>
@@ -72,7 +72,7 @@ export function render(root) {
                 <label class="form-label">Register Number <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
                   <span class="input-icon icon-left">🪪</span>
-                  <input class="form-input" id="reg-number" type="text" placeholder="e.g. 311824110042" required />
+                  <input class="form-input" id="reg-number" type="text" placeholder="e.g. 212224240015" required />
                 </div>
                 <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px">Your college register number — used to match exam schedules</div>
               </div>
@@ -91,6 +91,10 @@ export function render(root) {
                     <option>Artificial Intelligence & Data Science</option>
                     <option>Artificial Intelligence & Machine Learning</option>
                     <option>Cyber Security</option>
+                    <option>Biomedical Engineering</option>
+                    <option>Internet of Things</option>
+                    <option>Medical Electronics</option>
+                    <option>Electronics & Instrumentation Engineering</option>
                   </select>
                 </div>
                 <div class="form-group">

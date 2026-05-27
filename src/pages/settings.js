@@ -5,7 +5,7 @@ import { showToast } from '../components/toast.js';
 
 export default async function renderSettings(container) {
   const user = window.__currentUser;
-  const displayName = user?.displayName || 'Student';
+  const displayName = user?.displayName || 'aravind p';
   const email = user?.email || '';
   const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
@@ -74,7 +74,7 @@ export default async function renderSettings(container) {
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <div style="font-weight:500; color:var(--on-surface);">Attendance Alerts</div>
-                <div style="font-size:var(--text-body-sm); color:var(--outline);">Alert when below 85%</div>
+                <div style="font-size:var(--text-body-sm); color:var(--outline);">Alert when below 80%</div>
               </div>
               <label class="toggle">
                 <input type="checkbox" checked />

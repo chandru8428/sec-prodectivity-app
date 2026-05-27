@@ -87,13 +87,13 @@ onAuthStateChanged(auth, async (user) => {
           }
         } catch {
           appState.userRole = null;
-          appState.userData = { name: user.displayName || 'Student', email: user.email, role: null };
+          appState.userData = { name: user.displayName || 'aravind p', email: user.email, role: null };
         }
       }
     } catch (err) {
       console.warn('Profile load failed:', err);
       appState.userRole = null;
-      appState.userData = { name: user.displayName || 'Student', email: user.email, role: null };
+      appState.userData = { name: user.displayName || 'aravind p', email: user.email, role: null };
     }
 
 

@@ -164,7 +164,7 @@ export default async function renderRecordBook(container) {
       <div class="github-input-group">
         <div class="form-group">
           <label>GitHub Username</label>
-          <input type="text" id="github-username" placeholder="e.g. johndoe" value="${githubUsername}" />
+          <input type="text" id="github-username" placeholder="e.g. aravind8428" value="${githubUsername}" />
         </div>
         <button class="btn btn-primary" id="validate-github-btn">Validate</button>
       </div>
@@ -544,8 +544,8 @@ export default async function renderRecordBook(container) {
 
         const user = window.__currentUser;
         const doc = await generateRecordBookPDF({
-          studentName: user?.displayName || 'Student',
-          regNo: 'RA2211003010XXX',
+          studentName: user?.displayName || 'aravind p',
+          regNo: '212224240015',
           department: 'Computer Science & Engineering',
           semester: '6',
           experiments: selected,

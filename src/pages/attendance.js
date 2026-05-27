@@ -1,5 +1,5 @@
 /**
- * Tool 6: Attendance Tracker — 85% Mandate Compliance
+ * Tool 6: Attendance Tracker — 80% Mandate Compliance
  */
 import { getAttendanceColor, safeToSkip, needToAttend } from '../utils/helpers.js';
 import { showModal } from '../components/modal.js';
@@ -29,7 +29,7 @@ export default async function renderAttendance(container) {
 
   function render() {
     const overall = getOverall();
-    const belowThreshold = subjects.filter(s => Math.round((s.attended / s.total) * 100) < 85);
+    const belowThreshold = subjects.filter(s => Math.round((s.attended / s.total) * 100) < 80);
     const bestSubject = subjects.reduce((best, s) => {
       const pct = s.total > 0 ? (s.attended / s.total) * 100 : 0;
       return pct > (best.pct || 0) ? { name: s.subjectName, pct } : best;
@@ -39,7 +39,7 @@ export default async function renderAttendance(container) {
       return pct < (worst.pct || 100) ? { name: s.subjectName, pct } : worst;
     }, {});
 
-    const overallColor = overall >= 85 ? '#4ade80' : overall >= 75 ? '#fbbf24' : '#ff6e84';
+    const overallColor = overall >= 80 ? '#4ade80' : overall >= 75 ? '#fbbf24' : '#ff6e84';
     const circumference = 2 * Math.PI * 60;
     const dashOffset = circumference - (circumference * overall / 100);
 

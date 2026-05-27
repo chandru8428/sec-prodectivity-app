@@ -59,7 +59,7 @@ export function render(root) {
               <label class="form-label" for="pf-dept">Department</label>
               <select class="form-select" id="pf-dept">
                 <option value="">Select Department</option>
-                ${['Computer Science & Engineering','Information Technology','Electronics & Communication Engineering','Electrical & Electronics Engineering','Mechanical Engineering','Civil Engineering','Artificial Intelligence & Data Science','Artificial Intelligence & Machine Learning','Cyber Security'].map(d => `<option value="${d}" ${user.department === d ? 'selected' : ''}>${d}</option>`).join('')}
+                ${['Computer Science & Engineering','Information Technology','Electronics & Communication Engineering','Electrical & Electronics Engineering','Mechanical Engineering','Civil Engineering','Artificial Intelligence & Data Science','Artificial Intelligence & Machine Learning','Cyber Security','Biomedical Engineering','Internet of Things','Medical Electronics','Electronics & Instrumentation Engineering'].map(d => `<option value="${d}" ${user.department === d ? 'selected' : ''}>${d}</option>`).join('')}
               </select>
             </div>
             <div class="form-group">

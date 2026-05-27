@@ -41,12 +41,12 @@ export function getCountdownBadge(daysLeft) {
 }
 
 export function getAttendanceColor(percentage) {
-  if (percentage >= 85) return 'success';
+  if (percentage >= 80) return 'success';
   if (percentage >= 75) return 'warning';
   return 'danger';
 }
 
-export function safeToSkip(attended, total, threshold = 85) {
+export function safeToSkip(attended, total, threshold = 80) {
   // How many more can they skip while staying >= threshold%
   // (attended / (total + x)) >= threshold/100
   // attended * 100 >= threshold * (total + x)
@@ -56,7 +56,7 @@ export function safeToSkip(attended, total, threshold = 85) {
   return Math.max(0, canSkip);
 }
 
-export function needToAttend(attended, total, threshold = 85) {
+export function needToAttend(attended, total, threshold = 80) {
   // How many more they need to attend to reach threshold
   // ((attended + x) / (total + x)) >= threshold/100
   // 100*(attended + x) >= threshold*(total + x)
