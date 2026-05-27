@@ -518,7 +518,7 @@ function renderPosts(container, posts, main) {
           <div class="qa-author">
             <div class="qa-avatar">${(post.authorName||'a')[0].toUpperCase()}</div>
             <div>
-              <div class="qa-author-name">${post.authorName||'aravind p'}${pinned ? ' <span title="Pinned">📌</span>' : ''}</div>
+              <div class="qa-author-name">${post.authorName||'Aravind P'}${pinned ? ' <span title="Pinned">📌</span>' : ''}</div>
               <div class="qa-author-reg">${post.registerNumber||'212224240015'}</div>
             </div>
           </div>
@@ -702,7 +702,7 @@ function setupPostForm(main) {
         // ── Save new to Firestore ──────────────────────────────────────────────
         const newPost = {
           title, content, subject, type,
-          authorName:     user?.name || 'aravind p',
+          authorName:     user?.name || 'Aravind P',
           authorId:       appState.currentUser?.uid,
           registerNumber: user?.registerNumber || '212224240015',
           votes: 0, pinned: false,

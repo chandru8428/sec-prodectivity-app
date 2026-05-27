@@ -3,7 +3,7 @@
  */
 export function renderTopbar(user) {
   const topbar = document.getElementById('topbar');
-  const displayName = user?.displayName || user?.email?.split('@')[0] || 'aravind p';
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Aravind P';
   const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const hour = new Date().getHours();
   let greeting = 'Good evening';

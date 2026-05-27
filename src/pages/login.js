@@ -230,7 +230,7 @@ export function render(root) {
           throw new Error('NOT_REGISTERED');
         }
 
-        showToast(`Welcome back, ${profile.name || 'aravind p'}! 👋`, 'success');
+        showToast(`Welcome back, ${profile.name || 'Aravind P'}! 👋`, 'success');
         router.navigate(profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
       }
     } catch (err) {
@@ -266,7 +266,7 @@ export function render(root) {
         return;
       }
 
-      showToast(`Welcome, ${profile.name || user.displayName || 'aravind p'}! 🎉`, 'success');
+      showToast(`Welcome, ${profile.name || user.displayName || 'Aravind P'}! 🎉`, 'success');
       router.navigate(profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
     } catch (err) {
       showToast(friendlyAuthError(err), 'error');

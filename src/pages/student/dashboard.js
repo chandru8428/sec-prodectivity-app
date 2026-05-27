@@ -20,7 +20,7 @@ export function render(root) {
   const user = appState.userData;
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
-  const firstName = user?.name?.split(' ')[0] || 'aravind p';
+  const firstName = user?.name?.split(' ')[0] || 'Aravind P';
 
   const layout = createLayout('Dashboard', '');
   root.appendChild(layout);

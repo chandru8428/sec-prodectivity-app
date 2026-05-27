@@ -5,7 +5,7 @@ import { showToast } from '../components/toast.js';
 
 export default async function renderSettings(container) {
   const user = window.__currentUser;
-  const displayName = user?.displayName || 'aravind p';
+  const displayName = user?.displayName || 'Aravind P';
   const email = user?.email || '';
   const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 

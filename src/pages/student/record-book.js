@@ -336,7 +336,7 @@ export function render(root) {
           <form id="record-form" class="flex flex-col gap-4">
             <div class="form-group">
               <label class="form-label">Student Name</label>
-              <input class="form-input" id="student-name" type="text" placeholder="e.g. aravind p" required
+              <input class="form-input" id="student-name" type="text" placeholder="e.g. Aravind P" required
                 value="${sessionStorage.getItem('rb_student_name') || appState.userData?.name || ''}" />
             </div>
 

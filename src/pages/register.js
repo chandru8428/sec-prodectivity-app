@@ -51,7 +51,7 @@ export function render(root) {
               <div class="grid grid-2 gap-4">
                 <div class="form-group">
                   <label class="form-label">First Name</label>
-                  <input class="form-input" id="first-name" type="text" placeholder="e.g. aravind" required value="${prefillFirst}" />
+                  <input class="form-input" id="first-name" type="text" placeholder="e.g. Aravind" required value="${prefillFirst}" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Last Name</label>

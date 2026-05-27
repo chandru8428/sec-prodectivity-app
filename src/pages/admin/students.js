@@ -203,11 +203,37 @@ export function render(root) {
     btn.disabled = true;
     btn.textContent = '⏳ Removing...';
 
+    const student = allStudents.find(s => s.id === pendingRemoveId);
+
     try {
-      // 1. Delete from Supabase 'users' table
+      // 1. Delete associated data from all tables
+      
+      // Attendance
+      const attSnap = await getDocs(collection(db, 'users', pendingRemoveId, 'attendance'));
+      for (const d of attSnap.docs) await deleteDoc(d.ref);
+
+      // GPA
+      const gpaSnap = await getDocs(collection(db, 'users', pendingRemoveId, 'gpa'));
+      for (const d of gpaSnap.docs) await deleteDoc(d.ref);
+
+      // Exam Schedules
+      if (student && student.registerNumber) {
+        const esSnap = await getDocs(query(collection(db, 'examSchedules'), where('registerNumber', '==', student.registerNumber)));
+        for (const d of esSnap.docs) await deleteDoc(d.ref);
+      }
+
+      // Timetables
+      const ttSnap = await getDocs(query(collection(db, 'timetables'), where('createdBy', '==', pendingRemoveId)));
+      for (const d of ttSnap.docs) await deleteDoc(d.ref);
+
+      // Posts
+      const postsSnap = await getDocs(query(collection(db, 'posts'), where('authorId', '==', pendingRemoveId)));
+      for (const d of postsSnap.docs) await deleteDoc(d.ref);
+
+      // 2. Delete from Supabase 'users' table
       await deleteDoc(doc(db, 'users', pendingRemoveId));
 
-      // 2. Remove from local list & re-render
+      // 3. Remove from local list & re-render
       allStudents = allStudents.filter(s => s.id !== pendingRemoveId);
 
       // Update stats

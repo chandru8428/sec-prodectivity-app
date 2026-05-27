@@ -544,7 +544,7 @@ export default async function renderRecordBook(container) {
 
         const user = window.__currentUser;
         const doc = await generateRecordBookPDF({
-          studentName: user?.displayName || 'aravind p',
+          studentName: user?.displayName || 'Aravind P',
           regNo: '212224240015',
           department: 'Computer Science & Engineering',
           semester: '6',
