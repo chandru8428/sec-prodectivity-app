@@ -311,6 +311,7 @@ export function render(root) {
           <p style="font-size: 14px; margin-bottom: 24px; max-width: 280px; line-height: 1.5;">Mobile browsers cannot preview PDFs directly inside the app. Please download the file to view it.</p>
           <button id="fallback-download-btn" class="btn btn-primary" style="padding: 12px 24px;">📥 Download PDF</button>
         </div>
+        <div id="pdf-canvas-container" style="display:none; width:100%; height:100%; overflow:auto; background:var(--bg-body); padding:16px; flex-direction:column; align-items:center; gap:16px;"></div>
         <iframe id="pdf-iframe" title="PDF Preview"></iframe>
       </div>
     </div>
@@ -1195,6 +1196,21 @@ async function buildPDFDoc(main) {
   });
 }
 
+// ── Load PDF.js Dynamically ───────────────────────────────────────────────────
+async function loadPDFJS() {
+  if (window.pdfjsLib) return window.pdfjsLib;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+    script.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 // ── Open PDF in preview modal ─────────────────────────────────────────────────
 async function openPDFPreview(main) {
   const btn = main.querySelector('#preview-pdf-btn');
@@ -1202,28 +1218,65 @@ async function openPDFPreview(main) {
   btn.textContent = '⏳ Building...';
   try {
     const doc = await buildPDFDoc(main);
-    const blob = doc.output('blob');
-    const url  = URL.createObjectURL(blob);
 
     const iframe = main.querySelector('#pdf-iframe');
     const fallback = main.querySelector('#pdf-fallback-msg');
+    const canvasContainer = main.querySelector('#pdf-canvas-container');
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    main.querySelector('#pdf-modal').classList.add('open');
 
     if (isMobile) {
       iframe.style.display = 'none';
-      if (fallback) {
-        fallback.style.display = 'flex';
-        main.querySelector('#fallback-download-btn').onclick = () => { triggerDownload(main); };
+      if (fallback) fallback.style.display = 'none';
+      if (canvasContainer) {
+        canvasContainer.style.display = 'flex';
+        canvasContainer.innerHTML = '<div style="margin:auto; font-weight: 600; color: var(--color-on-surface-variant);">⏳ Rendering Preview...</div>';
+      }
+
+      try {
+        const pdfjsLib = await loadPDFJS();
+        const arrayBuffer = doc.output('arraybuffer');
+        const pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        if (canvasContainer) canvasContainer.innerHTML = '';
+        
+        for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
+          const page = await pdfDocument.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1.5 });
+          
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          canvas.style.width = '100%';
+          canvas.style.maxWidth = '800px';
+          canvas.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+          canvas.style.borderRadius = '4px';
+          canvas.style.backgroundColor = 'white';
+          
+          const renderContext = { canvasContext: context, viewport: viewport };
+          await page.render(renderContext).promise;
+          if (canvasContainer) canvasContainer.appendChild(canvas);
+        }
+      } catch (err) {
+        console.error('PDF.js render failed:', err);
+        if (canvasContainer) canvasContainer.style.display = 'none';
+        if (fallback) {
+          fallback.style.display = 'flex';
+          main.querySelector('#fallback-download-btn').onclick = () => { triggerDownload(main); };
+        }
       }
     } else {
+      const blob = doc.output('blob');
+      const url  = URL.createObjectURL(blob);
       iframe.style.display = 'block';
       if (fallback) fallback.style.display = 'none';
+      if (canvasContainer) canvasContainer.style.display = 'none';
       if (iframe._blobUrl) URL.revokeObjectURL(iframe._blobUrl);
       iframe._blobUrl = url;
       iframe.src = url;
     }
-
-    main.querySelector('#pdf-modal').classList.add('open');
   } catch (err) {
     showToast('Preview failed: ' + err.message, 'error');
   } finally {
