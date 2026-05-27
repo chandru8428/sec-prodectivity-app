@@ -83,7 +83,7 @@ export function render(root) {
         <!-- Hero countdown -->
         <div class="hero-exam-card" id="hero-exam">
           <div style="margin-bottom:var(--space-4)">
-            <span class="badge-next-exam" style="margin-bottom:var(--space-3)">⏰ NEXT EXAM</span>
+            <span class="badge-next-exam" id="hero-badge" style="margin-bottom:var(--space-3)">⏰ NEXT EXAM</span>
             <h2 style="font-size:1.5rem;font-weight:800;color:#A86E11;margin-bottom:var(--space-2)" id="hero-subject">Loading...</h2>
             <div class="flex items-center gap-4" style="color:#A86E11;font-size:var(--font-body-sm)" id="hero-meta">
               <span>📅 —</span><span>🕐 —</span><span>🏛️ —</span>
@@ -313,12 +313,37 @@ async function loadDashboardData(main) {
 }
 
 function renderHeroExam(main, exam) {
-  main.querySelector('#hero-subject').textContent = exam.subject;
-  main.querySelector('#hero-meta').innerHTML = `
-    <span>📅 ${formatDate(exam.examDate)}</span>
-    <span>🕐 ${exam.startTime || '—'}</span>
-    <span>🏛️ Hall ${exam.hall || '—'}</span>
-  `;
+  let badgeText = '⏰ NEXT EXAM';
+  let subjectColor = '#A86E11';
+
+  if (exam.examType === 'holiday') {
+    badgeText = '🔴 UPCOMING HOLIDAY';
+    subjectColor = 'var(--color-danger)';
+  } else if (exam.examType === 'event') {
+    badgeText = '🔵 UPCOMING EVENT';
+    subjectColor = 'var(--color-secondary)';
+  }
+
+  const badge = main.querySelector('#hero-badge');
+  if (badge) {
+    badge.textContent = badgeText;
+  }
+
+  const subjectEl = main.querySelector('#hero-subject');
+  if (subjectEl) {
+    subjectEl.textContent = exam.subject;
+    subjectEl.style.color = subjectColor;
+  }
+
+  const metaEl = main.querySelector('#hero-meta');
+  if (metaEl) {
+    metaEl.style.color = subjectColor;
+    metaEl.innerHTML = `
+      <span>📅 ${formatDate(exam.examDate)}</span>
+      ${exam.startTime ? `<span>🕐 ${exam.startTime}</span>` : ''}
+      ${exam.hall ? `<span>🏛️ Hall ${exam.hall}</span>` : ''}
+    `;
+  }
 }
 
 function startCountdown(main, exam) {
