@@ -19,7 +19,7 @@ import {
   increment,
   arrayUnion,
   limit,
-} from '/src/firebase.js';
+} from '../lib/firebase.js';
 import {
   db as supabaseDb,
   collection as sbCollection,
@@ -29,7 +29,7 @@ import {
   deleteDoc as sbDeleteDoc,
   doc as sbDoc,
   where as sbWhere,
-} from '/src/supabase-adapter.js';
+} from '../lib/supabase-adapter.js';
 
 // === EXAMS ===
 export async function getExams() {

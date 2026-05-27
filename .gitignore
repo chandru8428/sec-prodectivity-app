@@ -31,3 +31,17 @@ builder/migrations/__pycache__/
 # Secrets
 scripts/serviceAccountKey.json
 
+# Dev logs
+*.err.log
+*.out.log
+
+# IDE
+.vscode/
+.idea/
+
+# Graphify output (regeneratable)
+graphify-out/
+
+# Scratch / temp
+scratch/
+

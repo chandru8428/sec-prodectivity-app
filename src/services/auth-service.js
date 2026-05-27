@@ -1,7 +1,7 @@
 /**
  * Auth Service — Firebase Authentication Operations
  */
-import { auth, googleProvider, db, signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, signOut, onAuthStateChanged, doc, setDoc, getDoc } from '/src/firebase.js';
+import { auth, googleProvider, db, signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, signOut, onAuthStateChanged, doc, setDoc, getDoc } from '../lib/firebase.js';
 
 export async function signIn(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
