@@ -16,7 +16,7 @@ frontend/dist/
 
 # Firebase
 # .firebaserc and firebase.json are committed (needed for hosting)
-
+.firebase/
 # OS files
 .DS_Store
 Thumbs.db
