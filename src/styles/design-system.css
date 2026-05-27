@@ -2044,11 +2044,7 @@ tbody tr:hover td { background: var(--color-surface-container-high); }
     width: 100%;
   }
 
-  input[type="checkbox"],
-  input[type="radio"] {
-    min-width: 20px;
-    min-height: 20px;
-  }
+
 }
 
 /* Prevent horizontal scroll on all breakpoints */
@@ -2059,7 +2055,7 @@ html, body {
 
 /* Touch-friendly targets */
 @media (max-width: 768px) {
-  a, button, select, input[type="checkbox"], input[type="radio"] {
+  a, button, select {
     min-height: 44px;
     min-width: 44px;
   }

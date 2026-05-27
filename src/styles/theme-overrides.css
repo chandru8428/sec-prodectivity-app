@@ -131,7 +131,7 @@ svg:not(.nav-icon svg):not(.stat-icon svg) {
 }
 
 /* Fix Inputs */
-.form-input, .form-select, .form-textarea, input, select, textarea {
+.form-input, .form-select, .form-textarea, input:not([type="checkbox"]):not([type="radio"]), select, textarea {
   background: #FFFFFF !important;
   border: 1.5px solid var(--border-color) !important;
   color: var(--text-primary) !important;
@@ -307,7 +307,7 @@ body.dark-mode textarea {
 body.dark-mode .form-input:focus,
 body.dark-mode .form-select:focus,
 body.dark-mode .form-textarea:focus,
-body.dark-mode input:focus,
+body.dark-mode input:not([type="checkbox"]):not([type="radio"]):focus,
 body.dark-mode textarea:focus {
   background: #151820 !important;
   border-color: rgba(216,155,41,0.5) !important;
