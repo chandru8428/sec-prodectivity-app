@@ -30,6 +30,18 @@ export function render(root) {
   loadExams(main.querySelector('#timetable-content'));
 }
 
+function standardizeDate(dStr) {
+  if (!dStr) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dStr)) return dStr;
+  const m = String(dStr).match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2}|\d{4})$/);
+  if (m) {
+    let y = m[3];
+    if (y.length === 2) y = '20' + y;
+    return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  }
+  return dStr;
+}
+
 async function loadExams(container) {
   let user = appState.userData;
 
@@ -80,7 +92,12 @@ async function loadExams(container) {
       isGlobal: true
     }));
 
-    const all = [...(sbExams || []), ...acEvents].sort((a, b) => a.examDate.localeCompare(b.examDate));
+    const rawExams = [...(sbExams || []), ...acEvents].map(e => ({
+      ...e,
+      examDate: standardizeDate(e.examDate)
+    }));
+
+    const all = rawExams.sort((a, b) => (a.examDate || '').localeCompare(b.examDate || ''));
 
     const theory    = all.filter(e => !e.examType || e.examType === 'theory' || e.isGlobal);
     const practical = all.filter(e => e.examType === 'practical');

@@ -218,10 +218,42 @@ async function loadAnnouncements(main) {
     container.style.display = 'flex';
     
     const typeStyles = {
-      info:    { bg: 'rgba(67,97,238,0.1)',   border: 'rgba(67,97,238,0.3)',   icon: 'ℹ️' },
-      warning: { bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.3)',  icon: '⚠️' },
-      success: { bg: 'rgba(34,197,94,0.1)',   border: 'rgba(34,197,94,0.3)',   icon: '✅' },
-      danger:  { bg: 'rgba(239,68,104,0.1)',  border: 'rgba(239,68,104,0.3)',  icon: '🚨' }
+      info: { 
+        bg: 'linear-gradient(135deg, rgba(67,97,238,0.12) 0%, rgba(67,97,238,0.03) 100%)', 
+        border: 'rgba(67,97,238,0.3)', 
+        shadow: 'rgba(67,97,238,0.15)', 
+        blob: 'rgba(67,97,238,0.4)',
+        iconBg: 'linear-gradient(135deg, rgba(67,97,238,0.2), rgba(67,97,238,0.05))',
+        titleColor: '#8ca8ff',
+        icon: '💡' 
+      },
+      warning: { 
+        bg: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.03) 100%)', 
+        border: 'rgba(245,158,11,0.3)', 
+        shadow: 'rgba(245,158,11,0.15)',
+        blob: 'rgba(245,158,11,0.4)',
+        iconBg: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05))',
+        titleColor: '#fcd34d',
+        icon: '⚡' 
+      },
+      success: { 
+        bg: 'linear-gradient(135deg, rgba(34,197,94,0.12) 0%, rgba(16,185,129,0.03) 100%)', 
+        border: 'rgba(34,197,94,0.3)', 
+        shadow: 'rgba(34,197,94,0.15)',
+        blob: 'rgba(34,197,94,0.4)',
+        iconBg: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05))',
+        titleColor: '#86efac',
+        icon: '🚀' 
+      },
+      danger: { 
+        bg: 'linear-gradient(135deg, rgba(239,68,104,0.12) 0%, rgba(239,68,104,0.03) 100%)', 
+        border: 'rgba(239,68,104,0.3)', 
+        shadow: 'rgba(239,68,104,0.15)',
+        blob: 'rgba(239,68,104,0.4)',
+        iconBg: 'linear-gradient(135deg, rgba(239,68,104,0.2), rgba(239,68,104,0.05))',
+        titleColor: '#fda4af',
+        icon: '🔥' 
+      }
     };
 
     container.innerHTML = snap.docs.map(docSnap => {
@@ -232,14 +264,17 @@ async function loadAnnouncements(main) {
       });
 
       return `
-        <div class="announcement-banner" style="background: ${style.bg}; border: 1px solid ${style.border}; border-radius: var(--radius-lg); padding: 16px; display: flex; gap: 16px; align-items: flex-start;">
-          <div style="font-size: 24px;">${style.icon}</div>
-          <div style="flex: 1;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-              <h3 style="font-weight: 700; color: var(--color-on-surface); margin: 0; font-size: 15px;">${data.title}</h3>
-              <span style="font-size: 11px; color: var(--color-on-surface-variant);">${date}</span>
+        <div class="announcement-banner" style="background: ${style.bg}; border: 1px solid ${style.border}; border-radius: 16px; padding: 20px; display: flex; gap: 20px; align-items: flex-start; box-shadow: 0 8px 32px -8px ${style.shadow}; backdrop-filter: blur(12px); position: relative; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 40px -8px ${style.shadow}';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px -8px ${style.shadow}';">
+          <!-- Decorative glow blob -->
+          <div style="position:absolute; top:-20px; left:-20px; width:100px; height:100px; background:${style.blob}; border-radius:50%; filter:blur(40px); opacity:0.6; pointer-events:none;"></div>
+          
+          <div style="font-size: 24px; background: ${style.iconBg}; border-radius: 12px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px ${style.shadow}; z-index: 1; border: 1px solid ${style.border};">${style.icon}</div>
+          <div style="flex: 1; z-index: 1;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <h3 style="font-weight: 700; color: ${style.titleColor}; margin: 0; font-size: 16px; letter-spacing: -0.2px;">${data.title}</h3>
+              <span style="font-size: 11px; color: var(--color-on-surface-variant); font-weight: 600; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">${date}</span>
             </div>
-            <p style="margin: 0; font-size: 13px; color: var(--color-on-surface); line-height: 1.5;">${data.message}</p>
+            <p style="margin: 0; font-size: 14px; color: var(--color-on-surface); line-height: 1.6; opacity: 0.9;">${data.message}</p>
           </div>
         </div>
       `;
@@ -249,6 +284,18 @@ async function loadAnnouncements(main) {
     console.error('Failed to load announcements:', err);
     container.style.display = 'none';
   }
+}
+
+function standardizeDate(dStr) {
+  if (!dStr) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dStr)) return dStr;
+  const m = String(dStr).match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2}|\d{4})$/);
+  if (m) {
+    let y = m[3];
+    if (y.length === 2) y = '20' + y;
+    return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  }
+  return dStr;
 }
 
 async function loadDashboardData(main) {
@@ -276,9 +323,14 @@ async function loadDashboardData(main) {
       isGlobal: true
     }));
 
-    const exams = [...snap.docs.map(d => ({ id: d.id, ...d.data() })), ...acEvents]
+    const rawExams = [...snap.docs.map(d => ({ id: d.id, ...d.data() })), ...acEvents].map(e => ({
+      ...e,
+      examDate: standardizeDate(e.examDate)
+    }));
+
+    const exams = rawExams
       .filter(e => e.examDate >= today)
-      .sort((a, b) => a.examDate.localeCompare(b.examDate))
+      .sort((a, b) => (a.examDate || '').localeCompare(b.examDate || ''))
       .slice(0, 5);
 
     // Update stat

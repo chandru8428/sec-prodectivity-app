@@ -355,49 +355,116 @@ function looksLikeRegisterNumber(val) {
 
 function detectColumns(headers) {
   const normalized = {};
-  headers.forEach(h => { normalized[h.trim().toLowerCase().replace(/_/g,' ').replace(/-/g,' ')] = h; });
+  headers.forEach(h => { 
+    // Strip all non-alphanumeric chars for robust fuzzy matching
+    normalized[String(h).trim().toLowerCase().replace(/[^a-z0-9]/g, '')] = h; 
+  });
   const map = {};
   for (const [field, aliases] of Object.entries(COL_ALIASES)) {
     for (const alias of aliases) {
-      if (normalized[alias]) { map[field] = normalized[alias]; break; }
+      const normAlias = alias.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (normalized[normAlias]) { map[field] = normalized[normAlias]; break; }
     }
   }
   return map;
 }
 
-// After building the column map, sanity-check the first data row to fix misdetections
-function sanityCheckColMap(colMap, rawRows) {
+// After building the column map, infer missing columns from data and sanity-check
+function sanityCheckColMap(colMap, rawRows, headers) {
   if (!rawRows || rawRows.length === 0) return colMap;
   const fixed = { ...colMap };
-  const sample = rawRows[0];
-
-  // If subjectCode value looks like a register number, swap them
+  const sampleRows = rawRows.slice(0, 5);
+  
+  // 1. Swap mistaken mappings
   if (fixed.subjectCode && !fixed.registerNumber) {
-    const val = sample[fixed.subjectCode];
+    const val = sampleRows[0][fixed.subjectCode];
     if (looksLikeRegisterNumber(val)) {
       fixed.registerNumber = fixed.subjectCode;
       delete fixed.subjectCode;
     }
   }
-
-  // If registerNumber value looks like a subject code (short alphanum, no R20xx prefix)
   if (fixed.registerNumber && !fixed.subjectCode) {
-    const val = sample[fixed.registerNumber];
+    const val = sampleRows[0][fixed.registerNumber];
     if (val && !looksLikeRegisterNumber(val) && /^[A-Z0-9]{4,10}$/i.test(String(val).trim())) {
       fixed.subjectCode = fixed.registerNumber;
       delete fixed.registerNumber;
     }
   }
 
+  // 2. Data inference fallback for unmapped columns
+  const required = ['registerNumber', 'examDate', 'subjectCode', 'session', 'hall'];
+  const missing = required.filter(f => !fixed[f]);
+  
+  if (missing.length > 0 && headers) {
+    const unmappedHeaders = headers.filter(h => !Object.values(fixed).includes(h) && h.trim() !== '');
+    
+    for (const h of unmappedHeaders) {
+      const values = sampleRows.map(r => String(r[h] || '').trim()).filter(v => v);
+      if (values.length === 0) continue;
+      
+      if (missing.includes('registerNumber')) {
+        if (values.every(v => looksLikeRegisterNumber(v))) {
+          fixed.registerNumber = h;
+          missing.splice(missing.indexOf('registerNumber'), 1);
+          continue;
+        }
+      }
+      if (missing.includes('examDate')) {
+        if (values.every(v => v && /^\d{4}-\d{2}-\d{2}$/.test(parseDate(v)))) {
+          fixed.examDate = h;
+          missing.splice(missing.indexOf('examDate'), 1);
+          continue;
+        }
+      }
+      if (missing.includes('session')) {
+        if (values.every(v => {
+          const up = String(v).toUpperCase();
+          return up.includes('FN') || up.includes('AN') || parseTimeRange(v);
+        })) {
+          fixed.session = h;
+          missing.splice(missing.indexOf('session'), 1);
+          continue;
+        }
+      }
+    }
+  }
+
   return fixed;
+}
+
+// Find the most likely header row by scoring rows against expected columns
+function findHeaderRowAndMap(rowsArray) {
+  let bestIdx = -1;
+  let maxScore = 0;
+  
+  for (let i = 0; i < Math.min(rowsArray.length, 20); i++) {
+    const row = rowsArray[i];
+    if (!row || !Array.isArray(row)) continue;
+    
+    const headers = row.map(h => String(h || '').trim());
+    const colMap = detectColumns(headers);
+    const score = Object.keys(colMap).length;
+    
+    if (score > maxScore) {
+      maxScore = score;
+      bestIdx = i;
+    }
+  }
+  
+  if (maxScore >= 2) return { headerRowIdx: bestIdx };
+  return { headerRowIdx: 0 };
 }
 
 function parseDate(val) {
   if (!val || String(val).trim() === '') return '';
   val = String(val).trim();
   if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-  const m1 = val.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
-  if (m1) return `${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  const m1 = val.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2}|\d{4})$/);
+  if (m1) {
+    let y = m1[3];
+    if (y.length === 2) y = '20' + y;
+    return `${y}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  }
   const num = Number(val);
   if (!isNaN(num) && num > 40000 && num < 60000) {
     return new Date(Date.UTC(1899,11,30) + num*86400000).toISOString().split('T')[0];
@@ -486,23 +553,42 @@ function handleFile(file, main, type, onParsed) {
   reader.onload = e => {
     try {
       let rawRows = [], headers = [];
+      let colMap = {};
+      
       if (ext === 'csv') {
         const lines = e.target.result.trim().split('\n');
-        headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
-        rawRows = lines.slice(1).map(line => {
-          const vals = line.split(',').map(v => v.trim().replace(/"/g,''));
-          const obj = {};
-          headers.forEach((h,i) => { obj[h] = vals[i]||''; });
-          return obj;
-        });
+        const rowsArray = lines.map(line => line.split(',').map(v => v.trim().replace(/"/g,'')));
+        const { headerRowIdx } = findHeaderRowAndMap(rowsArray);
+        
+        if (headerRowIdx >= 0) {
+           headers = rowsArray[headerRowIdx];
+           rawRows = rowsArray.slice(headerRowIdx + 1).map(row => {
+               let obj = {};
+               headers.forEach((h, i) => obj[h] = row[i] || '');
+               return obj;
+           });
+        }
       } else {
         const wb = XLSX.read(e.target.result, { type:'binary' });
         const ws = wb.Sheets[wb.SheetNames[0]];
-        rawRows  = XLSX.utils.sheet_to_json(ws, { defval:'' });
-        headers  = Object.keys(rawRows[0]||{});
+        const rowsArray = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        
+        const { headerRowIdx } = findHeaderRowAndMap(rowsArray);
+        
+        if (headerRowIdx >= 0) {
+           headers = rowsArray[headerRowIdx].map(h => String(h).trim());
+           rawRows = rowsArray.slice(headerRowIdx + 1).map(row => {
+               let obj = {};
+               headers.forEach((h, i) => obj[h] = row[i] || '');
+               return obj;
+           });
+        } else {
+           rawRows  = XLSX.utils.sheet_to_json(ws, { defval:'' });
+           headers  = Object.keys(rawRows[0]||{});
+        }
       }
 
-      const colMap = sanityCheckColMap(detectColumns(headers), rawRows);
+      colMap = sanityCheckColMap(detectColumns(headers), rawRows, headers);
       const rows   = mapRows(rawRows, colMap);
 
       // Show column detection
@@ -573,6 +659,20 @@ async function loadSchedules(main, filterReg = '', filterType = '') {
     // Use Firestore service
     let records = await getExamSchedules(filterReg, filterType);
     
+    // Standardize dates before sorting
+    records = records.map(r => {
+      let dStr = r.examDate;
+      if (dStr && !/^\d{4}-\d{2}-\d{2}$/.test(dStr)) {
+        const m = String(dStr).match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2}|\d{4})$/);
+        if (m) {
+          let y = m[3];
+          if (y.length === 2) y = '20' + y;
+          dStr = `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+        }
+      }
+      return { ...r, examDate: dStr || '' };
+    });
+
     // Sort by date
     records = records.sort((a,b) => (a.examDate||'').localeCompare(b.examDate||''));
 
