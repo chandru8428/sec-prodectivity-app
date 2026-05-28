@@ -18,6 +18,7 @@ const routes = {
   '/admin/moderation':    () => import('../features/qa-board/QaModeration.js'),
   '/admin/calendar':      () => import('../features/calendar/AcademicCalendar.js'),
   '/admin/students':      () => import('../features/students/StudentList.js'),
+  '/admin/announcements': () => import('../features/announcements/AdminAnnouncements.js'),
   '/student/profile':     () => import('../features/profile/ProfilePage.js'),
 };
 
@@ -39,6 +40,7 @@ const PAGE_TITLES = {
   '/admin/moderation':        'Q&A Moderation | EduSync',
   '/admin/calendar':          'Academic Calendar | EduSync',
   '/admin/students':          'All Students | EduSync',
+  '/admin/announcements':     'Announcements | EduSync',
 };
 
 // ── Auth-Protected Route Map ───────────────────────────────────────────────────
@@ -49,7 +51,7 @@ const studentRoutes = new Set([
 ]);
 const adminRoutes = new Set([
   '/admin/dashboard', '/admin/upload-timetable', '/admin/repo-mapping',
-  '/admin/moderation', '/admin/calendar', '/admin/students',
+  '/admin/moderation', '/admin/calendar', '/admin/students', '/admin/announcements',
 ]);
 
 // ── Router ────────────────────────────────────────────────────────────────────

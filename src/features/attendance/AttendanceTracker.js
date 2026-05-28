@@ -33,15 +33,15 @@ export function render(root) {
           <form id="attendance-form" class="grid gap-4" style="grid-template-columns:repeat(3,minmax(0,1fr));align-items:end">
             <div class="form-group">
               <label class="form-label">Attended Classes</label>
-              <input class="form-input" id="attended-classes" type="number" min="0" step="1" value="${saved.attendedClasses}" />
+              <input class="form-input" id="attended-classes" type="number" min="0" step="1" placeholder="Enter attended classes" value="${saved.attendedClasses}" />
             </div>
             <div class="form-group">
               <label class="form-label">Total Classes</label>
-              <input class="form-input" id="total-classes" type="number" min="1" step="1" value="${saved.totalClasses}" />
+              <input class="form-input" id="total-classes" type="number" min="1" step="1" placeholder="Enter total classes" value="${saved.totalClasses}" />
             </div>
             <div class="form-group">
               <label class="form-label">Required Percentage</label>
-              <input class="form-input" id="required-percentage" type="number" min="1" max="100" step="0.01" value="${saved.requiredPercentage}" />
+              <input class="form-input" id="required-percentage" type="number" min="1" max="100" step="0.01" placeholder="Enter target % (e.g. 80)" value="${saved.requiredPercentage}" />
             </div>
           </form>
 

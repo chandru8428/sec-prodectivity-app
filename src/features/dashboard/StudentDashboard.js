@@ -1,6 +1,6 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState } from '../../app/main.js';
-import { db, collection, query, where, getDocs } from '../../lib/firebase.js';
+import { db, collection, query, where, getDocs, orderBy } from '../../lib/firebase.js';
 import {
   db as supabaseDb,
   collection as sbCollection,
@@ -38,6 +38,9 @@ export function render(root) {
         <span style="font-size:var(--font-body-sm);color:var(--color-on-surface-variant)">${user?.registerNumber || ''}</span>
       </div>
     </div>
+
+    <!-- Announcements Banner -->
+    <div id="announcements-container" class="flex flex-col gap-3 mb-6"></div>
 
     <!-- Stat Cards -->
     <div class="grid grid-4 gap-4 mb-8" id="stat-cards">
@@ -198,6 +201,54 @@ export function render(root) {
 
   loadDashboardData(main);
   setupAddEventModal(main);
+  loadAnnouncements(main);
+}
+
+async function loadAnnouncements(main) {
+  const container = main.querySelector('#announcements-container');
+  try {
+    const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'flex';
+    
+    const typeStyles = {
+      info:    { bg: 'rgba(67,97,238,0.1)',   border: 'rgba(67,97,238,0.3)',   icon: 'ℹ️' },
+      warning: { bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.3)',  icon: '⚠️' },
+      success: { bg: 'rgba(34,197,94,0.1)',   border: 'rgba(34,197,94,0.3)',   icon: '✅' },
+      danger:  { bg: 'rgba(239,68,104,0.1)',  border: 'rgba(239,68,104,0.3)',  icon: '🚨' }
+    };
+
+    container.innerHTML = snap.docs.map(docSnap => {
+      const data = docSnap.data();
+      const style = typeStyles[data.type] || typeStyles.info;
+      const date = new Date(data.createdAt).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'
+      });
+
+      return `
+        <div class="announcement-banner" style="background: ${style.bg}; border: 1px solid ${style.border}; border-radius: var(--radius-lg); padding: 16px; display: flex; gap: 16px; align-items: flex-start;">
+          <div style="font-size: 24px;">${style.icon}</div>
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+              <h3 style="font-weight: 700; color: var(--color-on-surface); margin: 0; font-size: 15px;">${data.title}</h3>
+              <span style="font-size: 11px; color: var(--color-on-surface-variant);">${date}</span>
+            </div>
+            <p style="margin: 0; font-size: 13px; color: var(--color-on-surface); line-height: 1.5;">${data.message}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    console.error('Failed to load announcements:', err);
+    container.style.display = 'none';
+  }
 }
 
 async function loadDashboardData(main) {
