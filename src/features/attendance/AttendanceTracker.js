@@ -169,6 +169,8 @@ function renderComputation(main, rawValues) {
   const requiredClasses = meetsRequirement ? 0 : calculateRequiredClasses(attendedClasses, totalClasses, requiredPercentage);
 
   updateSummaryCards(main, {
+    attendedClasses,
+    totalClasses,
     currentPercentage,
     requiredPercentage,
     meetsRequirement,
@@ -241,6 +243,8 @@ function calculateRequiredClasses(attendedClasses, totalClasses, requiredPercent
 
 function updateSummaryCards(main, state) {
   const {
+    attendedClasses,
+    totalClasses,
     currentPercentage,
     requiredPercentage,
     meetsRequirement,
@@ -255,15 +259,27 @@ function updateSummaryCards(main, state) {
   main.querySelector('#current-status').className = `stat-change ${meetsRequirement ? 'text-success' : 'text-danger'}`;
 
   main.querySelector('#safe-bunks').textContent = meetsRequirement ? String(safeBunks) : '0';
-  main.querySelector('#safe-bunks-note').textContent = meetsRequirement
-    ? safeBunks === 0 ? 'You are exactly at the safe limit' : 'Maximum classes you can miss safely'
-    : 'Not available until you reach the target';
+  
+  let safeBunksNote = 'Not available until you reach the target';
+  if (meetsRequirement) {
+    if (safeBunks === 0) {
+      safeBunksNote = 'You are exactly at the safe limit';
+    } else {
+      const finalPerc = ((attendedClasses / (totalClasses + safeBunks)) * 100).toFixed(2);
+      safeBunksNote = `Max classes you can miss (Drops to ${finalPerc}%)`;
+    }
+  }
+  main.querySelector('#safe-bunks-note').textContent = safeBunksNote;
   main.querySelector('#safe-bunks-note').className = `stat-change ${meetsRequirement ? 'text-warning' : 'text-muted'}`;
 
   main.querySelector('#required-classes').textContent = meetsRequirement ? '0' : String(requiredClasses);
-  main.querySelector('#required-classes-note').textContent = meetsRequirement
-    ? 'You already satisfy the target'
-    : 'Future classes you must attend continuously';
+  
+  let requiredClassesNote = 'You already satisfy the target';
+  if (!meetsRequirement) {
+    const finalPerc = (((attendedClasses + requiredClasses) / (totalClasses + requiredClasses)) * 100).toFixed(2);
+    requiredClassesNote = `Attend continuously (Reaches ${finalPerc}%)`;
+  }
+  main.querySelector('#required-classes-note').textContent = requiredClassesNote;
   main.querySelector('#required-classes-note').className = `stat-change ${meetsRequirement ? 'text-success' : 'text-danger'}`;
 }
 
@@ -323,8 +339,8 @@ function renderResultPanel(main, state) {
       <div class="text-label-sm text-muted mb-2">Decision Branch</div>
       <div style="font-size:14px;color:var(--color-on-surface);line-height:1.8">
         ${meetsRequirement
-          ? `Current attendance is above or equal to the target, so the calculator simulates future bunks and finds the maximum safe value. Result: <strong>${safeBunks}</strong> safe bunks.`
-          : `Current attendance is below the target, so the calculator simulates future attended classes until the threshold is reached. Result: <strong>${requiredClasses}</strong> classes must be attended continuously.`}
+          ? `Current attendance is above or equal to the target, so the calculator simulates future bunks and finds the maximum safe value. Result: <strong>${safeBunks}</strong> safe bunks. If you take them, your attendance will become <strong>${((attendedClasses / (totalClasses + safeBunks)) * 100).toFixed(2)}%</strong>.`
+          : `Current attendance is below the target, so the calculator simulates future attended classes until the threshold is reached. Result: <strong>${requiredClasses}</strong> classes must be attended continuously. If you do, your attendance will become <strong>${(((attendedClasses + requiredClasses) / (totalClasses + requiredClasses)) * 100).toFixed(2)}%</strong>.`}
       </div>
     </div>
   `;

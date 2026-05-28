@@ -9,6 +9,7 @@ import {
   query as sbQuery,
   where as sbWhere,
 } from '../../lib/supabase-adapter.js';
+import { supabase } from '../../lib/supabase.js';
 import { showToast } from '../../app/main.js';
 
 export function render(root) {
@@ -34,8 +35,23 @@ export function render(root) {
       </div>
       <div class="stat-card" id="as-schedules">
         <div class="stat-icon" style="background:rgba(67,97,238,0.15)">📅</div>
-        <div class="stat-value">—</div>
-        <div class="stat-label">Exam Schedules</div>
+        <div class="stat-value" id="as-schedules-total">—</div>
+        <div class="stat-label">Total Exam Records (Database)</div>
+        <div class="stat-change" style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
+          <div style="font-size:11px;color:var(--color-on-surface-variant)">
+            <span style="color:var(--primary);font-weight:600" id="as-theory-count">0</span> Theory · 
+            <span style="color:#00a3c8;font-weight:600" id="as-practical-count">0</span> Practical
+          </div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant)">
+            <span style="font-weight:600;color:var(--color-success)" id="as-active-student-exams">0</span> Exams for Registered Students <span style="opacity:0.7">(out of <span id="as-total-inline">0</span> total records)</span>
+          </div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant)">
+            <span style="font-weight:600" id="as-unique-students">0</span> Registered Students Scheduled
+          </div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant)" title="The total number of unique subjects (exam papers) uploaded. Multiple students can be scheduled for one exam.">
+            <span style="font-weight:600" id="as-unique-exams">0</span> Exams Uploaded by Admin ℹ️
+          </div>
+        </div>
       </div>
       <div class="stat-card" id="as-posts">
         <div class="stat-icon" style="background:rgba(251,146,60,0.15)">💬</div>
@@ -183,9 +199,57 @@ async function loadAdminStats(main) {
     const studentsSnap = await sbGetDocs(sbQuery(sbCollection(supabaseDb, 'users'), sbWhere('role','==','student')));
     main.querySelector('#as-students .stat-value').textContent = studentsSnap.size;
 
-    // Schedules
-    const schedSnap = await sbGetDocs(sbCollection(supabaseDb, 'examSchedules'));
-    main.querySelector('#as-schedules .stat-value').textContent = schedSnap.size;
+    const registeredStudentIds = new Set();
+    studentsSnap.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.registerNumber) {
+        registeredStudentIds.add(String(data.registerNumber));
+      }
+    });
+
+    // Schedules (Paginated fetch to avoid 1000 row limit)
+    let theoryCount = 0;
+    let practicalCount = 0;
+    let totalSchedules = 0;
+    let activeStudentExams = 0;
+    const uniqueSubjects = new Set();
+    const uniqueStudents = new Set();
+    const recentUploads = [];
+
+    let hasMore = true;
+    let fromIdx = 0;
+    let stepSize = 1000;
+
+    while (hasMore) {
+      const { data, error } = await supabase.from('examSchedules').select('examType, subject, registerNumber').range(fromIdx, fromIdx + stepSize - 1);
+      if (error || !data) break;
+      
+      totalSchedules += data.length;
+      data.forEach(d => {
+        if (d.examType === 'theory') theoryCount++;
+        if (d.examType === 'practical') practicalCount++;
+        if (d.subject) uniqueSubjects.add(d.subject);
+        
+        // Only count them as a "Scheduled Student" if they are actually registered on the platform
+        if (d.registerNumber && registeredStudentIds.has(String(d.registerNumber))) {
+          uniqueStudents.add(String(d.registerNumber));
+          activeStudentExams++;
+        }
+        
+        if (recentUploads.length < 50) recentUploads.push(d.subject);
+      });
+
+      if (data.length < stepSize) hasMore = false;
+      fromIdx += stepSize;
+    }
+
+    main.querySelector('#as-schedules-total').textContent = totalSchedules;
+    main.querySelector('#as-total-inline').textContent = totalSchedules;
+    main.querySelector('#as-theory-count').textContent = theoryCount;
+    main.querySelector('#as-practical-count').textContent = practicalCount;
+    main.querySelector('#as-active-student-exams').textContent = activeStudentExams;
+    main.querySelector('#as-unique-students').textContent = uniqueStudents.size;
+    main.querySelector('#as-unique-exams').textContent = uniqueSubjects.size;
 
     // Posts
     const postsSnap = await getDocs(collection(db, 'posts'));
@@ -196,7 +260,7 @@ async function loadAdminStats(main) {
     main.querySelector('#as-mappings .stat-value').textContent = mapSnap.size;
 
     // Recent Uploads (group by subject)
-    const subjects = [...new Set(schedSnap.docs.map(d => d.data().subject))].slice(0, 3);
+    const subjects = [...new Set(recentUploads)].slice(0, 3);
     const recentEl = main.querySelector('#recent-uploads');
     recentEl.innerHTML = subjects.length > 0 ? subjects.map(s => `
       <div class="flex items-center gap-2" style="padding:var(--space-2) 0">

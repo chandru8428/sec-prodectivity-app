@@ -65,7 +65,37 @@ export function render(root) {
         <option value="active">Active (Has Reg No)</option>
         <option value="pending">Pending (No Reg No)</option>
       </select>
+      <select class="form-select" id="exam-filter" style="width:140px;border-radius:var(--radius-full);border:1px solid var(--border-color)">
+        <option value="">All Exams</option>
+        <option value="scheduled">Scheduled</option>
+        <option value="none">Not Scheduled</option>
+      </select>
+      <select class="form-select" id="sort-filter" style="width:160px;border-radius:var(--radius-full);border:1px solid var(--border-color)">
+        <option value="">Sort By...</option>
+        <option value="name-asc">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+        <option value="date-desc">Joined (Newest)</option>
+        <option value="date-asc">Joined (Oldest)</option>
+        <option value="exam-first">Exams First</option>
+      </select>
       <button class="btn btn-ghost btn-sm" id="refresh-students">🔄 Refresh</button>
+    </div>
+
+    <!-- User Activity Modal -->
+    <div id="user-activity-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:#00000088;backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+      <div style="background:var(--surface);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 24px 64px #0008;border:1px solid var(--border-color);animation:slideUp .2s ease;">
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="width:60px;height:60px;border-radius:50%;background:var(--primary-container);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;">📊</div>
+          <h3 style="color:var(--on-surface);margin-bottom:6px;font-size:18px;">User Activity</h3>
+          <p style="color:var(--on-surface-variant);font-size:13px;line-height:1.6;">
+            Summary of <span id="activity-student-name" style="color:var(--on-surface);font-weight:600;">—</span>'s activities on EduSync.
+          </p>
+        </div>
+        <div style="background:var(--surface-container);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;" id="activity-stats-container">
+          <div style="text-align:center;color:var(--on-surface-variant);">Loading activity...</div>
+        </div>
+        <button class="btn" style="width:100%" id="activity-close-btn">Close</button>
+      </div>
     </div>
 
     <!-- Stats -->
@@ -105,7 +135,29 @@ export function render(root) {
     try {
       const q = query(collection(db, 'users'), where('role', '==', 'student'));
       const snap = await getDocs(q);
-      allStudents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      const scheduledRegNums = new Set();
+      let hasMore = true;
+      let fromIdx = 0;
+      let stepSize = 1000;
+      while (hasMore) {
+        const { data, error } = await supabase.from('examSchedules').select('registerNumber').range(fromIdx, fromIdx + stepSize - 1);
+        if (error || !data) break;
+        data.forEach(d => {
+          if (d.registerNumber) scheduledRegNums.add(String(d.registerNumber));
+        });
+        if (data.length < stepSize) hasMore = false;
+        fromIdx += stepSize;
+      }
+
+      allStudents = snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          hasExams: !!data.registerNumber && scheduledRegNums.has(String(data.registerNumber)),
+          ...data
+        };
+      });
 
       main.querySelector('#total-students').textContent = allStudents.length;
       const depts = new Set(allStudents.map(s => s.department).filter(Boolean));
@@ -139,6 +191,7 @@ export function render(root) {
     const dept   = main.querySelector('#dept-filter').value;
     const sem    = main.querySelector('#sem-filter2').value;
     const status = main.querySelector('#status-filter').value;
+    const examF  = main.querySelector('#exam-filter').value;
 
     let filtered = allStudents.filter(s => {
       const matchSearch = !search || s.name?.toLowerCase().includes(search) || s.registerNumber?.includes(search);
@@ -149,8 +202,25 @@ export function render(root) {
       if (status === 'active') matchStatus = !!s.registerNumber;
       if (status === 'pending') matchStatus = !s.registerNumber;
 
-      return matchSearch && matchDept && matchSem && matchStatus;
+      let matchExam = true;
+      if (examF === 'scheduled') matchExam = s.hasExams;
+      if (examF === 'none') matchExam = !s.hasExams;
+
+      return matchSearch && matchDept && matchSem && matchStatus && matchExam;
     });
+
+    const sortVal = main.querySelector('#sort-filter').value;
+    if (sortVal === 'name-asc') {
+      filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    } else if (sortVal === 'name-desc') {
+      filtered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+    } else if (sortVal === 'date-desc') {
+      filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (sortVal === 'date-asc') {
+      filtered.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    } else if (sortVal === 'exam-first') {
+      filtered.sort((a, b) => (b.hasExams === a.hasExams) ? 0 : b.hasExams ? 1 : -1);
+    }
 
     main.querySelector('#filtered-count').textContent = `${filtered.length} student${filtered.length !== 1 ? 's' : ''}`;
     const tbody = main.querySelector('#students-tbody');
@@ -179,7 +249,12 @@ export function render(root) {
           <td style="font-size:11px;color:var(--color-on-surface-variant)">${joined}</td>
           <td>
             <div class="flex gap-1">
-              <button class="btn btn-secondary btn-sm" onclick="viewStudentExams('${s.registerNumber}')">📅 Exams</button>
+              ${s.hasExams ? `<button class="btn btn-secondary btn-sm" onclick="viewStudentExams('${s.registerNumber}')">📅 Exams</button>` : ''}
+              <button class="btn btn-sm" onclick="openActivityModal('${s.id}')"
+                style="background:var(--primary-container);color:var(--primary);border:1px solid var(--primary-container);font-size:11px"
+                title="View student activity">
+                📊 Activity
+              </button>
               <button class="btn btn-sm" onclick="openRemoveModal('${s.id}')"
                 style="background:#fee2e233;color:#dc2626;border:1px solid #fca5a533;font-size:11px"
                 title="Remove this student">
@@ -278,7 +353,68 @@ export function render(root) {
   main.querySelector('#dept-filter').addEventListener('change', renderStudents);
   main.querySelector('#sem-filter2').addEventListener('change', renderStudents);
   main.querySelector('#status-filter').addEventListener('change', renderStudents);
+  main.querySelector('#exam-filter').addEventListener('change', renderStudents);
+  main.querySelector('#sort-filter').addEventListener('change', renderStudents);
   main.querySelector('#refresh-students').addEventListener('click', load);
+
+  /* ── Activity modal logic ── */
+  const activityModal = main.querySelector('#user-activity-modal');
+
+  window.openActivityModal = async function(userId) {
+    const student = allStudents.find(s => s.id === userId);
+    if (!student) return;
+    main.querySelector('#activity-student-name').textContent = student.name || '—';
+    activityModal.style.display = 'flex';
+    
+    const container = main.querySelector('#activity-stats-container');
+    container.innerHTML = '<div style="text-align:center;color:var(--on-surface-variant);">Loading activity...</div>';
+
+    try {
+      const attSnap = await getDocs(collection(db, 'users', userId, 'attendance'));
+      const gpaSnap = await getDocs(collection(db, 'users', userId, 'gpa'));
+      const ttSnap = await getDocs(query(collection(db, 'timetables'), where('createdBy', '==', userId)));
+      const postsSnap = await getDocs(query(collection(db, 'posts'), where('authorId', '==', userId)));
+
+      let examCount = 0;
+      if (student.registerNumber) {
+        const esSnap = await getDocs(query(collection(db, 'examSchedules'), where('registerNumber', '==', student.registerNumber)));
+        examCount = esSnap.docs.length;
+      }
+
+      container.innerHTML = `
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--on-surface-variant);">Attendance Records</span>
+          <strong style="color:var(--on-surface);">${attSnap.docs.length}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--on-surface-variant);">GPA Records</span>
+          <strong style="color:var(--on-surface);">${gpaSnap.docs.length}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--on-surface-variant);">Generated Timetables</span>
+          <strong style="color:var(--on-surface);">${ttSnap.docs.length}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="color:var(--on-surface-variant);">Q&A Posts</span>
+          <strong style="color:var(--on-surface);">${postsSnap.docs.length}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--on-surface-variant);">Scheduled Exams</span>
+          <strong style="color:var(--on-surface);">${examCount}</strong>
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = '<div style="text-align:center;color:#ef4444;">Failed to load activity.</div>';
+    }
+  };
+
+  main.querySelector('#activity-close-btn').addEventListener('click', () => {
+    activityModal.style.display = 'none';
+  });
+
+  activityModal.addEventListener('click', (e) => {
+    if (e.target === activityModal) { activityModal.style.display = 'none'; }
+  });
 
   window.viewStudentExams = function(regNum) {
     if (!regNum) return showToast('No register number', 'warning');
