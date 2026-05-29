@@ -441,6 +441,15 @@ async function loadDashboardData(main) {
   } catch { main.querySelector('#stat-posts').textContent = '0'; }
 }
 
+function formatTime12(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':');
+  let hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour}:${m} ${ampm}`;
+}
+
 function renderHeroExam(main, exam) {
   let badgeText = '⏰ NEXT EXAM';
   let subjectColor = '#A86E11';
@@ -469,7 +478,7 @@ function renderHeroExam(main, exam) {
     metaEl.style.color = subjectColor;
     metaEl.innerHTML = `
       <span>📅 ${formatDate(exam.examDate)}</span>
-      ${exam.startTime ? `<span>🕐 ${exam.startTime}</span>` : ''}
+      ${exam.startTime ? `<span>🕐 ${formatTime12(exam.startTime)}</span>` : ''}
       ${exam.hall ? `<span>🏛️ Hall ${exam.hall}</span>` : ''}
     `;
   }
@@ -520,7 +529,7 @@ function renderExamList(container, exams) {
           <div class="exam-subject">${exam.subject}</div>
           <div class="exam-meta">
             <div class="exam-meta-item">📅 ${formatDate(exam.examDate)}</div>
-            <div class="exam-meta-item">🕐 ${exam.startTime || 'TBA'} – ${exam.endTime || 'TBA'}</div>
+            <div class="exam-meta-item">🕐 ${exam.startTime ? formatTime12(exam.startTime) : 'TBA'} – ${exam.endTime ? formatTime12(exam.endTime) : 'TBA'}</div>
             ${exam.hall ? `<div class="exam-meta-item">🏛️ Hall ${exam.hall}</div>` : ''}
           </div>
         </div>

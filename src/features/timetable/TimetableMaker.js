@@ -5,6 +5,7 @@ import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
 import { db, collection, addDoc } from '../../lib/firebase.js';
 import { pdfToText, aiRepairParse } from '../../services/timetable-ai.js';
+import { logToolUsage } from '../../services/analytics-service.js';
 import { preprocess } from './timetable-preprocessor.js';
 import { parseText } from './timetable-regex-parser.js';
 import { generateTimetables, generateWithDropping } from './timetable-scheduler.js';
@@ -288,6 +289,7 @@ function wireStep3(wiz) {
         }
         
         S.results = results; S.clashWarning = clashWarning; S.resultIndex = 0; saveS(); nav(5);
+        logToolUsage('AI Schedule Crafter', 'generated');
       } catch (err) { showToast('Scheduling error: '+err.message,'error'); nav(3); }
     }, 300);
   };

@@ -1,6 +1,7 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
 import { db, collection, getDocs, addDoc, doc, deleteDoc, writeBatch, setDoc } from '../../lib/firebase.js';
+import { logToolUsage } from '../../services/analytics-service.js';
 
 // ── Grade System ──────────────────────────────────────────────────────────────
 const GRADE_SYSTEM = [
@@ -219,6 +220,11 @@ export function render(root) {
       });
       renderSemesterTable(main, currentSem);
       updateCGPA(main);
+      
+      // Log CGPA usage on successful load (if they have data)
+      if (snap.size > 0) {
+        logToolUsage('CGPA Calculator', 'viewed');
+      }
     } catch (e) {
       console.error(e);
       showToast('Error loading GPA data', 'error');
@@ -249,6 +255,7 @@ export function render(root) {
       renderSemesterTable(main, currentSem);
       updateCGPA(main);
       showToast(`${subject} added to Semester ${currentSem}`, 'success');
+      logToolUsage('GPA Calculator', 'calculated manually');
     } catch (err) {
       console.error(err);
       showToast('Error saving subject', 'error');
@@ -333,6 +340,7 @@ export function render(root) {
       renderSemesterTable(main, currentSem);
       updateCGPA(main);
       showToast(`${toAdd.length} subjects saved to Semester ${currentSem} ✅`, 'success');
+      logToolUsage('GPA Calculator', 'calculated from pdf');
     } catch (err) {
       console.error(err);
       showToast('Error saving to database', 'error');
@@ -360,6 +368,8 @@ export function render(root) {
           <div>You need at least grade <strong>${minGrade.grade}</strong> (${minGrade.points} points) — minimum marks: <strong>${minGrade.minMarks}/100</strong></div>
         </div>
       </div>`;
+    
+    logToolUsage('GPA Calculator', 'calculated target gpa');
   });
 
   main.querySelector('#export-gpa-btn').addEventListener('click', () => {

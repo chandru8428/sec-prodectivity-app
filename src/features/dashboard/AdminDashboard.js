@@ -11,6 +11,7 @@ import {
 } from '../../lib/supabase-adapter.js';
 import { supabase } from '../../lib/supabase.js';
 import { showToast } from '../../app/main.js';
+import { getToolUsageStats } from '../../services/analytics-service.js';
 
 export function render(root) {
   const layout = createLayout('Admin Dashboard', '', 'Admin');
@@ -63,6 +64,40 @@ export function render(root) {
         <div class="stat-icon" style="background:rgba(74,222,128,0.15)">🔗</div>
         <div class="stat-value" style="background:var(--gradient-success);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="stat-label">Repo Mappings</div>
+      </div>
+    </div>
+
+    <!-- Tool Analytics -->
+    <div class="glass-card mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span style="font-size:24px">📊</span>
+        <h2 class="text-title">Tool Usage Analytics</h2>
+      </div>
+      <div class="grid grid-4 gap-4">
+        <div class="stat-card" style="padding:16px; min-height:auto; border-top: 2px solid var(--color-primary)">
+          <div class="stat-label">AI Schedule Crafter</div>
+          <div class="stat-value" id="stat-ai-schedules" style="font-size:24px; margin-top:8px">—</div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px"><span id="stat-ai-users">0</span> students · Times generated</div>
+        </div>
+        <div class="stat-card" style="padding:16px; min-height:auto; border-top: 2px solid #00a3c8">
+          <div class="stat-label">Record Book</div>
+          <div class="stat-value" style="font-size:24px; margin-top:8px">
+             <span id="stat-records-gen">—</span><span style="font-size:14px; opacity:0.6; margin-right:4px">gen</span>
+             / 
+             <span id="stat-records-dl">—</span><span style="font-size:14px; opacity:0.6">dl</span>
+          </div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px"><span id="stat-record-users">0</span> students used this</div>
+        </div>
+        <div class="stat-card" style="padding:16px; min-height:auto; border-top: 2px solid var(--color-success)">
+          <div class="stat-label">GPA Calculator</div>
+          <div class="stat-value" id="stat-gpa" style="font-size:24px; margin-top:8px">—</div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px"><span id="stat-gpa-users">0</span> students · Times calculated</div>
+        </div>
+        <div class="stat-card" style="padding:16px; min-height:auto; border-top: 2px solid var(--color-warning)">
+          <div class="stat-label">CGPA Calculator</div>
+          <div class="stat-value" id="stat-cgpa" style="font-size:24px; margin-top:8px">—</div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px"><span id="stat-cgpa-users">0</span> students · Times calculated</div>
+        </div>
       </div>
     </div>
 
@@ -258,6 +293,25 @@ async function loadAdminStats(main) {
     // Mappings
     const mapSnap = await sbGetDocs(sbCollection(supabaseDb, 'repoMappings'));
     main.querySelector('#as-mappings .stat-value').textContent = mapSnap.size;
+
+    // Tool Analytics
+    const usageStats = await getToolUsageStats();
+    if (main.querySelector('#stat-ai-schedules')) {
+      main.querySelector('#stat-ai-schedules').textContent = usageStats.aiSchedules;
+      main.querySelector('#stat-ai-users').textContent = usageStats.aiSchedulesUsers;
+      main.querySelector('#stat-records-gen').textContent = usageStats.recordsGenerated;
+      main.querySelector('#stat-records-dl').textContent = usageStats.recordsDownloaded;
+      main.querySelector('#stat-record-users').textContent = new Set([
+        ...Array(usageStats.recordsGeneratedUsers).fill(0), 
+        ...Array(usageStats.recordsDownloadedUsers).fill(0)
+      ]).size; // This is a rough estimation since we can't easily merge the sets without modifying the return format further. Wait, let's just use recordsGeneratedUsers since almost everyone who downloads generates first.
+      main.querySelector('#stat-record-users').textContent = Math.max(usageStats.recordsGeneratedUsers, usageStats.recordsDownloadedUsers);
+      
+      main.querySelector('#stat-gpa').textContent = usageStats.gpaCalculations;
+      main.querySelector('#stat-gpa-users').textContent = usageStats.gpaUsers;
+      main.querySelector('#stat-cgpa').textContent = usageStats.cgpaCalculations;
+      main.querySelector('#stat-cgpa-users').textContent = usageStats.cgpaUsers;
+    }
 
     // Recent Uploads (group by subject)
     const subjects = [...new Set(recentUploads)].slice(0, 3);

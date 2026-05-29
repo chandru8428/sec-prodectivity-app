@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.web.edusync_auth_qa_2026.twa",
+    "sha256_cert_fingerprints": [
+      "5C:4B:8E:F9:39:E8:45:66:C4:AD:C0:2B:4D:F3:C4:CE:A6:3B:EC:7D:5F:EB:52:0C:47:28:C8:61:3E:1C:E0:2F"
+    ]
+  }
+}]

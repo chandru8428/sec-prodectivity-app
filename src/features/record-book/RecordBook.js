@@ -2,6 +2,7 @@ import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
 import { db, collection, query, where, getDocs } from '../../lib/supabase-adapter.js';
 import { getUserRepos, matchExperimentsToRepos, stringSimilarity } from '../../services/github-service.js';
+import { logToolUsage } from '../../services/analytics-service.js';
 import QRCode from 'qrcode';
 
 // Module-level experiment list (survives re-renders inside the page)
@@ -739,11 +740,13 @@ export function render(root) {
   // ── Preview PDF ──
   main.querySelector('#preview-pdf-btn').addEventListener('click', async () => {
     await openPDFPreview(main);
+    logToolUsage('Record Book', 'generated');
   });
 
   // ── Download PDF ──
   main.querySelector('#download-pdf-btn').addEventListener('click', async () => {
     await triggerDownload(main);
+    logToolUsage('Record Book', 'downloaded');
   });
 
   // ── Modal close ──

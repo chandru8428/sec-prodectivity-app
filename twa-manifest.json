@@ -1,0 +1,52 @@
+{
+  "packageId": "app.web.edusync_auth_qa_2026.twa",
+  "host": "edusync-auth-qa-2026.web.app",
+  "name": "EduSync Student Hub",
+  "launcherName": "EduSync",
+  "display": "standalone",
+  "themeColor": "#0B1220",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#0B1220",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://edusync-auth-qa-2026.web.app/icons/icon-512.png",
+  "maskableIconUrl": "https://edusync-auth-qa-2026.web.app/icons/icon-512.png",
+  "monochromeIconUrl": "https://edusync-auth-qa-2026.web.app/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://edusync-auth-qa-2026.web.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": true
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://edusync-auth-qa-2026.web.app/",
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "1"
+}
