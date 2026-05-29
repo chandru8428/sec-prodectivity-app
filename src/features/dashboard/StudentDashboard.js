@@ -10,11 +10,11 @@ import {
   addDoc as sbAddDoc,
 } from '../../lib/supabase-adapter.js';
 import { router } from '../../app/router.js';
+import { EmptyState } from '../../components/shared/EmptyState.js';
 
 let countdownIntervals = [];
 
 export function render(root) {
-  countdownIntervals.forEach(clearInterval);
   countdownIntervals = [];
 
   const user = appState.userData;
@@ -27,96 +27,96 @@ export function render(root) {
 
   const main = layout.querySelector('#page-main');
   main.innerHTML = `
-    <!-- Greeting -->
-    <div style="margin-bottom:var(--space-8)">
-      <h1 class="text-display" id="greeting" style="color:var(--accent-primary);font-size:2rem;font-weight:800;margin-bottom:var(--space-2)">
+    <!-- Desktop Actions (Sticky) -->
+    <div class="hide-on-mobile" style="position: sticky; top: calc(var(--topbar-height, 64px) + 24px); z-index: 50; width: 100%; display: flex; justify-content: flex-end; height: 0px; pointer-events: none;">
+      <button class="btn btn-primary" id="btn-add-event-desktop" style="border-radius:12px; height:48px; padding:0 24px; font-weight:700; pointer-events: auto; transform: translateY(-8px); box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Personal Event
+      </button>
+    </div>
+
+    <!-- 1. Greeting -->
+    <div style="margin-bottom:var(--space-4)">
+      <h1 class="text-display" id="greeting" style="color:var(--accent-primary);font-size:1.5rem;font-weight:800;margin-bottom:var(--space-2)">
         ${greeting}, ${firstName} 👋
       </h1>
-      <div class="flex items-center gap-3">
-        <span class="badge badge-secondary">${user?.department || 'CSE'}</span>
-        <span class="badge badge-primary">Semester ${user?.semester || '—'}</span>
-        <span style="font-size:var(--font-body-sm);color:var(--color-on-surface-variant)">${user?.registerNumber || ''}</span>
+      <div class="flex items-center gap-2">
+        <span class="badge badge-secondary" style="padding:4px 8px">[${user?.department || 'CSE'}]</span>
+        <span class="badge badge-primary" style="padding:4px 8px">[Semester ${user?.semester || '—'}]</span>
       </div>
     </div>
 
-    <!-- Announcements Banner -->
-    <div id="announcements-container" class="flex flex-col gap-3 mb-6"></div>
-
-    <!-- Stat Cards -->
-    <div class="grid grid-4 gap-4 mb-8" id="stat-cards">
-      <div class="stat-card">
-        <div class="stat-icon" style="background:rgba(67,97,238,0.1)">📅</div>
-        <div class="stat-value" id="stat-exams">—</div>
-        <div class="stat-label">Upcoming Exams</div>
-        <div class="stat-change text-primary">Next in <span id="stat-next-days">—</span> days</div>
+    <!-- 2. Next Exam Hero Card -->
+    <div class="hero-exam-card compact-hero" id="hero-exam" style="margin-bottom:var(--space-6); padding:var(--space-4);">
+      <div style="margin-bottom:var(--space-3)">
+        <span class="badge-next-exam" id="hero-badge" style="margin-bottom:var(--space-2); padding:4px 8px;">⏰ NEXT EXAM</span>
+        <h2 style="font-size:1.2rem;font-weight:800;color:#A86E11;margin-bottom:var(--space-1)" id="hero-subject">Loading...</h2>
+        <div class="flex items-center gap-3" style="color:#A86E11;font-size:var(--font-body-sm)" id="hero-meta">
+          <span>📅 —</span><span>🕐 —</span><span>🏛️ —</span>
+        </div>
       </div>
-      <div class="stat-card">
+      <div class="countdown" id="hero-countdown" style="gap:var(--space-2)">
+        <div class="countdown-unit">
+          <div class="countdown-value hero" id="cd-days" style="font-size:1.5rem">00</div>
+          <div class="countdown-label" style="font-size:0.7rem">Days</div>
+        </div>
+        <div class="countdown-sep" style="font-size:1.5rem">:</div>
+        <div class="countdown-unit">
+          <div class="countdown-value hero" id="cd-hours" style="font-size:1.5rem">00</div>
+          <div class="countdown-label" style="font-size:0.7rem">Hours</div>
+        </div>
+        <div class="countdown-sep" style="font-size:1.5rem">:</div>
+        <div class="countdown-unit">
+          <div class="countdown-value hero" id="cd-mins" style="font-size:1.5rem">00</div>
+          <div class="countdown-label" style="font-size:0.7rem">Mins</div>
+        </div>
+        <div class="countdown-sep" style="font-size:1.5rem">:</div>
+        <div class="countdown-unit">
+          <div class="countdown-value hero" id="cd-secs" style="font-size:1.5rem">00</div>
+          <div class="countdown-label" style="font-size:0.7rem">Secs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Dashboard Stats Section -->
+    <div class="dashboard-stats-grid" style="margin-bottom:var(--space-6)" id="stat-cards">
+      <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/gpa'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div class="stat-icon" style="background:rgba(91,213,252,0.1)">📊</div>
-        <div class="stat-value" id="stat-gpa">—</div>
+        <div class="stat-value" id="stat-gpa" style="font-size:1.2rem">—</div>
         <div class="stat-label">Current GPA</div>
-        <div class="stat-change text-success">Anna University Scale</div>
+        <div class="stat-change text-success" style="font-size:0.7rem">Anna University Scale</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/attendance'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div class="stat-icon" style="background:rgba(74,222,128,0.1)">✅</div>
-        <div class="stat-value" id="stat-attendance">—</div>
+        <div class="stat-value" id="stat-attendance" style="font-size:1.2rem">—</div>
         <div class="stat-label">Attendance</div>
-        <div class="stat-change" id="stat-attendance-msg">Loading...</div>
+        <div class="stat-change" id="stat-attendance-msg" style="font-size:0.7rem">Loading...</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/timetable'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div class="stat-icon" style="background:rgba(67,97,238,0.1)">📅</div>
+        <div class="stat-value" id="stat-exams" style="font-size:1.2rem">—</div>
+        <div class="stat-label">Upcoming Exams</div>
+        <div class="stat-change text-primary" style="font-size:0.7rem">Next in <span id="stat-next-days">—</span> days</div>
+      </div>
+      <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/qa-board'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div class="stat-icon" style="background:rgba(255,182,146,0.1)">💬</div>
-        <div class="stat-value" id="stat-posts">—</div>
+        <div class="stat-value" id="stat-posts" style="font-size:1.2rem">—</div>
         <div class="stat-label">Q&A Posts</div>
-        <div class="stat-change text-secondary">Your contributions</div>
+        <div class="stat-change text-secondary" style="font-size:0.7rem">Your contributions</div>
       </div>
     </div>
 
-    <!-- Hero Exam + Main Grid -->
-    <div class="grid gap-6" style="grid-template-columns:1fr 360px">
+    <!-- 4. Announcements Section -->
+    <div style="margin-bottom:var(--space-6)">
+      <h2 class="text-title" style="margin-bottom:var(--space-3)">📢 Announcements</h2>
+      <div id="announcements-container" class="flex flex-col gap-3 announcements-list"></div>
+    </div>
 
-      <!-- Left: Hero Exam + Exam List -->
-      <div class="flex flex-col gap-6">
-        
-        <!-- Add Event Button Above Timer -->
-        <div class="flex justify-end">
-          <button class="btn btn-primary" id="btn-add-event" style="padding:8px 16px; font-size:14px; font-weight:700; border-radius:24px; box-shadow:0 4px 12px rgba(67,97,238,0.3); display:flex; align-items:center; gap:6px;">
-            <span style="font-size:16px">➕</span> Add Personal Event
-          </button>
-        </div>
-
-        <!-- Hero countdown -->
-        <div class="hero-exam-card" id="hero-exam">
-          <div style="margin-bottom:var(--space-4)">
-            <span class="badge-next-exam" id="hero-badge" style="margin-bottom:var(--space-3)">⏰ NEXT EXAM</span>
-            <h2 style="font-size:1.5rem;font-weight:800;color:#A86E11;margin-bottom:var(--space-2)" id="hero-subject">Loading...</h2>
-            <div class="flex items-center gap-4" style="color:#A86E11;font-size:var(--font-body-sm)" id="hero-meta">
-              <span>📅 —</span><span>🕐 —</span><span>🏛️ —</span>
-            </div>
-          </div>
-          <div class="countdown" id="hero-countdown">
-            <div class="countdown-unit">
-              <div class="countdown-value hero" id="cd-days">00</div>
-              <div class="countdown-label">Days</div>
-            </div>
-            <div class="countdown-sep">:</div>
-            <div class="countdown-unit">
-              <div class="countdown-value hero" id="cd-hours">00</div>
-              <div class="countdown-label">Hours</div>
-            </div>
-            <div class="countdown-sep">:</div>
-            <div class="countdown-unit">
-              <div class="countdown-value hero" id="cd-mins">00</div>
-              <div class="countdown-label">Mins</div>
-            </div>
-            <div class="countdown-sep">:</div>
-            <div class="countdown-unit">
-              <div class="countdown-value hero" id="cd-secs">00</div>
-              <div class="countdown-label">Secs</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Upcoming exams list -->
-        <div class="glass-card">
+    <!-- 5. Recent Activity -->
+    <div id="dashboard-main-grid" class="grid gap-6" style="grid-template-columns:1fr 360px">
+      <!-- Left: Exam List -->
+      <div class="flex flex-col gap-4">
+        <div class="glass-card" style="padding:var(--space-4)">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-title">📋 Upcoming Exams / Events</h2>
             <button class="btn btn-secondary btn-sm" onclick="window.location.hash='#/student/timetable'">View All</button>
@@ -128,19 +128,18 @@ export function render(root) {
           </div>
         </div>
       </div>
-
       <!-- Right: Quick Actions + Attendance warning -->
       <div class="flex flex-col gap-4">
         <h2 class="text-title">⚡ Quick Actions</h2>
         ${[
-          { icon:'🗓️', label:'AI Schedule Crafter', desc:'Auto-generate conflict-free schedule', path:'/student/timetable-maker', color:'rgba(67,97,238,0.15)', border:'rgba(67,97,238,0.3)' },
-          { icon:'📄', label:'Record Book Forge', desc:'Generate with GitHub + QR codes', path:'/student/record-book', color:'rgba(91,213,252,0.1)', border:'rgba(91,213,252,0.25)' },
-          { icon:'✅', label:'Attendance Calculator', desc:'Track your 80% mandate', path:'/student/attendance', color:'rgba(74,222,128,0.1)', border:'rgba(74,222,128,0.25)' },
-          { icon:'📊', label:'CGPA / GPA', desc:'Anna University grading system', path:'/student/gpa', color:'rgba(255,182,146,0.1)', border:'rgba(255,182,146,0.25)' },
-          { icon:'💬', label:'Knowledge Exchange', desc:'Post questions and tips', path:'/student/qa-board', color:'rgba(186,67,255,0.1)', border:'rgba(186,67,255,0.25)' },
+          { icon:'🗓️', label:'AI Schedule Crafter', desc:'Auto-generate conflict-free schedule', path:'/student/timetable-maker' },
+          { icon:'📄', label:'Record Book Forge', desc:'Generate with GitHub + QR codes', path:'/student/record-book' },
+          { icon:'✅', label:'Attendance Calculator', desc:'Track your 80% mandate', path:'/student/attendance' },
+          { icon:'📊', label:'CGPA / GPA', desc:'Anna University grading system', path:'/student/gpa' },
+          { icon:'💬', label:'Knowledge Exchange', desc:'Post questions and tips', path:'/student/qa-board' },
         ].map(a => `
-          <button class="flex items-center gap-4 w-full text-left quick-action-card" style="background:var(--bg-card);border:1px solid var(--border-primary);border-radius:var(--radius-lg);padding:var(--space-4);cursor:pointer;transition:all 0.2s ease;outline:none" data-path="${a.path}" onclick="window.location.hash='#${a.path}'">
-            <div style="font-size:28px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${a.icon}</div>
+          <button class="flex items-center gap-4 w-full text-left quick-action-card" style="background:var(--surface-container-highest);border:1px solid rgba(216,155,41,0.1);border-radius:var(--radius-lg);padding:var(--space-3);cursor:pointer;transition:all 0.2s ease;outline:none" data-path="${a.path}" onclick="window.location.hash='#${a.path}'">
+            <div style="font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface-container);border-radius:8px;">${a.icon}</div>
             <div>
               <div style="font-size:var(--font-body-sm);font-weight:700;color:var(--color-on-surface)">${a.label}</div>
               <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:2px">${a.desc}</div>
@@ -148,8 +147,6 @@ export function render(root) {
             <span style="margin-left:auto;color:var(--accent-primary)">›</span>
           </button>
         `).join('')}
-
-        <!-- Attendance Warning (shown if < 80%) -->
         <div id="attendance-warning" class="alert alert-warning hidden" style="margin-top:var(--space-2)">
           <span>⚠️</span>
           <div>
@@ -159,6 +156,7 @@ export function render(root) {
         </div>
       </div>
     </div>
+
 
     <!-- Add Event Modal -->
     <div id="add-event-modal" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -199,8 +197,18 @@ export function render(root) {
     </div>
   `;
 
+  const fabHtml = `
+    <!-- 6. Floating Action Button -->
+    <button id="btn-add-event" class="mobile-fab-action" aria-label="Add Personal Event">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span style="font-weight: 700; font-size: 14px; letter-spacing: 0.3px;">Personal Event</span>
+    </button>
+  `;
+  layout.insertAdjacentHTML('beforeend', fabHtml);
+
   loadDashboardData(main);
-  setupAddEventModal(main);
+  // setupAddEventModal needs to find the button inside layout, not just main
+  setupAddEventModal(layout);
   loadAnnouncements(main);
 }
 
@@ -274,11 +282,29 @@ async function loadAnnouncements(main) {
               <h3 style="font-weight: 700; color: ${style.titleColor}; margin: 0; font-size: 16px; letter-spacing: -0.2px;">${data.title}</h3>
               <span style="font-size: 11px; color: var(--color-on-surface-variant); font-weight: 600; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">${date}</span>
             </div>
-            <p style="margin: 0; font-size: 14px; color: var(--color-on-surface); line-height: 1.6; opacity: 0.9;">${data.message}</p>
+            <p class="announcement-text collapsed" style="margin: 0; font-size: 14px; color: var(--color-on-surface); line-height: 1.6; opacity: 0.9;">${data.message}</p>
+            ${data.message.length > 120 ? `<button class="announcement-toggle" data-ann-id="${docSnap.id}">Read more</button>` : ''}
           </div>
         </div>
       `;
     }).join('');
+
+    // Attach announcement toggle handlers
+    container.querySelectorAll('.announcement-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const textEl = btn.previousElementSibling;
+        if (textEl.classList.contains('collapsed')) {
+          textEl.classList.remove('collapsed');
+          textEl.classList.add('expanded');
+          btn.textContent = 'Show less';
+        } else {
+          textEl.classList.remove('expanded');
+          textEl.classList.add('collapsed');
+          btn.textContent = 'Read more';
+        }
+      });
+    });
+
 
   } catch (err) {
     console.error('Failed to load announcements:', err);
@@ -370,9 +396,9 @@ async function loadDashboardData(main) {
       const sorted = gpaSnap.docs.map(d => d.data()).sort((a,b) => (b.semester||0) - (a.semester||0));
       main.querySelector('#stat-gpa').textContent = sorted[0]?.gpa?.toFixed(2) || '—';
     } else {
-      main.querySelector('#stat-gpa').textContent = '—';
+      main.querySelector('#stat-gpa').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`;
     }
-  } catch { main.querySelector('#stat-gpa').textContent = '—'; }
+  } catch { main.querySelector('#stat-gpa').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`; }
 
   // Load attendance
   try {
@@ -401,10 +427,10 @@ async function loadDashboardData(main) {
         attMsg.textContent = '✓ Above 80% mandate';
       }
     } else {
-      main.querySelector('#stat-attendance').textContent = 'N/A';
-      main.querySelector('#stat-attendance-msg').textContent = 'No data yet';
+      main.querySelector('#stat-attendance').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`;
+      main.querySelector('#stat-attendance-msg').textContent = 'No records yet';
     }
-  } catch { main.querySelector('#stat-attendance').textContent = '—'; }
+  } catch { main.querySelector('#stat-attendance').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`; }
 
   // Posts count
   try {
@@ -533,8 +559,7 @@ function renderNoExams(main) {
     examList.innerHTML = '<div class="text-muted text-body-sm" style="text-align:center;padding:var(--space-6)">No exam data available.</div>';
   }
 }
-
-function formatDate(dateStr) {
+function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
@@ -542,18 +567,24 @@ function formatDate(dateStr) {
 function setupAddEventModal(main) {
   const modal = main.querySelector('#add-event-modal');
   const btnOpen = main.querySelector('#btn-add-event');
+  const btnOpenDesktop = main.querySelector('#btn-add-event-desktop');
   const btnCancel = main.querySelector('#ev-cancel');
   const form = main.querySelector('#add-event-form');
   const saveBtn = main.querySelector('#ev-save');
 
-  btnOpen.addEventListener('click', () => {
+  const openModal = () => {
     modal.classList.remove('hidden');
-  });
+  };
 
-  btnCancel.addEventListener('click', () => {
-    modal.classList.add('hidden');
-    form.reset();
-  });
+  if (btnOpen) btnOpen.addEventListener('click', openModal);
+  if (btnOpenDesktop) btnOpenDesktop.addEventListener('click', openModal);
+
+  if (btnCancel) {
+    btnCancel.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      form.reset();
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

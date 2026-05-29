@@ -192,7 +192,7 @@ export function render(root) {
       /* ── Modal & Glassmorphism ── */
       .modal-backdrop {
         position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
-        z-index: 1000; display: flex; align-items: center; justify-content: center;
+        z-index: 10000; display: flex; align-items: center; justify-content: center;
         opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
       }
       .modal-backdrop.show { opacity: 1; pointer-events: auto; }
@@ -362,17 +362,22 @@ export function render(root) {
 
   loadPosts(main);
   setupFilters(main);
+
+  // Move modal out of main to escape stacking context
+  const modal = main.querySelector('#create-post-modal');
+  if (modal) layout.appendChild(modal);
+
   setupPostForm(main);
-  setupDropZone(main);
+  setupDropZone();
   setupModal(main);
 }
 
 function setupModal(main) {
-  const modal = main.querySelector('#create-post-modal');
+  const modal = document.getElementById('create-post-modal');
   const openBtn = main.querySelector('#open-create-modal');
   const fabBtn = main.querySelector('#mobile-create-fab');
-  const closeBtn = main.querySelector('#close-modal-btn');
-  const titleInput = main.querySelector('#post-title');
+  const closeBtn = document.getElementById('close-modal-btn');
+  const titleInput = document.getElementById('post-title');
   
   const openModal = () => {
     modal.classList.add('show');
@@ -409,10 +414,10 @@ function setupModal(main) {
 
 // ── File attachment drop-zone ────────────────────────────────────────────────
 
-function setupDropZone(main) {
-  const zone    = main.querySelector('#drop-zone');
-  const input   = main.querySelector('#file-input');
-  const preview = main.querySelector('#attach-preview');
+function setupDropZone() {
+  const zone    = document.getElementById('drop-zone');
+  const input   = document.getElementById('file-input');
+  const preview = document.getElementById('attach-preview');
 
   const handleFiles = (files) => {
     const allowed = [...files].filter(f =>
@@ -635,18 +640,18 @@ function setupFilters(main) {
 // ── Post form submit ──────────────────────────────────────────────────────────
 
 function setupPostForm(main) {
-  main.querySelector('#post-form').addEventListener('submit', async (e) => {
+  document.getElementById('post-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const submitBtn    = main.querySelector('#post-submit-btn');
-    const progressWrap = main.querySelector('#progress-wrap');
-    const progressFill = main.querySelector('#progress-fill');
-    const statusText   = main.querySelector('#upload-status');
+    const submitBtn    = document.getElementById('post-submit-btn');
+    const progressWrap = document.getElementById('progress-wrap');
+    const progressFill = document.getElementById('progress-fill');
+    const statusText   = document.getElementById('upload-status');
 
     const user     = appState.userData;
-    const title    = main.querySelector('#post-title').value.trim();
-    const content  = main.querySelector('#post-content').value.trim();
-    const subject  = main.querySelector('#post-subject').value.trim();
-    const type     = main.querySelector('input[name="post-type"]:checked').value;
+    const title    = document.getElementById('post-title').value.trim();
+    const content  = document.getElementById('post-content').value.trim();
+    const subject  = document.getElementById('post-subject').value.trim();
+    const type     = document.querySelector('input[name="post-type"]:checked').value;
 
     submitBtn.disabled = true;
     submitBtn.textContent = '⏳ Posting…';
@@ -718,7 +723,7 @@ function setupPostForm(main) {
         e.target.reset();
         pendingFiles.forEach(f => { if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
         pendingFiles = [];
-        main.querySelector('#attach-preview').innerHTML = '';
+        document.getElementById('attach-preview').innerHTML = '';
         showToast('Post published! 🎉', 'success');
         if (window._closePostModal) window._closePostModal();
       }

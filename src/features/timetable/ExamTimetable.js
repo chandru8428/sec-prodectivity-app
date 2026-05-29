@@ -120,7 +120,7 @@ async function loadExams(container) {
     // Build tab UI
     container.innerHTML = `
       <!-- Summary bar -->
-      <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:var(--space-4);margin-bottom:var(--space-6)">
+      <div class="grid summary-stats-grid" style="gap:var(--space-4);margin-bottom:var(--space-6)">
         <div class="glass-card" style="text-align:center;padding:var(--space-4)">
           <div style="font-size:1.8rem;font-weight:900;color:var(--color-primary)">${all.length}</div>
           <div style="font-size:11px;color:var(--color-on-surface-variant)">Total Exams</div>
@@ -140,10 +140,10 @@ async function loadExams(container) {
       </div>
 
       <!-- Tabs -->
-      <div class="tabs mb-6">
-        <button class="tab active" id="tab-all">📋 All (${all.length})</button>
-        <button class="tab" id="tab-theory">📝 Theory (${theory.length})</button>
-        <button class="tab" id="tab-practical">🧪 Practical (${practical.length})</button>
+      <div class="filter-tabs mb-6">
+        <button class="filter-tab active" id="tab-all">📋 All (${all.length})</button>
+        <button class="filter-tab" id="tab-theory">📝 Theory (${theory.length})</button>
+        <button class="filter-tab" id="tab-practical">🧪 Practical (${practical.length})</button>
       </div>
 
       <!-- Tab content panels -->
@@ -260,40 +260,49 @@ function renderExamPanel(panel, exams, today) {
       `;
 
       card.innerHTML = `
-        <div class="flex items-start gap-4">
-          <div style="flex:1;min-width:0">
-            <!-- Header row -->
-            <div class="flex items-center gap-2 mb-2 flex-wrap">
-              <span class="text-title" style="font-size:1.1rem;color:var(--text-primary)">${exam.subject || '—'}</span>
-              ${exam.subjectCode ? `<span class="badge" style="background:#F1F5F9;color:#475569;font-size:10px">${exam.subjectCode}</span>` : ''}
-              <span class="badge" style="background:${bgColor};color:${fgColor};font-size:10px">${typeLabel}</span>
-              ${exam.uploadedBy === 'student' ? '<span class="badge" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;font-size:10px">🌟 Personal Event</span>' : ''}
-              ${i === 0 ? '<span class="badge" style="background:#FFF7ED;color:#C2410C">Next Up</span>' : ''}
+        <div class="flex flex-col gap-4">
+          <div class="flex items-start justify-between gap-3">
+            <div style="flex:1;min-width:0">
+              <!-- Header row -->
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <span class="text-title" style="font-size:1.1rem;color:var(--text-primary);line-height:1.3">${exam.subject || '—'}</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3 flex-wrap">
+                ${exam.subjectCode ? `<span class="badge" style="background:#F1F5F9;color:#475569;font-size:10px">${exam.subjectCode}</span>` : ''}
+                <span class="badge" style="background:${bgColor};color:${fgColor};font-size:10px">${typeLabel}</span>
+                ${exam.uploadedBy === 'student' ? '<span class="badge" style="background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;font-size:10px">🌟 Personal Event</span>' : ''}
+                ${i === 0 ? '<span class="badge" style="background:#FFF7ED;color:#C2410C;font-size:10px">Next Up</span>' : ''}
+              </div>
+              <!-- Details row -->
+              <div class="flex flex-col gap-2" style="font-size:13px">
+                <span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px">
+                  <span style="font-size:16px">📅</span> <span>${formatDate(exam.examDate)}</span>
+                </span>
+                ${exam.session
+                  ? `<span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px">
+                       <span style="font-size:16px">⏰</span> <span class="badge ${exam.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:10px">${exam.session==='FN'?'FN · 9:00 AM – 12:00 PM':'AN · 1:00 PM – 4:00 PM'}</span>
+                     </span>`
+                  : exam.startTime ? `<span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px"><span style="font-size:16px">🕐</span> <span>${exam.startTime} – ${exam.endTime}</span></span>` : ''}
+                ${exam.hall ? `<span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px"><span style="font-size:16px">🏛️</span> <span>Hall: <strong>${exam.hall}</strong></span></span>` : ''}
+              </div>
             </div>
-            <!-- Details row -->
-            <div class="flex flex-wrap gap-3" style="font-size:13px">
-              <span style="color:var(--text-secondary)">📅 ${formatDate(exam.examDate)}</span>
-              ${exam.session
-                ? `<span style="color:var(--text-secondary)">⏰ <span class="badge ${exam.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:10px">${exam.session==='FN'?'FN · 9:00 AM – 12:00 PM':'AN · 1:00 PM – 4:00 PM'}</span></span>`
-                : exam.startTime ? `<span style="color:var(--text-secondary)">🕐 ${exam.startTime} – ${exam.endTime}</span>` : ''}
-              ${exam.hall ? `<span style="color:var(--text-secondary)">🏛️ Hall: <strong>${exam.hall}</strong></span>` : ''}
-            </div>
-            <!-- Action buttons -->
-            <div class="flex gap-2 mt-3 flex-wrap">
-              <button class="btn btn-secondary btn-sm"
-                onclick="addToCalendar('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}','${exam.startTime||'09:00'}','${exam.endTime||'12:00'}')">
-                📆 Add to Calendar
-              </button>
-              <button class="btn btn-ghost btn-sm" onclick="notifyExam('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}')">
-                🔔 Alert Me
-              </button>
-              ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm text-danger" style="color:var(--color-danger)" onclick="deletePersonalEvent('${exam.id}')">🗑️ Delete</button>` : ''}
+            
+            <!-- Countdown badge at top right -->
+            <div class="text-right" style="flex-shrink:0">
+              ${badgeHtml}
             </div>
           </div>
-
-          <!-- Countdown column -->
-          <div class="text-right" style="flex-shrink:0;min-width:100px">
-            ${badgeHtml}
+          
+          <!-- Action buttons (Touch-friendly height >= 44px) -->
+          <div class="flex gap-2 mt-2 flex-wrap" style="border-top: 1px solid var(--border-color); padding-top: var(--space-3)">
+            <button class="btn btn-secondary" style="flex:1;min-height:44px;font-size:13px"
+              onclick="addToCalendar('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}','${exam.startTime||'09:00'}','${exam.endTime||'12:00'}')">
+              📆 Add to Calendar
+            </button>
+            <button class="btn btn-ghost" style="flex:1;min-height:44px;font-size:13px;border:1px solid var(--border-color)" onclick="notifyExam('${(exam.subject||'').replace(/'/g,"\\'")}','${exam.examDate}')">
+              🔔 Alert Me
+            </button>
+            ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost text-danger" style="flex:1;min-height:44px;font-size:13px;border:1px solid var(--border-color);color:var(--color-danger)" onclick="deletePersonalEvent('${exam.id}')">🗑️ Delete</button>` : ''}
           </div>
         </div>
       `;

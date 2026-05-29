@@ -102,7 +102,8 @@ onAuthStateChanged(auth, async (user) => {
     if (appState.userRole === null) {
       router.navigate('/register');
     } else if (!currentHash || currentHash === '#/' || currentHash === '#/login' || currentHash === '#/register') {
-      router.navigate(appState.userRole === 'admin' ? '/admin/dashboard' : '/student/dashboard');
+      const defaultPath = appState.userRole === 'admin' ? '/admin/dashboard' : '/student/dashboard';
+      router.navigate(router.consumeRedirect(defaultPath));
     } else {
       router.render();
     }

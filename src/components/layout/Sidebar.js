@@ -6,10 +6,10 @@ import { showToast } from '../../app/main.js';
 const studentNavItems = [
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>', label: 'Dashboard',       path: '/student/dashboard' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>', label: 'Exam Roadmap',  path: '/student/timetable' },
+  { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>', label: 'Record Book Forge', path: '/student/record-book' },
+  { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>', label: 'Knowledge Exchange',       path: '/student/qa-board' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>', label: 'AI Schedule Crafter', path: '/student/timetable-maker' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.25V14"/><circle cx="16" cy="16" r="6"/></svg>', label: 'GPA / CGPA',      path: '/student/gpa' },
-  { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>', label: 'Knowledge Exchange',       path: '/student/qa-board' },
-  { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>', label: 'Record Book Forge', path: '/student/record-book' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>', label: 'Attendance',      path: '/student/attendance' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'My Profile',      path: '/student/profile' },
   { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>', label: 'Feedback',          url: 'https://docs.google.com/forms/d/e/1FAIpQLSelc0s6bqtjJ3IFp8Ckv2flGScOHjOz3GSERGsC0gQv-DLRjA/viewform?usp=publish-editor' },
@@ -169,6 +169,8 @@ export function createLayout(title, content, breadcrumb = '') {
     : '?';
   const current = router.getCurrentPath();
   const mobileNavItems = navItems.slice(0, 4);
+  const mobileNavItemsPart1 = mobileNavItems.slice(0, 2);
+  const mobileNavItemsPart2 = mobileNavItems.slice(2, 4);
   const shortLabel = (label) => {
     const map = {
       Dashboard: 'Home',
@@ -232,16 +234,25 @@ export function createLayout(title, content, breadcrumb = '') {
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Quick mobile navigation">
       <div class="mobile-bottom-nav-items">
-        ${mobileNavItems.map(item => `
+        ${mobileNavItemsPart1.map(item => `
           <a href="#${item.path}" class="mobile-bottom-nav-item ${current === item.path ? 'active' : ''}" aria-label="${item.label}">
             ${item.icon}
             <span>${shortLabel(item.label)}</span>
           </a>
         `).join('')}
-        <button class="mobile-bottom-nav-item" id="mobile-more-btn" type="button" aria-label="Open full navigation menu" aria-controls="sidebar" aria-expanded="false">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
-          <span>More</span>
+        
+        <button class="mobile-bottom-nav-item center-fab-btn" id="mobile-more-btn" type="button" aria-label="Open full navigation menu" aria-controls="sidebar" aria-expanded="false">
+          <div class="center-fab-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </div>
         </button>
+
+        ${mobileNavItemsPart2.map(item => `
+          <a href="#${item.path}" class="mobile-bottom-nav-item ${current === item.path ? 'active' : ''}" aria-label="${item.label}">
+            ${item.icon}
+            <span>${shortLabel(item.label)}</span>
+          </a>
+        `).join('')}
       </div>
     </nav>
     <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>

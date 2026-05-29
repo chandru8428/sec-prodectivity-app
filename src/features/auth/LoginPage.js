@@ -31,10 +31,10 @@ export function render(root) {
         <!-- Left Panel -->
         <div class="glass-card" style="flex:1;min-width:320px;border-radius:24px;padding:48px;border:1px solid rgba(68,70,85,0.25);display:flex;flex-direction:column;justify-content:center;">
           <div>
-            <div style="display:inline-block;background:#eab308;color:#ffffff;font-size:12px;font-weight:800;padding:6px 14px;border-radius:999px;margin-bottom:32px;letter-spacing:0.05em;text-transform:uppercase;box-shadow:0 4px 12px rgba(234,179,8,0.3);">CENTRAL AUTH</div>
-            <h1 style="font-size:56px;font-weight:900;font-family:system-ui, -apple-system, sans-serif;line-height:1.1;margin-bottom:16px;color:var(--color-on-surface);letter-spacing:-0.03em;">Welcome to<br/>EduSync<br/>Workspace</h1>
+           <div style="display:inline-block;background:#eab308;color:#ffffff;font-size:12px;font-weight:800;padding:6px 14px;border-radius:999px;margin-bottom:32px;letter-spacing:0.05em;text-transform:uppercase;box-shadow:0 4px 12px rgba(234,179,8,0.3);">CENTRAL AUTH</div>
+            <h1 class="login-hero-title" style="font-size:clamp(2.2rem, 8vw, 3.5rem);font-weight:900;font-family:system-ui, -apple-system, sans-serif;line-height:1.1;margin-bottom:16px;color:var(--color-on-surface);letter-spacing:-0.03em;">Welcome to<br/>EduSync<br/>Workspace</h1>
             
-            <div style="display:inline-flex;align-items:center;gap:16px;margin-bottom:48px;padding:12px 24px;background:var(--color-surface-container);border:1px solid var(--border-color);border-radius:100px;box-shadow:var(--shadow-sm);transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow-sm)'">
+            <div class="login-dev-badge" style="display:inline-flex;align-items:center;gap:16px;margin-bottom:48px;padding:12px 24px;background:var(--color-surface-container);border:1px solid var(--border-color);border-radius:100px;box-shadow:var(--shadow-sm);transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow-sm)'">
               <span style="color:var(--color-on-surface);font-size:16px;">Developed by <strong style="font-size:17px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Chandru K</strong></span>
               <div style="width:1px;height:24px;background:var(--border-color);"></div>
               <div style="display:flex;align-items:center;gap:12px;">
@@ -47,48 +47,45 @@ export function render(root) {
               </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:auto 1fr;row-gap:24px;column-gap:16px;margin-bottom:48px;align-items:start;">
+            <div class="login-features-mobile" style="margin-bottom:48px">
               <!-- Feature 1 -->
-              <div style="display:flex;align-items:flex-start;gap:12px;padding-top:2px;">
-                <span style="color:#eab308;font-size:16px;">●</span>
-                <span style="font-weight:700;color:var(--color-on-surface);font-size:15px;">Record Book<br/>Forge:</span>
+              <div class="login-feature-item">
+                <span class="login-feature-dot">●</span>
+                <div class="login-feature-content">
+                  <span class="login-feature-title">Record Book Forge</span>
+                  <span class="login-feature-desc">Auto-generate lab records from GitHub.</span>
+                </div>
               </div>
-              <div style="color:var(--color-on-surface-variant);font-size:15px;line-height:1.5;padding-top:2px;">
-                Auto-generate lab records from<br/>GitHub.
-              </div>
-              
               <!-- Feature 2 -->
-              <div style="display:flex;align-items:flex-start;gap:12px;padding-top:2px;">
-                <span style="color:#eab308;font-size:16px;">●</span>
-                <span style="font-weight:700;color:var(--color-on-surface);font-size:15px;">AI Schedule<br/>Crafter:</span>
+              <div class="login-feature-item">
+                <span class="login-feature-dot">●</span>
+                <div class="login-feature-content">
+                  <span class="login-feature-title">AI Schedule Crafter</span>
+                  <span class="login-feature-desc">Create custom timetables and roadmaps.</span>
+                </div>
               </div>
-              <div style="color:var(--color-on-surface-variant);font-size:15px;line-height:1.5;padding-top:2px;">
-                Create custom timetables and<br/>roadmaps.
-              </div>
-
               <!-- Feature 3 -->
-              <div style="display:flex;align-items:flex-start;gap:12px;padding-top:2px;">
-                <span style="color:#eab308;font-size:16px;">●</span>
-                <span style="font-weight:700;color:var(--color-on-surface);font-size:15px;">Academic Tracking:</span>
+              <div class="login-feature-item">
+                <span class="login-feature-dot">●</span>
+                <div class="login-feature-content">
+                  <span class="login-feature-title">Academic Tracking</span>
+                  <span class="login-feature-desc">Monitor your attendance and GPA.</span>
+                </div>
               </div>
-              <div style="color:var(--color-on-surface-variant);font-size:15px;line-height:1.5;padding-top:2px;">
-                Monitor your attendance and GPA.
-              </div>
-
               <!-- Feature 4 -->
-              <div style="display:flex;align-items:flex-start;gap:12px;padding-top:2px;">
-                <span style="color:#eab308;font-size:16px;">●</span>
-                <span style="font-weight:700;color:var(--color-on-surface);font-size:15px;">Knowledge<br/>Exchange:</span>
-              </div>
-              <div style="color:var(--color-on-surface-variant);font-size:15px;line-height:1.5;padding-top:2px;">
-                Connect with peers on the Q&A<br/>board.
+              <div class="login-feature-item">
+                <span class="login-feature-dot">●</span>
+                <div class="login-feature-content">
+                  <span class="login-feature-title">Knowledge Exchange</span>
+                  <span class="login-feature-desc">Connect with peers on the Q&A board.</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
         
         <!-- Right Panel -->
-        <div class="glass-card" style="flex:1;min-width:320px;border-radius:24px;padding:48px;border:1px solid rgba(68,70,85,0.25);color:var(--color-on-surface);display:flex;flex-direction:column;justify-content:center;position:relative;">
+        <div class="glass-card login-panel-form" style="flex:1;min-width:320px;border-radius:24px;padding:48px;border:1px solid rgba(68,70,85,0.25);color:var(--color-on-surface);display:flex;flex-direction:column;justify-content:center;position:relative;">
           
           <div style="text-align:center;margin-bottom:32px;">
             <div style="width:72px;height:72px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:var(--shadow-glow-primary);overflow:hidden;background:white;">
@@ -105,8 +102,9 @@ export function render(root) {
               <label class="form-label" for="student-identifier">Username</label>
               <div class="form-input-wrapper">
                 <span class="input-icon icon-left" aria-hidden="true">👤</span>
-                <input class="form-input" id="student-identifier" type="text" placeholder="e.g. 212224240015 or aravind.p@email.com" required autocomplete="username" />
+                <input class="form-input" id="student-identifier" type="text" placeholder="Register No. or Email" required autocomplete="username" />
               </div>
+              <small style="color:var(--color-on-surface-variant);font-size:12px;line-height:1.4;margin-top:4px;">e.g. 212224240015 or aravind.p@email.com</small>
             </div>
             <div class="form-group">
               <label class="form-label" for="student-password">Password</label>
@@ -117,12 +115,12 @@ export function render(root) {
               </div>
             </div>
             
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-top:4px;">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--color-on-surface-variant);">
-                <input type="checkbox" id="student-remember" style="width:16px;height:16px;accent-color:var(--color-primary-container);cursor:pointer;border-radius:4px;margin:0;" />
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-top:8px;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--color-on-surface-variant);min-height:44px;padding:4px 0;">
+                <input type="checkbox" id="student-remember" style="width:20px;height:20px;accent-color:var(--color-primary-container);cursor:pointer;border-radius:4px;margin:0;flex-shrink:0;" />
                 Remember this device
               </label>
-              <a href="#/forgot-password" style="color:var(--color-primary);text-decoration:none;font-weight:500;">Forgot Password?</a>
+              <a href="#/forgot-password" style="color:var(--color-primary);text-decoration:none;font-weight:500;min-height:44px;display:inline-flex;align-items:center;padding:4px 0;">Forgot Password?</a>
             </div>
             
             <button type="submit" class="btn btn-primary w-full" id="student-login-btn" style="margin-top:8px;padding:14px;">
@@ -149,7 +147,7 @@ export function render(root) {
       </div>
       
       <p style="text-align:center;margin-top:40px;font-size:12px;color:var(--color-outline);letter-spacing:0.04em;">
-        By continuing you agree to the latest security and privacy terms.
+        By continuing you agree to our <a href="#" style="color:var(--color-primary);text-decoration:underline;">Terms of Service</a> and <a href="#" style="color:var(--color-primary);text-decoration:underline;">Privacy Policy</a>.
       </p>
     </div>
   `;

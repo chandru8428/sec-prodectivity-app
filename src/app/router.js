@@ -76,13 +76,23 @@ export const router = {
 
     // Auth guards
     if (studentRoutes.has(path) && appState.userRole !== 'student') {
-      if (!appState.currentUser) { this.navigate('/login'); return; }
+      if (!appState.currentUser) {
+        sessionStorage.setItem('edusync_redirect', path);
+        this._showSessionToast();
+        this.navigate('/login');
+        return;
+      }
       if (appState.userRole === 'admin') { this.navigate('/admin/dashboard'); return; }
       this.navigate('/register'); return;
     }
 
     if (adminRoutes.has(path) && appState.userRole !== 'admin') {
-      if (!appState.currentUser) { this.navigate('/login'); return; }
+      if (!appState.currentUser) {
+        sessionStorage.setItem('edusync_redirect', path);
+        this._showSessionToast();
+        this.navigate('/login');
+        return;
+      }
       if (appState.userRole === 'student') { this.navigate('/student/dashboard'); return; }
       this.navigate('/register'); return;
     }
@@ -104,10 +114,33 @@ export const router = {
       console.error('Route render error:', err);
       root.innerHTML = `<div style="padding:2rem;color:#f87171">Failed to load page: ${err.message}</div>`;
     }
+  },
+
+  /** Show a brief toast when session-guard redirects to login */
+  _showSessionToast() {
+    const existing = document.querySelector('.session-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'session-toast';
+    toast.textContent = 'Session expired — please sign in again';
+    toast.style.cssText = `
+      position:fixed;top:16px;left:50%;transform:translateX(-50%);
+      background:var(--bg-card,#1e1e2e);color:var(--color-on-surface,#fff);
+      padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;
+      box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:10000;
+      animation:slideDown 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  },
+
+  /** After login, consume saved redirect path if any */
+  consumeRedirect(fallback) {
+    const saved = sessionStorage.getItem('edusync_redirect');
+    sessionStorage.removeItem('edusync_redirect');
+    return saved || fallback;
   }
 };
-
-// ── Hash Change Listener ───────────────────────────────────────────────────────
 window.addEventListener('hashchange', () => {
   if (!appState.isLoading) router.render();
 });
