@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, increment, arrayUnion, serverTimestamp, writeBatch, orderBy, limit } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, increment, arrayUnion, arrayRemove, serverTimestamp, writeBatch, orderBy, limit } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -40,6 +40,7 @@ export {
   deleteDoc,
   increment,
   arrayUnion,
+  arrayRemove,
   serverTimestamp,
   writeBatch,
   orderBy,

@@ -45,6 +45,8 @@ export async function getToolUsageStats() {
       recordsGeneratedUsers: new Set(),
       recordsDownloaded: 0,
       recordsDownloadedUsers: new Set(),
+      appDownloads: 0,
+      appDownloadsUsers: new Set(),
       totalEvents: snap.size
     };
 
@@ -57,6 +59,9 @@ export async function getToolUsageStats() {
       if (data.toolName === 'Record Book') {
         if (data.action === 'generated') { stats.recordsGenerated++; stats.recordsGeneratedUsers.add(user); }
         if (data.action === 'downloaded') { stats.recordsDownloaded++; stats.recordsDownloadedUsers.add(user); }
+      }
+      if (data.toolName === 'App Download') {
+        stats.appDownloads++; stats.appDownloadsUsers.add(user);
       }
     });
 
@@ -71,6 +76,8 @@ export async function getToolUsageStats() {
       recordsGeneratedUsers: stats.recordsGeneratedUsers.size,
       recordsDownloaded: stats.recordsDownloaded,
       recordsDownloadedUsers: stats.recordsDownloadedUsers.size,
+      appDownloads: stats.appDownloads,
+      appDownloadsUsers: stats.appDownloadsUsers.size,
       totalEvents: stats.totalEvents
     };
   } catch (error) {
@@ -81,6 +88,7 @@ export async function getToolUsageStats() {
       cgpaCalculations: 0, cgpaUsers: 0,
       recordsGenerated: 0, recordsGeneratedUsers: 0,
       recordsDownloaded: 0, recordsDownloadedUsers: 0,
+      appDownloads: 0, appDownloadsUsers: 0,
       totalEvents: 0
     };
   }

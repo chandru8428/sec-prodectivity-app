@@ -374,8 +374,39 @@ function renderExamPanel(panel, exams, today) {
 window.addToCalendar = function(subject, date, startTime, endTime) {
   const start = date.replace(/-/g,'') + 'T' + startTime.replace(':','') + '00';
   const end   = date.replace(/-/g,'') + 'T' + endTime.replace(':','') + '00';
-  const url   = `https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(subject+' Exam')}&dates=${start}/${end}&details=${encodeURIComponent('EduSync Exam Reminder')}&location=Exam+Hall`;
-  window.open(url, '_blank');
+  
+  // Generate ICS file content with alarms
+  const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//EduSync//Timetable//EN
+BEGIN:VEVENT
+SUMMARY:${subject} Exam
+DTSTART:${start}
+DTEND:${end}
+DESCRIPTION:EduSync Exam Reminder
+LOCATION:Exam Hall
+BEGIN:VALARM
+TRIGGER:-PT24H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: ${subject} Exam tomorrow
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: ${subject} Exam in 1 hour
+END:VALARM
+END:VEVENT
+END:VCALENDAR`.replace(/\n/g, "\r\n");
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${subject.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_exam.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
 
 window.deletePersonalEvent = async function(id) {
@@ -397,7 +428,7 @@ window.notifyExam = function(subject, examDate) {
 
     // Immediate confirmation notification
     new Notification('🔔 EduSync Reminder Set', {
-      body: `You will be reminded 1 day before "${subject}" exam on ${examDate}`,
+      body: `You will be reminded 1 day before and 1 hour before "${subject}" exam on ${examDate}`,
       icon: '/favicon.ico'
     });
 
@@ -405,7 +436,7 @@ window.notifyExam = function(subject, examDate) {
     const examTime = new Date(`${examDate}T09:00:00`).getTime();
     const now = Date.now();
     const oneDayBefore = examTime - 86400000;
-    const twoHoursBefore = examTime - 7200000;
+    const oneHourBefore = examTime - 3600000; // Optimized to 1 hour before
 
     if (now < oneDayBefore) {
       const msUntil = oneDayBefore - now;
@@ -416,13 +447,13 @@ window.notifyExam = function(subject, examDate) {
         });
       }, msUntil);
     }
-    if (now < twoHoursBefore) {
+    if (now < oneHourBefore) {
       setTimeout(() => {
-        new Notification('⏰ Exam in 2 Hours!', {
-          body: `"${subject}" exam starts in 2 hours. Be prepared!`,
+        new Notification('⏰ Exam in 1 Hour!', {
+          body: `"${subject}" exam starts in 1 hour. Be prepared!`,
           icon: '/favicon.ico'
         });
-      }, twoHoursBefore - now);
+      }, oneHourBefore - now);
     }
   });
 };

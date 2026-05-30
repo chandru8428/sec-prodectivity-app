@@ -15,6 +15,7 @@ import { EmptyState } from '../../components/shared/EmptyState.js';
 let countdownIntervals = [];
 
 export function render(root) {
+  countdownIntervals.forEach(clearInterval);
   countdownIntervals = [];
 
   const user = appState.userData;
@@ -354,9 +355,18 @@ async function loadDashboardData(main) {
       examDate: standardizeDate(e.examDate)
     }));
 
+    const now = new Date();
     const exams = rawExams
-      .filter(e => e.examDate >= today)
-      .sort((a, b) => (a.examDate || '').localeCompare(b.examDate || ''))
+      .filter(e => {
+        const timeStr = e.endTime || e.startTime || '23:59';
+        const examEnd = new Date(`${e.examDate}T${timeStr}:00`);
+        return isNaN(examEnd) ? e.examDate >= today : examEnd > now;
+      })
+      .sort((a, b) => {
+        const timeA = a.startTime || '00:00';
+        const timeB = b.startTime || '00:00';
+        return `${a.examDate}T${timeA}`.localeCompare(`${b.examDate}T${timeB}`);
+      })
       .slice(0, 5);
 
     // Update stat
@@ -485,9 +495,21 @@ function renderHeroExam(main, exam) {
 }
 
 function startCountdown(main, exam) {
+  countdownIntervals.forEach(clearInterval);
+  countdownIntervals = [];
+
   function tick() {
     const target = new Date(`${exam.examDate}T${exam.startTime || '09:00'}:00`);
+    const endTarget = new Date(`${exam.examDate}T${exam.endTime || exam.startTime || '23:59'}:00`);
     const now    = new Date();
+    
+    if (now >= endTarget) {
+      countdownIntervals.forEach(clearInterval);
+      countdownIntervals = [];
+      loadDashboardData(main);
+      return;
+    }
+
     const diff   = target - now;
 
     if (diff <= 0) {

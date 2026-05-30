@@ -24,7 +24,7 @@ const UPLOAD_URL     = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/uplo
  * e.g. /image/upload/v1/folder/file.pdf  →  /image/upload/fl_inline/v1/folder/file.pdf
  */
 function makeInlineUrl(url) {
-  return url.replace('/image/upload/', '/image/upload/fl_inline/');
+  return url;
 }
 
 // ── Image compression ─────────────────────────────────────────────────────────

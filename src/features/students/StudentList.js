@@ -141,10 +141,10 @@ export function render(root) {
       let fromIdx = 0;
       let stepSize = 1000;
       while (hasMore) {
-        const { data, error } = await supabase.from('examSchedules').select('registerNumber').range(fromIdx, fromIdx + stepSize - 1);
+        const { data, error } = await supabase.from('examSchedules').select('registerNumber, uploadedBy').range(fromIdx, fromIdx + stepSize - 1);
         if (error || !data) break;
         data.forEach(d => {
-          if (d.registerNumber) scheduledRegNums.add(String(d.registerNumber));
+          if (d.registerNumber && d.uploadedBy !== 'student') scheduledRegNums.add(String(d.registerNumber));
         });
         if (data.length < stepSize) hasMore = false;
         fromIdx += stepSize;

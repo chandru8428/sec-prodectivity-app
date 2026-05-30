@@ -2,7 +2,8 @@ import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
 import {
   db, collection, getDocs, addDoc,
-  updateDoc, deleteDoc, doc, increment, serverTimestamp
+  updateDoc, deleteDoc, doc, increment, serverTimestamp,
+  arrayUnion, arrayRemove
 } from '../../lib/firebase.js';
 import { uploadToCloudinary, compressImage, formatBytes } from '../../services/cloudinary-service.js';
 
@@ -110,9 +111,17 @@ export function render(root) {
         padding:4px 12px; border-radius:var(--radius-full);
         border:1px solid var(--border-color); background:var(--color-surface);
         font-size:12px; font-weight:600; cursor:pointer;
-        color:var(--color-on-surface-variant); transition:all 0.15s;
+        color:var(--color-on-surface); transition:all 0.15s;
+      }
+      .qa-vote .vote-count {
+        color: inherit !important;
       }
       .qa-vote:hover { border-color:var(--color-primary); color:var(--color-primary); }
+      .qa-vote.active {
+        background:var(--color-primary-container, var(--color-primary));
+        color:var(--color-on-primary-container, #fff);
+        border-color:var(--color-primary);
+      }
       /* ── Attachment drop-zone ── */
       .drop-zone {
         border: 2px dashed var(--border-color);
@@ -536,8 +545,8 @@ function renderPosts(container, posts, main) {
           <span class="qa-tag qa-tag-subj">📚 ${post.subject}</span>
           ${post.semester ? `<span class="qa-tag qa-tag-sem">Sem ${post.semester}</span>` : ''}
           <span class="qa-time">${timeAgo}</span>
-          <button class="qa-vote upvote-btn" data-id="${post.id}" data-votes="${post.votes||0}">
-            ▲ <span class="vote-count">${post.votes||0}</span>
+          <button class="qa-vote upvote-btn ${post.upvotedBy?.includes(appState.currentUser?.uid) ? 'active' : ''}" data-id="${post.id}">
+            ▲ <span class="vote-count">${post.upvotedBy?.length ?? post.votes ?? 0}</span>
           </button>
           ${(isAdmin || post.authorId === appState.currentUser?.uid) ? `
             ${isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin" style="padding:4px 8px">📌</button>` : ''}
@@ -554,14 +563,33 @@ function renderPosts(container, posts, main) {
   // Upvote handlers
   container.querySelectorAll('.upvote-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const id      = btn.dataset.id;
-      const current = parseInt(btn.dataset.votes) || 0;
+      const id = btn.dataset.id;
+      const uid = appState.currentUser?.uid;
+      if (!uid) { showToast('Please login to upvote', 'error'); return; }
+
+      const post = window._allPosts.find(p => p.id === id);
+      if (!post) return;
+
+      const isUpvoted = post.upvotedBy?.includes(uid);
+      const countSpan = btn.querySelector('.vote-count');
+      const currentCount = post.upvotedBy?.length ?? post.votes ?? 0;
+
       try {
-        await updateDoc(doc(db, 'posts', id), { votes: increment(1) });
-        btn.dataset.votes = current + 1;
-        btn.querySelector('.vote-count').textContent = current + 1;
-        btn.style.color = 'var(--color-primary)';
-      } catch { showToast('Failed to upvote', 'error'); }
+        if (isUpvoted) {
+          await updateDoc(doc(db, 'posts', id), { upvotedBy: arrayRemove(uid) });
+          post.upvotedBy = post.upvotedBy.filter(u => u !== uid);
+          btn.classList.remove('active');
+          countSpan.textContent = currentCount - 1;
+        } else {
+          if (!post.upvotedBy) post.upvotedBy = [];
+          await updateDoc(doc(db, 'posts', id), { upvotedBy: arrayUnion(uid) });
+          post.upvotedBy.push(uid);
+          btn.classList.add('active');
+          countSpan.textContent = currentCount + 1;
+        }
+      } catch (err) {
+        showToast('Failed to toggle upvote', 'error');
+      }
     });
   });
 
@@ -577,7 +605,8 @@ function buildAttachmentHtml(attachments) {
     if (a.type === 'image') {
       return `<img class="post-img-thumb" src="${a.url}" alt="attachment" loading="lazy" />`;
     } else {
-      return `<a class="post-pdf-chip" href="${a.url}" target="_blank" rel="noopener">
+      const cleanUrl = a.url.replace('/fl_inline/', '/');
+      return `<a class="post-pdf-chip" href="${cleanUrl}" target="_blank" rel="noopener">
         📄 ${a.filename || 'PDF Document'}
       </a>`;
     }

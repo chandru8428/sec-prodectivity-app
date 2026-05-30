@@ -98,6 +98,11 @@ export function render(root) {
           <div class="stat-value" id="stat-cgpa" style="font-size:24px; margin-top:8px">—</div>
           <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px"><span id="stat-cgpa-users">0</span> students · Times calculated</div>
         </div>
+        <div class="stat-card" style="padding:16px; min-height:auto; border-top: 2px solid #eab308">
+          <div class="stat-label">Android App</div>
+          <div class="stat-value" id="stat-app-dl" style="font-size:24px; margin-top:8px">—</div>
+          <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px"><span id="stat-app-users">0</span> unique users · Times downloaded</div>
+        </div>
       </div>
     </div>
 
@@ -206,7 +211,9 @@ export function render(root) {
           : await getDocs(collection(db, table));
         for (const document of snap.docs) {
           if (table === 'examSchedules') {
-            await sbDeleteDoc(sbDoc(sbCollection(supabaseDb, table), document.id));
+            if (document.data().uploadedBy !== 'student') {
+              await sbDeleteDoc(sbDoc(sbCollection(supabaseDb, table), document.id));
+            }
           } else {
             await deleteDoc(doc(collection(db, table), document.id));
           }
@@ -256,11 +263,13 @@ async function loadAdminStats(main) {
     let stepSize = 1000;
 
     while (hasMore) {
-      const { data, error } = await supabase.from('examSchedules').select('examType, subject, registerNumber').range(fromIdx, fromIdx + stepSize - 1);
+      const { data, error } = await supabase.from('examSchedules').select('examType, subject, registerNumber, uploadedBy').range(fromIdx, fromIdx + stepSize - 1);
       if (error || !data) break;
       
-      totalSchedules += data.length;
       data.forEach(d => {
+        if (d.uploadedBy === 'student') return; // Skip personal events
+        
+        totalSchedules++;
         if (d.examType === 'theory') theoryCount++;
         if (d.examType === 'practical') practicalCount++;
         if (d.subject) uniqueSubjects.add(d.subject);
@@ -311,6 +320,11 @@ async function loadAdminStats(main) {
       main.querySelector('#stat-gpa-users').textContent = usageStats.gpaUsers;
       main.querySelector('#stat-cgpa').textContent = usageStats.cgpaCalculations;
       main.querySelector('#stat-cgpa-users').textContent = usageStats.cgpaUsers;
+      
+      if (main.querySelector('#stat-app-dl')) {
+        main.querySelector('#stat-app-dl').textContent = usageStats.appDownloads;
+        main.querySelector('#stat-app-users').textContent = usageStats.appDownloadsUsers;
+      }
     }
 
     // Recent Uploads (group by subject)

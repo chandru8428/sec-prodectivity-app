@@ -79,7 +79,9 @@ export async function getExamSchedules(filterReg = '', filterType = '') {
   constraints.push(sbOrderBy('examDate'));
   q = sbQuery(q, ...constraints);
   const snap = await sbGetDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .filter(d => d.uploadedBy !== 'student');
 }
 
 export async function clearExamSchedulesByType(examType) {
@@ -91,13 +93,13 @@ export async function clearExamSchedulesByType(examType) {
   
   console.log('Total docs fetched from Supabase:', snap.docs.length);
   
-  // Filter by type if needed
-  let docsToDelete = snap.docs;
+  // Filter by type if needed and ALWAYS protect student personal events
+  let docsToDelete = snap.docs.filter(d => d.data().uploadedBy !== 'student');
   if (examType && examType !== '') {
-    docsToDelete = snap.docs.filter(d => d.data().examType === examType);
+    docsToDelete = docsToDelete.filter(d => d.data().examType === examType);
     console.log('Filtered by type:', examType, '-> docs to delete:', docsToDelete.length);
   } else {
-    console.log('No type filter - will delete ALL:', docsToDelete.length);
+    console.log('No type filter - will delete ALL admin docs:', docsToDelete.length);
   }
   
   if (docsToDelete.length === 0) {

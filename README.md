@@ -1,6 +1,6 @@
 # EduSync - SEC Productivity App
 
-EduSync is a comprehensive academic productivity platform designed to streamline operations for students and administrators. It features AI-powered tools that automate traditionally manual tasks such as timetable generation and lab record creation, all wrapped in a modern, responsive interface ("Clean Sync" design system).
+EduSync is a comprehensive academic productivity platform designed to streamline operations for students and administrators. It features AI-powered tools that automate traditionally manual tasks such as timetable generation and lab record creation, all wrapped in a modern, responsive interface ("Clean Sync" design system). The platform is available as a web app, a Progressive Web App (PWA), and a packaged Android Application.
 
 ## 🌟 Key Features
 
@@ -9,9 +9,11 @@ EduSync is a comprehensive academic productivity platform designed to streamline
 * **Record Book Forge (AI Record Book PDF Maker):** 
   A tool for students to automatically generate professional PDF lab records. It integrates with GitHub to verify live repository URLs and maps them to administrative subject guidelines.
 * **Student Academic Portal:** 
-  Includes attendance tracking, a GPA calculator, and a Q&A board.
+  Includes attendance tracking, a GPA calculator, an interactive Q&A board, announcements, and a centralized academic calendar.
 * **Administrative Dashboard:**
-  Provides secure controls for moderating subject-repository mappings, managing schedules, and performing targeted database resets.
+  Provides secure controls for moderating subject-repository mappings, managing schedules, posting announcements, and performing targeted database resets.
+* **Cross-Platform Availability:**
+  Built with Vite PWA and packaged as an Android APK via Trusted Web Activity (TWA).
 
 ## 🛠 Tech Stack
 
@@ -19,6 +21,7 @@ EduSync is a comprehensive academic productivity platform designed to streamline
 * **Backend / Database:** Hybrid architecture using Supabase and Firebase
 * **AI Integration:** NVIDIA AI endpoints utilizing advanced LLMs (e.g., Llama 3.3 70B) for parsing unstructured data and generating structured outputs.
 * **Styling:** Custom "Clean Sync" CSS framework (Mobile-first, responsive design)
+* **Mobile Build:** PWA & TWA (Bubblewrap/Gradle) for Android APK generation
 
 ## 🚀 Getting Started
 
@@ -26,6 +29,7 @@ EduSync is a comprehensive academic productivity platform designed to streamline
 
 * Node.js (v18 or higher recommended)
 * Git
+* Java SDK (for Android APK building)
 
 ### Installation
 
@@ -45,7 +49,7 @@ EduSync is a comprehensive academic productivity platform designed to streamline
    ```bash
    cp .env.example .env
    ```
-   *Edit the `.env` file to include your Supabase and NVIDIA AI keys.*
+   *Edit the `.env` file to include your Supabase, Firebase, and NVIDIA AI keys.*
 
 4. **Start the development server:**
    ```bash
@@ -53,8 +57,8 @@ EduSync is a comprehensive academic productivity platform designed to streamline
    ```
    The application will be running at `http://localhost:5173/`. If you need to access it externally (e.g., via mobile), you can use `ngrok`.
 
-## 📱 Mobile Support
-The platform is fully responsive and optimized for mobile devices, including complex interactive elements like the Record Book table cards and the Timetable Wizard steps.
+## 📱 Mobile Support & Android App
+The platform is fully responsive and optimized for mobile devices. It can be installed directly as a PWA, or built into an Android APK using the included `gradlew` scripts and `twa-manifest.json` configuration.
 
 ## 🔒 Security
 Please ensure you do not commit your `.env` files or Google Cloud service account keys (e.g., `serviceAccountKey.json`). These are already handled in the `.gitignore`.
