@@ -216,20 +216,38 @@ export function render(root) {
         const uid = signedIn?.user?.uid || signedIn?.user?.id;
 
         // Verify the user exists in our 'users' table (registered via app)
-        const { data: profile, error: profileErr } = await supabase
+        let profile = null;
+        let role = null;
+        let name = null;
+
+        const { data: sbProfile, error: profileErr } = await supabase
           .from('users')
           .select('id, role, name')
           .eq('id', uid)
           .single();
 
-        if (profileErr || !profile) {
+        if (!profileErr && sbProfile) {
+          profile = sbProfile;
+          role = sbProfile.role;
+          name = sbProfile.name;
+        } else {
+          // Fallback to Firebase Firestore for older users
+          const userDoc = await getDoc(doc(db, 'users', uid));
+          if (userDoc.exists()) {
+            profile = userDoc.data();
+            role = profile.role || 'student';
+            name = profile.name || profile.firstName;
+          }
+        }
+
+        if (!profile) {
           // Not registered via the app — sign out and reject
           await supabase.auth.signOut();
           throw new Error('NOT_REGISTERED');
         }
 
-        showToast(`Welcome back, ${profile.name || 'Aravind P'}! 👋`, 'success');
-        router.navigate(profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
+        showToast(`Welcome back, ${name || 'Aravind P'}! 👋`, 'success');
+        router.navigate(role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
       }
     } catch (err) {
       if (err.message === 'NOT_REGISTERED') {
@@ -251,21 +269,39 @@ export function render(root) {
       const uid    = user?.uid || user?.id;
 
       // Check if this Google user is registered in our 'users' table
-      const { data: profile, error: profileErr } = await supabase
+      let profile = null;
+      let role = null;
+      let name = null;
+
+      const { data: sbProfile, error: profileErr } = await supabase
         .from('users')
         .select('id, role, name')
         .eq('id', uid)
         .single();
 
-      if (profileErr || !profile) {
+      if (!profileErr && sbProfile) {
+        profile = sbProfile;
+        role = sbProfile.role;
+        name = sbProfile.name;
+      } else {
+        // Fallback to Firebase Firestore for older users
+        const userDoc = await getDoc(doc(db, 'users', uid));
+        if (userDoc.exists()) {
+          profile = userDoc.data();
+          role = profile.role || 'student';
+          name = profile.name || profile.firstName;
+        }
+      }
+
+      if (!profile) {
         // Not registered — redirect to register to complete profile
         showToast(`Welcome! Please complete your registration.`, 'info');
         router.navigate('/register');
         return;
       }
 
-      showToast(`Welcome, ${profile.name || user.displayName || 'Aravind P'}! 🎉`, 'success');
-      router.navigate(profile.role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
+      showToast(`Welcome, ${name || user.displayName || 'Aravind P'}! 🎉`, 'success');
+      router.navigate(role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
     } catch (err) {
       showToast(friendlyAuthError(err), 'error');
     }
