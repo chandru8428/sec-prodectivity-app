@@ -13,6 +13,49 @@
 
 const GITHUB_API = 'https://api.github.com';
 
+// You can set your personal access tokens (PATs) in the .env file like this:
+// VITE_GITHUB_TOKENS=ghp_TOKEN1,ghp_TOKEN2
+const envTokens = import.meta.env.VITE_GITHUB_TOKENS || '';
+const GITHUB_TOKENS = envTokens
+  .split(',')
+  .map(token => token.trim())
+  .filter(Boolean);
+let currentTokenIndex = -1; // -1 means unauthenticated
+
+/**
+ * Fetch wrapper that starts unauthenticated and rotates through GitHub API tokens when a rate limit is hit.
+ */
+async function fetchWithTokenRotation(url, options = {}) {
+  while (true) {
+    const headers = { ...options.headers };
+    
+    // Use token if we have advanced past unauthenticated
+    if (currentTokenIndex >= 0 && currentTokenIndex < GITHUB_TOKENS.length) {
+      const currentToken = GITHUB_TOKENS[currentTokenIndex];
+      if (currentToken) {
+        headers['Authorization'] = `token ${currentToken}`;
+      }
+    }
+    
+    const res = await fetch(url, { ...options, headers });
+    
+    // If rate limited, check if we have more tokens to try
+    if (res.status === 403 || res.status === 429) {
+      if (currentTokenIndex < GITHUB_TOKENS.length - 1) {
+        // Move to the next token
+        currentTokenIndex++;
+        console.warn(`GitHub rate limit hit. Switching to token index ${currentTokenIndex}`);
+        continue; // Retry with the new token
+      } else {
+        // Exhausted unauthenticated AND all tokens
+        return res;
+      }
+    }
+    
+    return res;
+  }
+}
+
 /* ── Sample fallback repos (used when GitHub API rate limit is hit) ────── */
 const SAMPLE_FALLBACK_REPOS = [
   { name: 'symbol-table-implementation',   html_url: 'https://github.com/sample/symbol-table-implementation',   description: 'Implementation of Symbol Table using C', pushed_at: '2024-01-15T10:00:00Z', updated_at: '2024-01-15T10:00:00Z' },
@@ -41,7 +84,7 @@ export { SAMPLE_FALLBACK_REPOS };
 /* ── 1. Username validation ──────────────────────────────────────────────── */
 export async function validateUsername(username) {
   try {
-    const res = await fetch(`${GITHUB_API}/users/${username}`);
+    const res = await fetchWithTokenRotation(`${GITHUB_API}/users/${username}`);
     if (res.ok) {
       const data = await res.json();
       return { valid: true, user: data };
@@ -72,7 +115,7 @@ export async function getUserRepos(username) {
 
   while (true) {
     try {
-      const res = await fetch(
+      const res = await fetchWithTokenRotation(
         `${GITHUB_API}/users/${username}/repos?per_page=${perPage}&page=${page}&type=all`
       );
       if (!res.ok) {
@@ -182,7 +225,7 @@ export function matchExperimentsToRepos(experiments, userRepos, username, thresh
 /* ── 6. Verify a single repo is live via GitHub API ─────────────────────── */
 export async function checkRepoLive(username, repoName) {
   try {
-    const res = await fetch(
+    const res = await fetchWithTokenRotation(
       `${GITHUB_API}/repos/${username}/${repoName}`,
       { headers: { Accept: 'application/vnd.github.v3+json' } }
     );
@@ -199,7 +242,7 @@ export async function checkUrlLive(url) {
     const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
     if (!match) return false;
     const [, owner, repo] = match;
-    const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo.replace(/\.git$/, '')}`);
+    const res = await fetchWithTokenRotation(`${GITHUB_API}/repos/${owner}/${repo.replace(/\.git$/, '')}`);
     return res.ok;
   } catch {
     return false;

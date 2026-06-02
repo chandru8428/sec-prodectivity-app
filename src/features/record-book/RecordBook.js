@@ -1,7 +1,7 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
 import { db, collection, query, where, getDocs } from '../../lib/supabase-adapter.js';
-import { getUserRepos, matchExperimentsToRepos, stringSimilarity } from '../../services/github-service.js';
+import { validateUsername, getUserRepos, matchExperimentsToRepos, stringSimilarity, SAMPLE_FALLBACK_REPOS } from '../../services/github-service.js';
 import { logToolUsage } from '../../services/analytics-service.js';
 import QRCode from 'qrcode';
 
@@ -88,6 +88,91 @@ export function render(root) {
         min-width: 700px;
       }
 
+      /* ── Custom searchable subject dropdown ── */
+      .subject-search-wrap { position: relative; }
+      .subject-search-input {
+        width: 100%;
+        padding: 10px 36px 10px 12px;
+        border-radius: 8px;
+        border: 1.5px solid var(--color-outline);
+        background: var(--color-surface-container-lowest);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-on-surface);
+        outline: none;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .subject-search-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(216, 155, 41, 0.15);
+        background: var(--color-surface-container);
+      }
+      .subject-search-arrow {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--color-on-surface-variant);
+        transition: transform 0.2s;
+      }
+      .subject-search-wrap.open .subject-search-arrow { transform: translateY(-50%) rotate(180deg); }
+      .subject-dropdown {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: var(--color-surface-container);
+        border: 1.5px solid var(--color-primary);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        z-index: 9999;
+        max-height: 240px;
+        overflow-y: auto;
+        animation: dropIn 0.15s ease;
+      }
+      @keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+      .subject-search-wrap.open .subject-dropdown { display: block; }
+      .subject-filter-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: none;
+        border-bottom: 1.5px solid var(--color-outline);
+        border-radius: 10px 10px 0 0;
+        font-size: 13px;
+        outline: none;
+        background: var(--color-surface-container-lowest);
+        box-sizing: border-box;
+        color: var(--color-on-surface);
+      }
+      .subject-filter-input:focus { background: var(--color-surface-container); }
+      .subject-option {
+        padding: 10px 14px;
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--color-on-surface);
+        transition: background 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .subject-option:hover, .subject-option.highlighted { 
+        background: var(--color-surface-container-highest); 
+        color: var(--color-primary); 
+      }
+      .subject-option.custom-opt { 
+        color: var(--color-primary); 
+        font-weight: 700; 
+        border-top: 1.5px solid var(--color-outline); 
+        margin-top: 4px; 
+      }
+      .subject-option .opt-code { font-size: 11px; color: var(--color-on-surface-variant); margin-left: auto; }
+      .subject-no-results { padding: 14px; text-align: center; color: var(--color-on-surface-variant); font-size: 13px; }
+
       /* ── Mobile card list (replaces table on small screens) ── */
       #exp-cards { display: none; }
 
@@ -152,6 +237,16 @@ export function render(root) {
         border-bottom: 1px dashed rgba(0,0,0,0.05);
       }
 
+      /* Prevent table cell overflow */
+      #exp-editor td {
+        overflow: hidden;
+        max-width: 0;
+        word-break: break-word;
+      }
+      #exp-editor td:nth-child(3) {
+        max-width: 220px;
+      }
+
       /* Inputs inside cells */
       #exp-editor input[type="text"],
       #exp-editor input[type="date"],
@@ -165,6 +260,8 @@ export function render(root) {
         outline: none;
         box-sizing: border-box;
         transition: all 0.2s ease;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       @media (max-width: 640px) {
         .exp-card input[type="text"],
@@ -302,15 +399,15 @@ export function render(root) {
             PDF Preview
           </div>
           <div style="display:flex;gap:8px;">
-            <button id="modal-download-btn">📥 Download</button>
-            <button id="modal-close-btn">✕ Close</button>
+            <button id="modal-download-btn"><i data-lucide="inbox" class="icon-inline"></i> Download</button>
+            <button id="modal-close-btn"><i data-lucide="x" class="icon-inline"></i> Close</button>
           </div>
         </div>
         <div id="pdf-fallback-msg" style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 24px; color: var(--color-on-surface-variant);">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px; opacity:0.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           <h3 style="font-size: 18px; font-weight: 700; color: var(--color-on-surface); margin-bottom: 8px;">Preview Not Supported</h3>
           <p style="font-size: 14px; margin-bottom: 24px; max-width: 280px; line-height: 1.5;">Mobile browsers cannot preview PDFs directly inside the app. Please download the file to view it.</p>
-          <button id="fallback-download-btn" class="btn btn-primary" style="padding: 12px 24px;">📥 Download PDF</button>
+          <button id="fallback-download-btn" class="btn btn-primary" style="padding: 12px 24px;"><i data-lucide="inbox" class="icon-inline"></i> Download PDF</button>
         </div>
         <div id="pdf-canvas-container" style="display:none; width:100%; height:100%; overflow:auto; background:var(--bg-body); padding:16px; flex-direction:column; align-items:center; gap:16px;"></div>
         <iframe id="pdf-iframe" title="PDF Preview"></iframe>
@@ -324,8 +421,8 @@ export function render(root) {
 
         <!-- Mode Selector -->
         <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <button id="mode-auto" type="button" class="btn btn-secondary flex-1" style="border: 2px solid var(--accent-primary); background: var(--bg-surface-elevated)">⚡ Auto-Generate</button>
-          <button id="mode-manual" type="button" class="btn btn-ghost flex-1">✍️ Manual Entry</button>
+          <button id="mode-auto" type="button" class="btn btn-secondary flex-1" style="border: 2px solid var(--accent-primary); background: var(--bg-surface-elevated)"><i data-lucide="zap" class="icon-inline"></i> Auto-Generate</button>
+          <button id="mode-manual" type="button" class="btn btn-ghost flex-1"><i data-lucide="pen" class="icon-inline"></i> Manual Entry</button>
         </div>
 
         <!-- Details form -->
@@ -360,9 +457,17 @@ export function render(root) {
             <div id="auto-fields" class="flex flex-col gap-4">
               <div class="form-group">
                 <label class="form-label">Select Subject</label>
-                <select class="form-input" id="auto-subject-select" required style="padding:10px 12px;border-radius:8px;font-weight:600;font-size:14px;background:#f8fafc;">
-                  <option value="">Loading subjects...</option>
-                </select>
+                <div class="subject-search-wrap" id="subject-search-wrap">
+                  <input type="text" class="subject-search-input" id="subject-display-input"
+                    placeholder="Loading subjects..." readonly />
+                  <svg class="subject-search-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  <div class="subject-dropdown" id="subject-dropdown">
+                    <input type="text" class="subject-filter-input" id="subject-filter" placeholder="&#128269; Search subject..." autocomplete="off" />
+                    <div id="subject-options-list"></div>
+                  </div>
+                </div>
+                <!-- Hidden select keeps existing value-reading logic intact -->
+                <select id="auto-subject-select" style="display:none;"></select>
               </div>
               <div id="custom-subject-fields" class="flex flex-col gap-4" style="display:none;">
                 <div class="form-group">
@@ -389,7 +494,7 @@ export function render(root) {
             </div>
 
             <button type="submit" class="btn btn-primary btn-lg w-full" id="validate-btn">
-              <span id="validate-text">🔍 Fetch &amp; Load Experiments</span>
+              <span id="validate-text"><i data-lucide="search" class="icon-inline"></i> Fetch &amp; Load Experiments</span>
               <span id="validate-spinner" class="spinner hidden" style="width:18px;height:18px;border-width:2px"></span>
             </button>
           </form>
@@ -528,45 +633,152 @@ export function render(root) {
   const autoCustomCodeInp = main.querySelector('#auto-custom-code');
   const ghInput = main.querySelector('#gh-username');
 
+  // ── Searchable subject dropdown ──────────────────────────────────────────
+  const searchWrap     = main.querySelector('#subject-search-wrap');
+  const displayInput   = main.querySelector('#subject-display-input');
+  const dropdownEl     = main.querySelector('#subject-dropdown');
+  const filterInput    = main.querySelector('#subject-filter');
+  const optionsList    = main.querySelector('#subject-options-list');
+
+  // All subject options data
+  let subjectOptions = []; // [{value, label, code, name}]
+
+  function renderOptions(filter = '') {
+    const q = filter.toLowerCase();
+    const matched = q
+      ? subjectOptions.filter(o => o.label.toLowerCase().includes(q) || o.code.toLowerCase().includes(q))
+      : subjectOptions;
+
+    optionsList.innerHTML = '';
+    if (!matched.length) {
+      optionsList.innerHTML = '<div class="subject-no-results">No subjects found</div>';
+      return;
+    }
+    matched.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'subject-option' + (opt.value === 'custom' ? ' custom-opt' : '');
+      div.dataset.value = opt.value;
+      if (opt.value === 'custom') {
+        div.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> My subject is not listed...`;
+      } else {
+        div.innerHTML = `<span>${opt.name}</span><span class="opt-code">${opt.code}</span>`;
+      }
+      div.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        selectSubject(opt);
+      });
+      optionsList.appendChild(div);
+    });
+  }
+
+  function selectSubject(opt) {
+    subjectSelect.value = opt.value;
+    displayInput.value = opt.value === 'custom' ? '🔍 My subject is not listed...' : opt.label;
+    searchWrap.classList.remove('open');
+    filterInput.value = '';
+    renderOptions();
+    // Trigger custom fields visibility
+    if (opt.value === 'custom') {
+      customFields.style.display = 'flex';
+      autoCustomSubjInp.required = true;
+    } else {
+      customFields.style.display = 'none';
+      autoCustomSubjInp.required = false;
+    }
+    // Fire change event so existing listeners work
+    subjectSelect.dispatchEvent(new Event('change'));
+  }
+
+  // Toggle open/close
+  displayInput.addEventListener('click', () => {
+    searchWrap.classList.toggle('open');
+    if (searchWrap.classList.contains('open')) {
+      filterInput.focus();
+      renderOptions();
+    }
+  });
+
+  // Filter as user types
+  filterInput.addEventListener('input', () => renderOptions(filterInput.value));
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!searchWrap.contains(e.target)) searchWrap.classList.remove('open');
+  });
+
+  // Keyboard navigation
+  filterInput.addEventListener('keydown', (e) => {
+    const items = [...optionsList.querySelectorAll('.subject-option')];
+    const hi = optionsList.querySelector('.highlighted');
+    let idx = items.indexOf(hi);
+    if (e.key === 'ArrowDown') { e.preventDefault(); idx = Math.min(idx + 1, items.length - 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); idx = Math.max(idx - 1, 0); }
+    else if (e.key === 'Enter' && hi) { e.preventDefault(); const v = subjectOptions.find(o => o.value === hi.dataset.value); if (v) selectSubject(v); return; }
+    else if (e.key === 'Escape') { searchWrap.classList.remove('open'); return; }
+    else return;
+    items.forEach(it => it.classList.remove('highlighted'));
+    if (items[idx]) { items[idx].classList.add('highlighted'); items[idx].scrollIntoView({ block: 'nearest' }); }
+  });
+
   // Load subjects
   async function loadSubjects() {
     try {
       const snap = await getDocs(collection(db, 'repoMappings'));
-      const subjectsMap = {};
+      const subjectsArr = [];
+      const seen = new Set();
+      
       snap.docs.forEach(d => {
         const data = d.data();
         if (data.subjectName && data.subjectCode) {
-          subjectsMap[data.subjectCode] = data.subjectName;
+          const key = `${data.subjectCode}|${data.subjectName}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            subjectsArr.push({ code: data.subjectCode, name: data.subjectName });
+          }
         }
       });
+
+      subjectOptions = subjectsArr.map(({code, name}) => ({
+        value: `${code}|${name}`,
+        label: `${name} (${code})`,
+        name,
+        code,
+      }));
+      // Add custom option last
+      subjectOptions.push({ value: 'custom', label: 'My subject is not listed...', name: '', code: '' });
+
+      // Rebuild hidden select
       subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
-      for (const [code, name] of Object.entries(subjectsMap)) {
+      subjectOptions.forEach(o => {
         const opt = document.createElement('option');
-        opt.value = `${code}|${name}`;
-        opt.textContent = `${name} (${code})`;
+        opt.value = o.value;
+        opt.textContent = o.label;
         subjectSelect.appendChild(opt);
-      }
-      const customOpt = document.createElement('option');
-      customOpt.value = 'custom';
-      customOpt.textContent = '🔍 My subject is not listed...';
-      subjectSelect.appendChild(customOpt);
-      
+      });
+
+      displayInput.placeholder = '-- Select Subject --';
+      renderOptions();
+
+      // Restore previous session
       const prevCode = sessionStorage.getItem('rb_code');
       const prevSubj = sessionStorage.getItem('rb_subject');
       if (prevCode && prevSubj) {
         const val = `${prevCode}|${prevSubj}`;
-        if (Array.from(subjectSelect.options).some(o => o.value === val)) {
-          subjectSelect.value = val;
+        const match = subjectOptions.find(o => o.value === val);
+        if (match) {
+          selectSubject(match);
         } else {
-          subjectSelect.value = 'custom';
-          customFields.style.display = 'flex';
+          selectSubject(subjectOptions.find(o => o.value === 'custom'));
           autoCustomSubjInp.value = prevSubj;
           autoCustomCodeInp.value = prevCode;
           autoCustomSubjInp.required = true;
         }
       }
     } catch(e) {
-      subjectSelect.innerHTML = '<option value="custom">🔍 My subject is not listed...</option>';
+      subjectOptions = [{ value: 'custom', label: 'My subject is not listed...', name: '', code: '' }];
+      subjectSelect.innerHTML = '<option value="custom">My subject is not listed...</option>';
+      displayInput.placeholder = 'Select Subject';
+      renderOptions();
       customFields.style.display = 'flex';
       autoCustomSubjInp.required = true;
     }
@@ -592,7 +804,7 @@ export function render(root) {
     manualCodeInp.required = false;
     if (subjectSelect.value === 'custom') autoCustomSubjInp.required = true;
     
-    main.querySelector('#validate-text').innerHTML = '🔍 Fetch &amp; Load Experiments';
+    main.querySelector('#validate-text').innerHTML = '<i data-lucide="search" class="icon-inline"></i> Fetch &amp; Load Experiments';
   });
 
   manualBtn.addEventListener('click', () => {
@@ -615,7 +827,7 @@ export function render(root) {
     manualSubjectInp.required = true;
     manualCodeInp.required = true;
     
-    main.querySelector('#validate-text').innerHTML = '✍️ Start Manual Entry';
+    main.querySelector('#validate-text').innerHTML = '<i data-lucide="pen" class="icon-inline"></i> Start Manual Entry';
   });
 
   subjectSelect.addEventListener('change', () => {
@@ -633,7 +845,7 @@ export function render(root) {
     main.querySelector('#editor-card').style.display = '';
     main.querySelector('#editor-empty').style.display = 'none';
     buildEditor(main, _username);
-    showToast(`Restored ${experiments.length} experiment(s) from last session. ✅`, 'info', 3000);
+    showToast(`Restored ${experiments.length} experiment(s) from last session. <i data-lucide="check-circle-2" class="icon-inline"></i>`, 'info', 3000);
   }
 
   // ── Form submit ──
@@ -804,19 +1016,20 @@ async function runPipeline(main, username, subject, code, isCustom) {
       circle.style.border = '2px solid transparent';
       circle.style.boxShadow = '0 2px 8px rgba(239,68,68,0.4)';
     }
-    if (msgEl) msgEl.textContent = msg;
+    if (msgEl) msgEl.innerHTML = msg;
   };
 
   // ── Step 1: Validate GitHub username ────────────────────────────────────
   setStep('v1', 'loading', 'Checking GitHub username...');
   try {
-    const r = await fetch(`https://api.github.com/users/${username}`);
-    if (r.status === 403 || r.status === 429) {
-      setStep('v1', 'done', `✓ (Rate Limited) ${username}`);
-    } else if (!r.ok) {
+    const v1Res = await validateUsername(username);
+    if (!v1Res.valid) {
       throw new Error('not found');
+    }
+    if (v1Res.rateLimited) {
+      setStep('v1', 'done', `<i data-lucide="check" class="icon-inline"></i> (Rate Limited) ${username}`);
     } else {
-      setStep('v1', 'done', `✓ Found: ${username}`);
+      setStep('v1', 'done', `<i data-lucide="check" class="icon-inline"></i> Found: ${username}`);
     }
   } catch {
     setStep('v1', 'error', `User "${username}" not found on GitHub`);
@@ -830,11 +1043,17 @@ async function runPipeline(main, username, subject, code, isCustom) {
   try {
     userRepos = await getUserRepos(username);
     if (!userRepos.length) throw new Error('no public repos');
-    setStep('v2', 'done', `✓ Found ${userRepos.length} public repositories`);
+    setStep('v2', 'done', `<i data-lucide="check" class="icon-inline"></i> Found ${userRepos.length} public repositories`);
   } catch (err) {
-    setStep('v2', 'error', 'Cannot fetch repositories — ' + err.message);
-    showToast('Failed to fetch your GitHub repositories.', 'error');
-    return;
+    if (err.name === 'GitHubRateLimitError') {
+      userRepos = SAMPLE_FALLBACK_REPOS;
+      setStep('v2', 'done', `<i data-lucide="check" class="icon-inline"></i> Rate Limited — Using ${userRepos.length} sample repositories`);
+      showToast('GitHub Rate Limit exceeded. Using sample fallback repositories.', 'warning', 5000);
+    } else {
+      setStep('v2', 'error', 'Cannot fetch repositories — ' + err.message);
+      showToast('Failed to fetch your GitHub repositories.', 'error');
+      return;
+    }
   }
 
   // ── Step 3: Load admin experiment-title mappings ─────────────────────────
@@ -909,7 +1128,7 @@ async function runPipeline(main, username, subject, code, isCustom) {
       mappings.sort((a, b) => (parseInt(a.expNo) || 0) - (parseInt(b.expNo) || 0));
     }
 
-    setStep('v3', 'done', `✓ ${mappings.length} experiment(s) found`);
+    setStep('v3', 'done', `<i data-lucide="check" class="icon-inline"></i> ${mappings.length} experiment(s) found`);
   } catch (err) {
     setStep('v3', 'error', 'Failed to load experiment list: ' + err.message);
     return;
@@ -976,7 +1195,7 @@ async function runPipeline(main, username, subject, code, isCustom) {
     const fuzzyCount   = experiments.filter(e => e.matchMethod === 'fuzzy').length;
     const missingCount = experiments.filter(e => !e.repoUrl).length;
 
-    let v4Msg = `✓ ${experiments.length - missingCount}/${experiments.length} matched`;
+    let v4Msg = `<i data-lucide="check" class="icon-inline"></i> ${experiments.length - missingCount}/${experiments.length} matched`;
     if (exactCount > 0) v4Msg += ` (${exactCount} exact fork`;
     if (fuzzyCount > 0) v4Msg += exactCount > 0 ? `, ${fuzzyCount} keyword` : ` (${fuzzyCount} keyword`;
     if (exactCount > 0 || fuzzyCount > 0) v4Msg += ')';
@@ -992,10 +1211,10 @@ async function runPipeline(main, username, subject, code, isCustom) {
   try {
     buildEditor(main, username);
     saveExperiments();
-    setStep('v5', 'done', '✓ Editor ready — edit dates, add rows, then preview/download!');
+    setStep('v5', 'done', '<i data-lucide="check" class="icon-inline"></i> Editor ready — edit dates, add rows, then preview/download!');
     main.querySelector('#editor-card').style.display = '';
     main.querySelector('#editor-empty').style.display = 'none';
-    showToast('Experiments loaded! Edit dates if needed, then preview/download. 📄', 'success', 4000);
+    showToast('Experiments loaded! Edit dates if needed, then preview/download. <i data-lucide="file" class="icon-inline"></i>', 'success', 4000);
   } catch (err) {
     setStep('v5', 'error', 'Editor failed: ' + err.message);
   }
@@ -1008,6 +1227,16 @@ function buildEditor(main, username) {
   tbody.innerHTML = '';
   if (cards) cards.innerHTML = '';
   experiments.forEach((exp, i) => addEditorRow(main, exp, i));
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function addEditorRow(main, exp, i) {
@@ -1028,17 +1257,17 @@ function addEditorRow(main, exp, i) {
   tr.innerHTML = `
     <td style="text-align:center;min-width:44px;padding-left:8px;">
       <div class="index-wrapper">
-        <input type="text" class="exp-no" value="${exp.expNo || String(i+1).padStart(2,'0')}" />
+        <input type="text" class="exp-no" value="${escapeHTML(exp.expNo || String(i+1).padStart(2,'0'))}" />
       </div>
     </td>
     <td>
-      <input type="date" class="exp-date" value="${dateVal}" style="min-width:130px" />
+      <input type="date" class="exp-date" value="${escapeHTML(dateVal)}" style="min-width:130px" />
     </td>
     <td>
-      <input type="text" class="exp-title" value="${exp.title || ''}" placeholder="Experiment name" style="min-width:200px" />
+      <input type="text" class="exp-title" value="${escapeHTML(exp.title || '')}" placeholder="Experiment name" style="min-width:200px" />
     </td>
     <td>
-      <input type="text" class="exp-url url-input" value="${exp.repoUrl || ''}" placeholder="https://github.com/..." style="min-width:180px" />
+      <input type="text" class="exp-url url-input" value="${escapeHTML(exp.repoUrl || '')}" placeholder="https://github.com/..." style="min-width:180px" />
     </td>
     <td style="text-align:center">
       <span class="qr-cell">${
@@ -1059,22 +1288,22 @@ function addEditorRow(main, exp, i) {
   card.innerHTML = `
     <div class="exp-card-header">
       <div class="index-wrapper" style="width:44px">
-        <input type="text" class="exp-no" value="${exp.expNo || String(i+1).padStart(2,'0')}" />
+        <input type="text" class="exp-no" value="${escapeHTML(exp.expNo || String(i+1).padStart(2,'0'))}" />
       </div>
-      <div class="exp-card-title">${exp.title || `Experiment ${i+1}`}</div>
+      <div class="exp-card-title">${escapeHTML(exp.title || `Experiment ${i+1}`)}</div>
       <button class="del-row-btn" title="Remove"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
     </div>
     <div class="exp-card-field">
-      <div class="exp-card-label">📅 Date</div>
-      <input type="date" class="exp-date" value="${dateVal}" />
+      <div class="exp-card-label"><i data-lucide="calendar" class="icon-inline"></i> Date</div>
+      <input type="date" class="exp-date" value="${escapeHTML(dateVal)}" />
     </div>
     <div class="exp-card-field">
-      <div class="exp-card-label">🧪 Experiment Name</div>
-      <input type="text" class="exp-title" value="${exp.title || ''}" placeholder="Experiment name" />
+      <div class="exp-card-label"><i data-lucide="flask-conical" class="icon-inline"></i> Experiment Name</div>
+      <input type="text" class="exp-title" value="${escapeHTML(exp.title || '')}" placeholder="Experiment name" />
     </div>
     <div class="exp-card-field">
-      <div class="exp-card-label">🔗 GitHub URL</div>
-      <input type="text" class="exp-url url-input" value="${exp.repoUrl || ''}" placeholder="https://github.com/..." />
+      <div class="exp-card-label"><i data-lucide="link" class="icon-inline"></i> GitHub URL</div>
+      <input type="text" class="exp-url url-input" value="${escapeHTML(exp.repoUrl || '')}" placeholder="https://github.com/..." />
     </div>
     <div class="exp-card-footer">
       <span class="exp-card-status ${exp.isLive ? 'live' : 'missing'}">
@@ -1284,26 +1513,26 @@ async function openPDFPreview(main) {
     showToast('Preview failed: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = '👁 Preview PDF';
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Preview PDF`;
   }
 }
 
 // ── Download PDF ──────────────────────────────────────────────────────────────
 async function triggerDownload(main) {
   const btn = main.querySelector('#download-pdf-btn');
-  const orig = btn.textContent;
+  const origHTML = btn.innerHTML; // capture full HTML including SVG icon
   btn.disabled = true;
-  btn.textContent = '⏳ Generating...';
+  btn.innerHTML = '⏳ Generating...';
   const username = main.querySelector('#gh-username')?.value || sessionStorage.getItem('rb_username') || 'student';
   const code     = main.querySelector('#rec-code')?.value    || sessionStorage.getItem('rb_code')    || 'code';
   try {
     const doc = await buildPDFDoc(main);
     doc.save(`RecordBook_${code}_${username}.pdf`);
-    showToast('PDF downloaded! 📥', 'success');
+    showToast('PDF downloaded! ✅', 'success');
   } catch (err) {
     showToast('PDF failed: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = orig;
+    btn.innerHTML = origHTML; // restore icon + text
   }
 }
