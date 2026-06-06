@@ -1,16 +1,23 @@
-import { createLayout } from '../../components/layout/Sidebar.js';
-import { appState } from '../../app/main.js';
-import { db, collection, query, where, getDocs, orderBy } from '../../lib/firebase.js';
-import {
-  db as supabaseDb,
-  collection as sbCollection,
-  query as sbQuery,
-  where as sbWhere,
-  getDocs as sbGetDocs,
-  addDoc as sbAddDoc,
-} from '../../lib/supabase-adapter.js';
 import { router } from '../../app/router.js';
 import { EmptyState } from '../../components/shared/EmptyState.js';
+import { createLayout } from '../../components/layout/Sidebar.js';
+import { appState } from '../../app/main.js';
+import {
+  db,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  addDoc as sbAddDoc,
+} from '../../lib/supabase-adapter.js';
+
+// Alias so existing sbCollection / sbQuery / sbWhere / sbGetDocs / supabaseDb refs still work
+const supabaseDb = db;
+const sbCollection = collection;
+const sbQuery = query;
+const sbWhere = where;
+const sbGetDocs = getDocs;
 
 let countdownIntervals = [];
 
@@ -338,9 +345,9 @@ async function loadDashboardData(main) {
     const examsRef = sbCollection(supabaseDb, 'examSchedules');
     const q = sbQuery(examsRef, sbWhere('registerNumber', '==', user.registerNumber));
     const snap = await sbGetDocs(q);
-    
-    // Fetch academic calendar events
-    const acSnap = await getDocs(collection(db, 'academicCalendar'));
+
+    // Fetch academic calendar events from Supabase 'calendar' table
+    const acSnap = await getDocs(collection(db, 'calendar'));
     const acEvents = acSnap.docs.map(d => ({
       id: d.id,
       subject: d.data().name,

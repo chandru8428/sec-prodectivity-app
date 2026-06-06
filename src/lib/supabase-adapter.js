@@ -240,10 +240,33 @@ export function writeBatch(db) {
         }
       }
 
-      // Bulk insert per table
+      // Bulk insert per table — with graceful retry on missing columns (PGRST204)
       for (const [table, rows] of Object.entries(insertsByTable)) {
-        const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id' });
-        if (error) throw error;
+        let currentRows = rows;
+        let attempt = 0;
+        const maxRetries = 5; // max columns to strip before giving up
+        while (attempt <= maxRetries) {
+          const { error } = await supabase.from(table).upsert(currentRows, { onConflict: 'id' });
+          if (!error) break; // success
+          // If Supabase says column doesn't exist in schema cache, strip it and retry
+          if (error.code === 'PGRST204' && error.message) {
+            // Extract the missing column name from the error message
+            // e.g. "Could not find the 'staffName' column of 'examSchedules' in the schema cache"
+            const colMatch = error.message.match(/Could not find the '([^']+)' column/);
+            if (colMatch) {
+              const missingCol = colMatch[1];
+              console.warn(`[DB] Column '${missingCol}' not in schema for table '${table}'. Stripping and retrying. (Add this column to Supabase to persist this data)`);
+              currentRows = currentRows.map(row => {
+                const { [missingCol]: _dropped, ...rest } = row;
+                return rest;
+              });
+              attempt++;
+              continue;
+            }
+          }
+          throw error; // unrecoverable error
+        }
+        if (attempt > maxRetries) throw new Error(`Too many missing columns in table '${table}'. Check schema.`);
       }
 
       // Handle updates and deletes individually

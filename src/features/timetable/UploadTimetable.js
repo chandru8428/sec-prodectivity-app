@@ -233,7 +233,50 @@ export function render(root) {
   main.querySelector('#refresh-sched').addEventListener('click', () => loadSchedules(main, '', ''));
 
   loadSchedules(main, '', '');
+
+  // Check staffName column and show warning banner if missing
+  checkAndShowStaffNameBanner(main);
 }
+
+async function checkAndShowStaffNameBanner(main) {
+  try {
+    const { supabase: sb } = await import('../../lib/supabase.js');
+    const { error } = await sb.from('examSchedules').select('staffName').limit(1);
+    if (error && error.code === 'PGRST204') {
+      // Column missing — show prominent alert
+      const banner = document.createElement('div');
+      banner.id = 'staffname-warning-banner';
+      banner.innerHTML = `
+        <div class="alert" style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.4);color:var(--color-on-surface);margin-bottom:var(--space-4);display:flex;align-items:flex-start;gap:var(--space-3)">
+          <span style="font-size:1.4rem;flex-shrink:0">⚠️</span>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px">Staff Name Column Missing in Database</div>
+            <div style="font-size:12px;color:var(--color-on-surface-variant);margin-bottom:8px">
+              The <code>staffName</code> column doesn't exist in your Supabase <code>examSchedules</code> table.
+              Staff names from your Excel will be <b>skipped during upload</b> until you add this column.
+            </div>
+            <div style="font-size:11px;background:rgba(0,0,0,0.2);padding:8px 12px;border-radius:6px;font-family:monospace;word-break:break-all;">
+              ALTER TABLE "examSchedules" ADD COLUMN IF NOT EXISTS "staffName" text DEFAULT NULL;
+            </div>
+            <div style="font-size:11px;margin-top:6px">
+              Run this SQL at:
+              <a href="https://supabase.com/dashboard/project/jzvtcdamuddogcnqdxut/sql/new" target="_blank"
+                 style="color:var(--color-primary);text-decoration:underline">
+                Supabase SQL Editor ↗
+              </a>
+              · Then refresh this page and re-upload your practical exam file.
+            </div>
+          </div>
+          <button onclick="this.closest('#staffname-warning-banner').remove()"
+            style="background:none;border:none;cursor:pointer;color:var(--color-on-surface-variant);font-size:1.2rem;flex-shrink:0;margin-left:auto">✕</button>
+        </div>
+      `;
+      const pageHeader = main.querySelector('.page-header');
+      if (pageHeader) pageHeader.insertAdjacentElement('afterend', banner);
+    }
+  } catch { /* silently skip */ }
+}
+
 
 function setupUploadZone(main, type, parsedRows) {
   const zone  = main.querySelector(`#${type}-zone`);
@@ -258,6 +301,19 @@ async function uploadRows(main, rows, type, clearFirst, parsedRows) {
   const btn = main.querySelector(`#${type}-upload-btn`);
   btn.disabled = true;
   btn.textContent = 'Uploading...';
+
+  // Check if staffName column exists in Supabase schema
+  const hasStaffNameCol = await checkStaffNameColumnExists();
+  const hasStaffData = rows.some(r => r.staffName && r.staffName.trim());
+  if (hasStaffData && !hasStaffNameCol) {
+    showToast(
+      '<i data-lucide="alert-triangle" class="icon-inline"></i> <b>Staff Name column missing in DB!</b> ' +
+      'Go to Supabase → SQL Editor and run: <code>ALTER TABLE "examSchedules" ADD COLUMN IF NOT EXISTS "staffName" text DEFAULT NULL;</code> ' +
+      'Staff names will be skipped until you add this column.',
+      'warning',
+      8000
+    );
+  }
 
   try {
     if (clearFirst) {
@@ -284,7 +340,15 @@ async function uploadRows(main, rows, type, clearFirst, parsedRows) {
       btn.textContent = `Uploading... (${total}/${rows.length})`;
     }
 
-    showToast(`<i data-lucide="check-circle-2" class="icon-inline"></i> Uploaded ${total} ${type} exam records!`, 'success');
+    if (hasStaffData && !hasStaffNameCol) {
+      showToast(
+        `<i data-lucide="check-circle-2" class="icon-inline"></i> Uploaded ${total} ${type} exam records ` +
+        `<b>(without staff names — add "staffName" column in Supabase to save them)</b>`,
+        'warning'
+      );
+    } else {
+      showToast(`<i data-lucide="check-circle-2" class="icon-inline"></i> Uploaded ${total} ${type} exam records!`, 'success');
+    }
     parsedRows[type] = [];
     main.querySelector(`#${type}-preview-info`).classList.add('hidden');
     main.querySelector('#preview-section').style.display = 'none';
@@ -295,6 +359,18 @@ async function uploadRows(main, rows, type, clearFirst, parsedRows) {
   btn.disabled = false;
   btn.textContent = type === 'theory' ? '⬆️ Upload Theory' : '⬆️ Upload Practical';
 }
+
+/** Check if staffName column exists in Supabase examSchedules table */
+async function checkStaffNameColumnExists() {
+  try {
+    const { supabase: sb } = await import('../../lib/supabase.js');
+    const { error } = await sb.from('examSchedules').select('staffName').limit(1);
+    return !error; // no error means column exists
+  } catch {
+    return false;
+  }
+}
+
 
 // Delete exams from database by type
 async function deleteByType(type) {

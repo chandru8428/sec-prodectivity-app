@@ -1,7 +1,7 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState } from '../../app/main.js';
 import { supabase } from '../../lib/supabase.js';
-import { db, collection, getDocs } from '../../lib/firebase.js';
+import { db, collection, getDocs } from '../../lib/supabase-adapter.js';
 
 let countdownIntervals = [];
 
@@ -82,7 +82,7 @@ async function loadExams(container) {
 
     if (qErr) throw qErr;
 
-    const acSnap = await getDocs(collection(db, 'academicCalendar'));
+    const acSnap = await getDocs(collection(db, 'calendar'));
     const acEvents = acSnap.docs.map(d => ({
       id: d.id,
       subject: d.data().name,

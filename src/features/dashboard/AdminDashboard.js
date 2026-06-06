@@ -1,14 +1,22 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
-import { db, collection, getDocs, query, where, deleteDoc, doc } from '../../lib/firebase.js';
 import {
-  db as supabaseDb,
-  collection as sbCollection,
-  getDocs as sbGetDocs,
-  deleteDoc as sbDeleteDoc,
-  doc as sbDoc,
-  query as sbQuery,
-  where as sbWhere,
+  db,
+  collection,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
 } from '../../lib/supabase-adapter.js';
+
+// Aliases so existing sbXxx / supabaseDb references keep working
+const supabaseDb = db;
+const sbCollection = collection;
+const sbGetDocs = getDocs;
+const sbDeleteDoc = deleteDoc;
+const sbDoc = doc;
+const sbQuery = query;
+const sbWhere = where;
 import { supabase } from '../../lib/supabase.js';
 import { showToast } from '../../app/main.js';
 import { getToolUsageStats } from '../../services/analytics-service.js';
