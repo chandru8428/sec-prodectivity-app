@@ -284,6 +284,7 @@ function renderExamPanel(panel, exams, today) {
                      </span>`
                   : exam.startTime ? `<span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px"><span style="font-size:16px">🕐</span> <span>${exam.startTime} – ${exam.endTime}</span></span>` : ''}
                 ${exam.hall ? `<span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px"><span style="font-size:16px">🏛️</span> <span>Hall: <strong>${exam.hall}</strong></span></span>` : ''}
+                ${exam.staffName ? `<span style="color:var(--text-secondary);display:flex;align-items:center;gap:6px"><span style="font-size:16px">👨‍🏫</span> <span>Staff: <strong>${exam.staffName}</strong></span></span>` : ''}
               </div>
             </div>
             
@@ -358,6 +359,7 @@ function renderExamPanel(panel, exams, today) {
               ${formatDate(exam.examDate)}
               ${exam.session ? `· ${exam.session==='FN'?'FN 10AM':'AN 2PM'}` : ''}
               ${exam.hall ? `· Hall: ${exam.hall}` : ''}
+              ${exam.staffName ? `· Staff: ${exam.staffName}` : ''}
             </div>
           </div>
           ${exam.uploadedBy === 'student' ? '<span class="badge badge-warning" style="font-size:10px">🌟 Personal</span>' : ''}

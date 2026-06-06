@@ -13,7 +13,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">📆 Academic Calendar</h1>
+      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"><i data-lucide="calendar-days" class="icon-inline"></i> Academic Calendar</h1>
       <p class="page-subtitle">Manage holidays, exam days, and special events. Students will see these on their attendance tracker.</p>
     </div>
 
@@ -42,7 +42,7 @@ export function render(root) {
       <!-- Add Event + Event List -->
       <div class="flex flex-col gap-4">
         <div class="glass-card">
-          <h3 class="text-title mb-4">➕ Add Event</h3>
+          <h3 class="text-title mb-4"><i data-lucide="plus" class="icon-inline"></i> Add Event</h3>
           <form id="event-form" class="flex flex-col gap-3">
             <div class="form-group">
               <label class="form-label">Date</label>
@@ -56,9 +56,9 @@ export function render(root) {
               <label class="form-label">Event Type</label>
               <div class="flex gap-3 flex-wrap">
                 ${[
-                  { val:'holiday', label:'🔴 Holiday' },
-                  { val:'exam',    label:'🟣 Exam Day' },
-                  { val:'event',   label:'🔵 Event' },
+                  { val:'holiday', label:'<i data-lucide="circle" class="icon-inline"></i> Holiday' },
+                  { val:'exam',    label:'<i data-lucide="circle" class="icon-inline"></i> Exam Day' },
+                  { val:'event',   label:'<i data-lucide="circle" class="icon-inline"></i> Event' },
                 ].map(t => `
                   <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--font-body-sm)">
                     <input type="radio" name="event-type" value="${t.val}" ${t.val==='holiday'?'checked':''} style="accent-color:var(--color-primary-container)">
@@ -73,8 +73,8 @@ export function render(root) {
 
         <div class="glass-card">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-title">📋 Events This Month</h3>
-            <button class="btn btn-ghost btn-sm" id="refresh-events">🔄</button>
+            <h3 class="text-title"><i data-lucide="clipboard-list" class="icon-inline"></i> Events This Month</h3>
+            <button class="btn btn-ghost btn-sm" id="refresh-events"><i data-lucide="refresh-cw" class="icon-inline"></i></button>
           </div>
           <div id="events-list" class="flex flex-col gap-2"></div>
         </div>
@@ -146,7 +146,7 @@ export function render(root) {
     }
     container.innerHTML = monthEvents.map(([date, ev]) => {
       const color = ev.type === 'holiday' ? 'var(--color-danger)' : ev.type === 'exam' ? '#c77dff' : 'var(--color-secondary)';
-      const icon  = ev.type === 'holiday' ? '🔴' : ev.type === 'exam' ? '🟣' : '🔵';
+      const icon  = ev.type === 'holiday' ? '<i data-lucide="circle" class="icon-inline"></i>' : ev.type === 'exam' ? '<i data-lucide="circle" class="icon-inline"></i>' : '<i data-lucide="circle" class="icon-inline"></i>';
       return `
         <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-md);background:var(--color-surface-container-high)">
           <span>${icon}</span>
@@ -154,7 +154,7 @@ export function render(root) {
             <div style="font-weight:600;font-size:var(--font-body-sm);color:${color}">${ev.name}</div>
             <div style="font-size:11px;color:var(--color-on-surface-variant)">${formatDate(date)}</div>
           </div>
-          <button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px" onclick="deleteEvent('${date}')">🗑️</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px" onclick="deleteEvent('${date}')"><i data-lucide="trash-2" class="icon-inline"></i></button>
         </div>
       `;
     }).join('');

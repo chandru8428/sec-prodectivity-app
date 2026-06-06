@@ -42,7 +42,7 @@ export function render(root) {
 
           <!-- Error Banner -->
           <div id="reg-error" class="alert alert-danger hidden" style="margin-bottom:var(--space-4)">
-            <span>⚠️</span><span id="reg-error-msg"></span>
+            <span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span id="reg-error-msg"></span>
           </div>
 
           <form id="register-form">
@@ -62,7 +62,7 @@ export function render(root) {
               <div class="form-group">
                 <label class="form-label">College Email <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left">📧</span>
+                  <span class="input-icon icon-left"><i data-lucide="mail" class="icon-inline"></i></span>
                   <input class="form-input" id="reg-email" type="email" placeholder="aravind.p@email.com" required autocomplete="email" value="${prefillEmail}" ${isGoogleUser ? 'readonly style="opacity:0.7;cursor:not-allowed;"' : ''} />
                 </div>
                 <div style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px">Use any valid email address</div>
@@ -109,9 +109,9 @@ export function render(root) {
               <div class="form-group" style="${isGoogleUser ? 'display:none;' : ''}">
                 <label class="form-label" for="reg-password">Password <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left" aria-hidden="true">🔒</span>
+                  <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="lock" class="icon-inline"></i></span>
                   <input class="form-input" id="reg-password" type="password" placeholder="Min. 8 characters" ${isGoogleUser ? '' : 'required'} minlength="8" autocomplete="new-password" />
-                  <button type="button" class="input-icon" id="toggle-reg-pass" aria-label="Show password">👁</button>
+                  <button type="button" class="input-icon" id="toggle-reg-pass" aria-label="Show password"><i data-lucide="eye" class="icon-inline"></i></button>
                 </div>
                 <!-- Strength bar -->
                 <div id="pw-strength-bar-wrap" style="margin-top:6px;height:4px;border-radius:4px;background:rgba(0,0,0,0.08);overflow:hidden">
@@ -123,13 +123,13 @@ export function render(root) {
               <div class="form-group" style="${isGoogleUser ? 'display:none;' : ''}">
                 <label class="form-label" for="reg-confirm">Confirm Password <span style="color:var(--color-danger)">*</span></label>
                 <div class="form-input-wrapper">
-                  <span class="input-icon icon-left" aria-hidden="true">🔒</span>
+                  <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="lock" class="icon-inline"></i></span>
                   <input class="form-input" id="reg-confirm" type="password" placeholder="Re-enter password" ${isGoogleUser ? '' : 'required'} autocomplete="new-password" />
                 </div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-lg w-full" id="register-btn">
-                <span id="reg-text">🎓 ${isGoogleUser ? 'Complete Profile' : 'Create Account'}</span>
+                <span id="reg-text"><i data-lucide="graduation-cap" class="icon-inline"></i> ${isGoogleUser ? 'Complete Profile' : 'Create Account'}</span>
                 <span id="reg-spinner" class="spinner hidden" style="width:18px;height:18px;border-width:2px"></span>
               </button>
 
@@ -172,7 +172,7 @@ export function render(root) {
       { w: '20%', color: '#ef4444', text: 'Too weak' },
       { w: '45%', color: '#f97316', text: 'Weak' },
       { w: '70%', color: '#eab308', text: 'Fair' },
-      { w: '100%', color: '#22c55e', text: 'Strong ✓' },
+      { w: '100%', color: '#22c55e', text: 'Strong <i data-lucide="check" class="icon-inline"></i>' },
     ];
     const lvl = levels[Math.max(0, score - 1)];
     bar.style.width = lvl.w;
@@ -261,7 +261,7 @@ export function render(root) {
       });
       if (insertErr) throw insertErr;
 
-      showToast('Account created! Welcome to EduSync 🎉', 'success');
+      showToast('Account created! Welcome to EduSync <i data-lucide="party-popper" class="icon-inline"></i>', 'success');
       if (isGoogleUser) {
         appState.userRole = 'student';
         appState.userData = { ...appState.userData, name: `${firstName} ${lastName}`.trim(), registerNumber: regNumber, role: 'student' };
@@ -303,9 +303,9 @@ function friendlyRegError(err) {
   if (code === 'auth/weak-password')
     return 'Password is too weak. Use at least 6 characters.';
   if (code === 'auth/operation-not-allowed')
-    return '⚠️ Email/Password sign-in is disabled. The admin needs to enable it in Firebase Console → Authentication → Sign-in providers.';
+    return '<i data-lucide="alert-triangle" class="icon-inline"></i>️ Email/Password sign-in is disabled. The admin needs to enable it in Firebase Console → Authentication → Sign-in providers.';
   if (code === 'auth/configuration-not-found')
-    return '⚠️ Firebase Authentication is not configured yet. Admin must enable it in Firebase Console.';
+    return '<i data-lucide="alert-triangle" class="icon-inline"></i>️ Firebase Authentication is not configured yet. Admin must enable it in Firebase Console.';
   if (code === 'auth/network-request-failed')
     return 'Network error. Please check your internet connection and try again.';
   if (code === 'auth/too-many-requests')

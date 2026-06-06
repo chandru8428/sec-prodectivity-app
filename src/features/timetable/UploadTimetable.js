@@ -11,7 +11,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">📤 Upload Exam Timetable</h1>
+      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"><i data-lucide="upload-cloud" class="icon-inline"></i> Upload Exam Timetable</h1>
       <p class="page-subtitle">Upload Theory and Practical exams separately to keep data clean and error-free.</p>
     </div>
 
@@ -21,14 +21,14 @@ export function render(root) {
       <!-- Theory Upload -->
       <div class="glass-card" style="border:1px solid rgba(67,97,238,0.3)">
         <div class="flex items-center gap-3 mb-4">
-          <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#4361ee,#7209b7);display:flex;align-items:center;justify-content:center;font-size:20px">📝</div>
+          <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#4361ee,#7209b7);display:flex;align-items:center;justify-content:center;font-size:20px"><i data-lucide="file-edit" class="icon-inline"></i></div>
           <div>
             <h2 class="text-title">Theory Exam</h2>
             <div style="font-size:11px;color:var(--color-on-surface-variant)">Stored as <code>examType: theory</code></div>
           </div>
         </div>
         <div class="upload-zone" id="theory-zone" style="border-color:rgba(67,97,238,0.4)">
-          <span class="upload-icon">📊</span>
+          <span class="upload-icon"><i data-lucide="bar-chart-3" class="icon-inline"></i></span>
           <div class="text-title mb-2">Drop Theory Excel/CSV here</div>
           <div class="text-muted text-body-sm mb-4">or click to browse</div>
           <button class="btn btn-primary" id="theory-browse-btn">Browse Files</button>
@@ -36,7 +36,7 @@ export function render(root) {
         </div>
         <div id="theory-preview-info" class="hidden mt-3">
           <div class="alert" style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.3);color:var(--color-on-surface)">
-            <span>📊</span>
+            <span><i data-lucide="bar-chart-3" class="icon-inline"></i></span>
             <span id="theory-preview-text"></span>
           </div>
           <div class="flex items-center gap-3 mt-3">
@@ -52,14 +52,14 @@ export function render(root) {
       <!-- Practical Upload -->
       <div class="glass-card" style="border:1px solid rgba(0,163,200,0.3)">
         <div class="flex items-center gap-3 mb-4">
-          <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#00a3c8,#16a34a);display:flex;align-items:center;justify-content:center;font-size:20px">🧪</div>
+          <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#00a3c8,#16a34a);display:flex;align-items:center;justify-content:center;font-size:20px"><i data-lucide="flask-conical" class="icon-inline"></i></div>
           <div>
             <h2 class="text-title">Practical Exam</h2>
             <div style="font-size:11px;color:var(--color-on-surface-variant)">Stored as <code>examType: practical</code></div>
           </div>
         </div>
         <div class="upload-zone" id="practical-zone" style="border-color:rgba(0,163,200,0.4)">
-          <span class="upload-icon">🧪</span>
+          <span class="upload-icon"><i data-lucide="flask-conical" class="icon-inline"></i></span>
           <div class="text-title mb-2">Drop Practical Excel/CSV here</div>
           <div class="text-muted text-body-sm mb-4">or click to browse</div>
           <button class="btn btn-secondary" id="practical-browse-btn">Browse Files</button>
@@ -67,7 +67,7 @@ export function render(root) {
         </div>
         <div id="practical-preview-info" class="hidden mt-3">
           <div class="alert" style="background:rgba(0,163,200,0.1);border:1px solid rgba(0,163,200,0.3);color:var(--color-on-surface)">
-            <span>🧪</span>
+            <span><i data-lucide="flask-conical" class="icon-inline"></i></span>
             <span id="practical-preview-text"></span>
           </div>
           <div class="flex items-center gap-3 mt-3">
@@ -85,19 +85,20 @@ export function render(root) {
     <div class="glass-card mb-6">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12px">
         <div>
-          <div style="font-weight:700;margin-bottom:6px">🔍 Auto-detected columns:</div>
+          <div style="font-weight:700;margin-bottom:6px"><i data-lucide="search" class="icon-inline"></i> Auto-detected columns:</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;line-height:2">
-            <span>📌 <b>Reg No</b> / Register Number</span>
-            <span>📅 <b>Date</b> / Exam Date</span>
-            <span>👤 <b>Name</b> / Student Name</span>
-            <span>📚 <b>Subject Code</b> / Sub Code</span>
-            <span>⏰ <b>Session</b> (FN / AN)</span>
-            <span>📖 <b>Subject Name</b> / Subject</span>
-            <span>🏛️ <b>Location</b> / Hall / Room</span>
+            <span><i data-lucide="pin" class="icon-inline"></i> <b>Reg No</b> / Register Number</span>
+            <span><i data-lucide="calendar" class="icon-inline"></i> <b>Date</b> / Exam Date</span>
+            <span><i data-lucide="user" class="icon-inline"></i> <b>Name</b> / Student Name</span>
+            <span><i data-lucide="book-open" class="icon-inline"></i> <b>Subject Code</b> / Sub Code</span>
+            <span><i data-lucide="alarm-clock" class="icon-inline"></i> <b>Session</b> (FN / AN)</span>
+            <span><i data-lucide="book" class="icon-inline"></i> <b>Subject Name</b> / Subject</span>
+            <span><i data-lucide="building-2" class="icon-inline"></i> <b>Location</b> / Hall / Room</span>
+            <span><i data-lucide="user-check" class="icon-inline"></i> <b>Staff</b> / Invigilator</span>
           </div>
         </div>
         <div id="col-map-display" style="display:none">
-          <div style="font-weight:700;margin-bottom:6px">✅ Last file detection result:</div>
+          <div style="font-weight:700;margin-bottom:6px"><i data-lucide="check-circle-2" class="icon-inline"></i> Last file detection result:</div>
           <div id="col-map-list" class="flex flex-col gap-1"></div>
         </div>
       </div>
@@ -106,12 +107,12 @@ export function render(root) {
     <!-- Preview Table -->
     <div class="glass-card mb-6" id="preview-section" style="display:none">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-title">👁️ Preview — <span id="preview-type-badge"></span> (<span id="preview-count">0</span> rows)</h2>
+        <h2 class="text-title"><i data-lucide="eye" class="icon-inline"></i>️ Preview — <span id="preview-type-badge"></span> (<span id="preview-count">0</span> rows)</h2>
       </div>
       <div class="table-wrapper" style="max-height:300px;overflow-y:auto">
         <table>
           <thead><tr>
-            <th>Reg. No</th><th>Name</th><th>Date</th><th>Code</th><th>Session</th><th>Subject</th><th>Hall</th>
+            <th>Reg. No</th><th>Name</th><th>Date</th><th>Code</th><th>Session</th><th>Subject</th><th>Hall</th><th>Staff</th>
           </tr></thead>
           <tbody id="preview-tbody"></tbody>
         </table>
@@ -121,24 +122,24 @@ export function render(root) {
     <!-- Existing Schedules -->
     <div class="glass-card">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-title">📋 Uploaded Schedules</h2>
+        <h2 class="text-title"><i data-lucide="clipboard-list" class="icon-inline"></i> Uploaded Schedules</h2>
         <div class="flex gap-2">
-          <button class="btn btn-ghost btn-sm" id="refresh-sched">🔄 Refresh</button>
-          <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:var(--color-danger);border:1px solid rgba(239,68,68,0.25)" id="clear-theory-btn">🗑️ Clear Theory</button>
-          <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:var(--color-danger);border:1px solid rgba(239,68,68,0.25)" id="clear-practical-btn">🗑️ Clear Practical</button>
-          <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:var(--color-danger);border:1px solid rgba(239,68,68,0.25)" id="clear-all-btn">🗑️ Clear All</button>
+          <button class="btn btn-ghost btn-sm" id="refresh-sched"><i data-lucide="refresh-cw" class="icon-inline"></i> Refresh</button>
+          <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:var(--color-danger);border:1px solid rgba(239,68,68,0.25)" id="clear-theory-btn"><i data-lucide="trash-2" class="icon-inline"></i> Clear Theory</button>
+          <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:var(--color-danger);border:1px solid rgba(239,68,68,0.25)" id="clear-practical-btn"><i data-lucide="trash-2" class="icon-inline"></i> Clear Practical</button>
+          <button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:var(--color-danger);border:1px solid rgba(239,68,68,0.25)" id="clear-all-btn"><i data-lucide="trash-2" class="icon-inline"></i> Clear All</button>
         </div>
       </div>
 
       <div class="flex gap-3 mb-4">
         <div class="search-bar" style="flex:1">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><i data-lucide="search" class="icon-inline"></i></span>
           <input type="text" id="filter-reg" placeholder="Filter by register number..." />
         </div>
         <select class="form-select" id="filter-type" style="width:160px">
           <option value="">All Types</option>
-          <option value="theory">📝 Theory</option>
-          <option value="practical">🧪 Practical</option>
+          <option value="theory"><i data-lucide="file-edit" class="icon-inline"></i> Theory</option>
+          <option value="practical"><i data-lucide="flask-conical" class="icon-inline"></i> Practical</option>
         </select>
       </div>
 
@@ -166,7 +167,7 @@ export function render(root) {
 
   // ── Clear buttons (delete from Supabase with confirmation) ──
   main.querySelector('#clear-theory-btn').addEventListener('click', async () => {
-    if (!confirm('⚠️ Delete ALL Theory exam schedules from database? This cannot be undone!')) return;
+    if (!confirm('[Warning]️ Delete ALL Theory exam schedules from database? This cannot be undone!')) return;
     try {
       showToast('Deleting theory exams...', 'info');
       await deleteByType('theory');
@@ -174,7 +175,7 @@ export function render(root) {
       parsedRows.theory = [];
       main.querySelector('#theory-preview-info').classList.add('hidden');
       main.querySelector('#preview-section').style.display = 'none';
-      showToast('✅ All theory exams deleted from database', 'success');
+      showToast('<i data-lucide="check-circle-2" class="icon-inline"></i> All theory exams deleted from database', 'success');
       loadSchedules(main, '', '');
     } catch (err) {
       showToast('Failed: ' + err.message, 'error');
@@ -182,7 +183,7 @@ export function render(root) {
   });
   
   main.querySelector('#clear-practical-btn').addEventListener('click', async () => {
-    if (!confirm('⚠️ Delete ALL Practical exam schedules from database? This cannot be undone!')) return;
+    if (!confirm('[Warning]️ Delete ALL Practical exam schedules from database? This cannot be undone!')) return;
     try {
       showToast('Deleting practical exams...', 'info');
       await deleteByType('practical');
@@ -190,7 +191,7 @@ export function render(root) {
       parsedRows.practical = [];
       main.querySelector('#practical-preview-info').classList.add('hidden');
       main.querySelector('#preview-section').style.display = 'none';
-      showToast('✅ All practical exams deleted from database', 'success');
+      showToast('<i data-lucide="check-circle-2" class="icon-inline"></i> All practical exams deleted from database', 'success');
       loadSchedules(main, '', '');
     } catch (err) {
       showToast('Failed: ' + err.message, 'error');
@@ -198,7 +199,7 @@ export function render(root) {
   });
   
   main.querySelector('#clear-all-btn').addEventListener('click', async () => {
-    if (!confirm('⚠️ Delete ALL exam schedules from database? This cannot be undone!')) return;
+    if (!confirm('[Warning]️ Delete ALL exam schedules from database? This cannot be undone!')) return;
     try {
       showToast('Deleting all exams...', 'info');
       await deleteByType('');
@@ -210,7 +211,7 @@ export function render(root) {
       main.querySelector('#preview-section').style.display = 'none';
       main.querySelector('#filter-reg').value = '';
       main.querySelector('#filter-type').value = '';
-      showToast('✅ All exam schedules deleted from database', 'success');
+      showToast('<i data-lucide="check-circle-2" class="icon-inline"></i> All exam schedules deleted from database', 'success');
       loadSchedules(main, '', '');
     } catch (err) {
       showToast('Failed: ' + err.message, 'error');
@@ -283,7 +284,7 @@ async function uploadRows(main, rows, type, clearFirst, parsedRows) {
       btn.textContent = `Uploading... (${total}/${rows.length})`;
     }
 
-    showToast(`✅ Uploaded ${total} ${type} exam records!`, 'success');
+    showToast(`<i data-lucide="check-circle-2" class="icon-inline"></i> Uploaded ${total} ${type} exam records!`, 'success');
     parsedRows[type] = [];
     main.querySelector(`#${type}-preview-info`).classList.add('hidden');
     main.querySelector('#preview-section').style.display = 'none';
@@ -339,6 +340,7 @@ const COL_ALIASES = {
   session:        ['session','sess','fn/an','fn','an','slot','exam session','time slot','time','Time','TIME','Time slot'],
   subject:        ['subject name','subjectname','subject','course name','paper name','course','subject_name','paper'],
   hall:           ['location','hall','room','venue','exam hall','exam center','room no','hall no','exam venue','location','Location','LOCATION'],
+  staffName:      ['staff','staff name','staffname','invigilator','invigilator name','faculty','faculty name','teacher','teacher name','staff_name'],
 };
 
 // Detect if a value looks like a register number (handles R2019/, R2024, R 2019, plain 212224xxxxxx etc.)
@@ -542,6 +544,7 @@ function mapRows(rawRows, colMap) {
       subject:        get(row,'subject'),
       session, startTime: start, endTime: end,
       hall:           get(row,'hall'),
+      staffName:      get(row,'staffName'),
     };
   }).filter(Boolean);
 }
@@ -595,16 +598,16 @@ function handleFile(file, main, type, onParsed) {
       const colDisplay = main.querySelector('#col-map-display');
       const colList    = main.querySelector('#col-map-list');
       colDisplay.style.display = '';
-      const fields = ['registerNumber','studentName','examDate','subjectCode','session','subject','hall'];
-      const icons  = { registerNumber:'📌',studentName:'👤',examDate:'📅',subjectCode:'📚',session:'⏰',subject:'📖',hall:'🏛️' };
+      const fields = ['registerNumber','studentName','examDate','subjectCode','session','subject','hall','staffName'];
+      const icons  = { registerNumber:'<i data-lucide="pin" class="icon-inline"></i>',studentName:'<i data-lucide="user" class="icon-inline"></i>',examDate:'<i data-lucide="calendar" class="icon-inline"></i>',subjectCode:'<i data-lucide="book-open" class="icon-inline"></i>',session:'<i data-lucide="alarm-clock" class="icon-inline"></i>',subject:'<i data-lucide="book" class="icon-inline"></i>',hall:'<i data-lucide="building-2" class="icon-inline"></i>',staffName:'<i data-lucide="user-check" class="icon-inline"></i>' };
       colList.innerHTML = fields.map(f => {
         const mapped = colMap[f];
         return `<div style="display:flex;align-items:center;gap:8px;font-size:11px">
           <span>${icons[f]}</span>
           <span style="min-width:110px;font-weight:600">${f}</span>
           ${mapped
-            ? `<span style="color:var(--color-success)">✓ <span class="badge badge-success" style="font-size:9px">${mapped}</span></span>`
-            : `<span style="color:var(--color-danger)">✗ not detected</span>`
+            ? `<span style="color:var(--color-success)"><i data-lucide="check" class="icon-inline"></i> <span class="badge badge-success" style="font-size:9px">${mapped}</span></span>`
+            : `<span style="color:var(--color-danger)"><i data-lucide="x" class="icon-inline"></i> not detected</span>`
           }
         </div>`;
       }).join('');
@@ -613,8 +616,8 @@ function handleFile(file, main, type, onParsed) {
       const previewSection = main.querySelector('#preview-section');
       previewSection.style.display = '';
       main.querySelector('#preview-type-badge').innerHTML = type === 'theory'
-        ? '<span class="badge badge-primary">📝 Theory</span>'
-        : '<span class="badge" style="background:rgba(0,163,200,0.2);color:#00a3c8">🧪 Practical</span>';
+        ? '<span class="badge badge-primary"><i data-lucide="file-edit" class="icon-inline"></i> Theory</span>'
+        : '<span class="badge" style="background:rgba(0,163,200,0.2);color:#00a3c8"><i data-lucide="flask-conical" class="icon-inline"></i> Practical</span>';
       main.querySelector('#preview-count').textContent = rows.length;
       main.querySelector('#preview-tbody').innerHTML = rows.slice(0,30).map(r => {
         const timeStr = r.startTime && r.endTime ? `${r.startTime}–${r.endTime}` : '';
@@ -630,16 +633,17 @@ function handleFile(file, main, type, onParsed) {
           </td>
           <td style="font-size:12px;max-width:160px" class="truncate">${r.subject||'—'}</td>
           <td style="font-size:12px">${r.hall||'—'}</td>
+          <td style="font-size:12px;max-width:140px" class="truncate">${r.staffName||'—'}</td>
         </tr>`;
       }).join('');
 
       // Show preview info panel
       const infoPanel = main.querySelector(`#${type}-preview-info`);
       infoPanel.classList.remove('hidden');
-      main.querySelector(`#${type}-preview-text`).textContent = `✅ Parsed ${rows.length} rows from "${file.name}"${rows.length > 30 ? ' (showing 30)' : ''}`;
+      main.querySelector(`#${type}-preview-text`).innerHTML = `<i data-lucide="check-circle-2" class="icon-inline"></i> Parsed ${rows.length} rows from "${file.name.replace(/</g, '&lt;')}"${rows.length > 30 ? ' (showing 30)' : ''}`;
 
       onParsed(rows);
-      showToast(`✅ ${rows.length} rows parsed from "${file.name}"`, 'success');
+      showToast(`<i data-lucide="check-circle-2" class="icon-inline"></i> ${rows.length} rows parsed from "${file.name.replace(/</g, '&lt;')}"`, 'success');
     } catch (err) {
       showToast('Failed to parse file: ' + err.message, 'error');
       console.error(err);
@@ -683,7 +687,7 @@ async function loadSchedules(main, filterReg = '', filterType = '') {
 
     container.innerHTML = records.slice(0,80).map(r => {
       const typeColor = r.examType === 'theory' ? 'rgba(67,97,238,0.2)' : 'rgba(0,163,200,0.2)';
-      const typeIcon  = r.examType === 'theory' ? '📝' : '🧪';
+      const typeIcon  = r.examType === 'theory' ? '<i data-lucide="file-edit" class="icon-inline"></i>' : '<i data-lucide="flask-conical" class="icon-inline"></i>';
       const timeStr   = r.startTime && r.endTime ? `${r.startTime}–${r.endTime}` : '';
       return `
       <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-container-high);border-left:3px solid ${typeColor}">
@@ -694,12 +698,13 @@ async function loadSchedules(main, filterReg = '', filterType = '') {
             <span class="badge badge-primary" style="font-size:9px">${r.registerNumber}</span>
             ${r.studentName ? `· ${r.studentName}` : ''}
             · ${r.examDate||'—'}
-            ${r.session ? `· <span class="badge ${r.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:9px">${r.session}</span>` : ''}
-            ${timeStr ? `· <span style="color:var(--color-on-surface-variant)">⏰ ${timeStr}</span>` : ''}
+            · ${r.session ? `· <span class="badge ${r.session==='FN'?'badge-primary':'badge-warning'}" style="font-size:9px">${r.session}</span>` : ''}
+            ${timeStr ? `· <span style="color:var(--color-on-surface-variant)"><i data-lucide="alarm-clock" class="icon-inline"></i> ${timeStr}</span>` : ''}
             · ${r.hall ? `Hall: ${r.hall}` : '—'}
+            ${r.staffName ? `· <span style="color:var(--color-on-surface-variant)"><i data-lucide="user-check" class="icon-inline"></i> ${r.staffName}</span>` : ''}
           </div>
         </div>
-        <button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px 8px" onclick="deleteSchedule('${r.id}')">🗑️</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--color-danger);padding:4px 8px" onclick="deleteSchedule('${r.id}')"><i data-lucide="trash-2" class="icon-inline"></i></button>
       </div>`;
     }).join('');
 
@@ -708,12 +713,12 @@ async function loadSchedules(main, filterReg = '', filterType = '') {
     }
   } catch (err) {
     console.error('Load schedules error:', err);
-    container.innerHTML = `<div class="alert alert-danger"><span>⚠️</span><span>${err.message}</span></div>`;
+    container.innerHTML = `<div class="alert alert-danger"><span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span>${err.message}</span></div>`;
   }
 }
 
 window.deleteSchedule = async function(id) {
-  if (!confirm('🗑️ Delete this exam record from database?')) return;
+  if (!confirm(' Delete this exam record from database?')) return;
   try {
     await deleteExamSchedule(id);
     showToast('Record deleted from database', 'success');

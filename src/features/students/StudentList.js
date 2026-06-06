@@ -10,7 +10,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">👥 All Students</h1>
+      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"><i data-lucide="users" class="icon-inline"></i> All Students</h1>
       <p class="page-subtitle">Browse and manage student profiles registered in EduSync.</p>
     </div>
 
@@ -18,7 +18,7 @@ export function render(root) {
     <div id="remove-user-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:#00000088;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;">
       <div style="background:var(--surface);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 24px 64px #0008;border:1px solid var(--border-color);animation:slideUp .2s ease;">
         <div style="text-align:center;margin-bottom:20px;">
-          <div style="width:60px;height:60px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;">🗑️</div>
+          <div style="width:60px;height:60px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;"><i data-lucide="trash-2" class="icon-inline"></i></div>
           <h3 style="color:var(--on-surface);margin-bottom:6px;font-size:18px;">Remove Student?</h3>
           <p style="color:var(--on-surface-variant);font-size:13px;line-height:1.6;" id="remove-modal-msg">
             This will permanently delete the student's account and all their data. This cannot be undone.
@@ -42,7 +42,7 @@ export function render(root) {
           <button class="btn btn-ghost flex-1" id="modal-cancel-btn">Cancel</button>
           <button class="btn flex-1" id="modal-confirm-btn"
             style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;">
-            🗑️ Yes, Remove
+            <i data-lucide="trash-2" class="icon-inline"></i> Yes, Remove
           </button>
         </div>
       </div>
@@ -50,7 +50,7 @@ export function render(root) {
 
     <div class="flex gap-4 mb-6 flex-wrap">
       <div class="search-bar" style="max-width:320px">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><i data-lucide="search" class="icon-inline"></i></span>
         <input type="text" id="student-search" placeholder="Search by name or register number..." />
       </div>
       <select class="form-select" id="dept-filter" style="width:220px;border-radius:var(--radius-full);border:1px solid var(--border-color)">
@@ -78,14 +78,14 @@ export function render(root) {
         <option value="date-asc">Joined (Oldest)</option>
         <option value="exam-first">Exams First</option>
       </select>
-      <button class="btn btn-ghost btn-sm" id="refresh-students">🔄 Refresh</button>
+      <button class="btn btn-ghost btn-sm" id="refresh-students"><i data-lucide="refresh-cw" class="icon-inline"></i> Refresh</button>
     </div>
 
     <!-- User Activity Modal -->
     <div id="user-activity-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:#00000088;backdrop-filter:blur(4px);align-items:center;justify-content:center;">
       <div style="background:var(--surface);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 24px 64px #0008;border:1px solid var(--border-color);animation:slideUp .2s ease;">
         <div style="text-align:center;margin-bottom:20px;">
-          <div style="width:60px;height:60px;border-radius:50%;background:var(--primary-container);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;">📊</div>
+          <div style="width:60px;height:60px;border-radius:50%;background:var(--primary-container);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;"><i data-lucide="bar-chart-3" class="icon-inline"></i></div>
           <h3 style="color:var(--on-surface);margin-bottom:6px;font-size:18px;">User Activity</h3>
           <p style="color:var(--on-surface-variant);font-size:13px;line-height:1.6;">
             Summary of <span id="activity-student-name" style="color:var(--on-surface);font-weight:600;">—</span>'s activities on EduSync.
@@ -181,7 +181,7 @@ export function render(root) {
 
       renderStudents();
     } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="8"><div class="alert alert-danger"><span>⚠️</span><span>${err.message}</span></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8"><div class="alert alert-danger"><span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span>${err.message}</span></div></td></tr>`;
     }
   }
 
@@ -249,16 +249,16 @@ export function render(root) {
           <td style="font-size:11px;color:var(--color-on-surface-variant)">${joined}</td>
           <td>
             <div class="flex gap-1">
-              ${s.hasExams ? `<button class="btn btn-secondary btn-sm" onclick="viewStudentExams('${s.registerNumber}')">📅 Exams</button>` : ''}
+              ${s.hasExams ? `<button class="btn btn-secondary btn-sm" onclick="viewStudentExams('${s.registerNumber}')"><i data-lucide="calendar" class="icon-inline"></i> Exams</button>` : ''}
               <button class="btn btn-sm" onclick="openActivityModal('${s.id}')"
                 style="background:var(--primary-container);color:var(--primary);border:1px solid var(--primary-container);font-size:11px"
                 title="View student activity">
-                📊 Activity
+                <i data-lucide="bar-chart-3" class="icon-inline"></i> Activity
               </button>
               <button class="btn btn-sm" onclick="openRemoveModal('${s.id}')"
                 style="background:#fee2e233;color:#dc2626;border:1px solid #fca5a533;font-size:11px"
                 title="Remove this student">
-                🗑️ Remove
+                <i data-lucide="trash-2" class="icon-inline"></i> Remove
               </button>
             </div>
           </td>
@@ -294,7 +294,7 @@ export function render(root) {
     if (!pendingRemoveId) return;
     const btn = main.querySelector('#modal-confirm-btn');
     btn.disabled = true;
-    btn.textContent = '⏳ Removing...';
+    btn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Removing...';
 
     const student = allStudents.find(s => s.id === pendingRemoveId);
 
@@ -336,15 +336,15 @@ export function render(root) {
       main.querySelector('#active-students').textContent = allStudents.filter(s => s.registerNumber).length;
 
       renderStudents();
-      showToast('✅ Student removed successfully', 'success');
+      showToast('<i data-lucide="check-circle-2" class="icon-inline"></i> Student removed successfully', 'success');
     } catch (err) {
-      showToast('❌ Failed to remove: ' + err.message, 'error');
+      showToast('<i data-lucide="x-circle" class="icon-inline"></i> Failed to remove: ' + err.message, 'error');
     }
 
     modal.style.display = 'none';
     pendingRemoveId = null;
     btn.disabled = false;
-    btn.textContent = '🗑️ Yes, Remove';
+    btn.innerHTML = '<i data-lucide="trash-2" class="icon-inline"></i> Yes, Remove';
   });
 
   /* ── Search / filter ── */

@@ -2,6 +2,21 @@
    SHARED COMPONENT STYLES - Premium Warm Theme
    ============================================ */
 
+/* --- Icons --- */
+.icon-inline {
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: -0.15em;
+  stroke-width: 2px;
+}
+
+/* Colorize specific icons to match the warm theme */
+.exam-meta-item .icon-inline,
+.qa-chip:not(.active) .icon-inline,
+.text-muted .icon-inline {
+  color: var(--color-primary);
+}
+
 /* --- Glass Card --- */
 .glass-card {
   background: var(--color-surface-container);

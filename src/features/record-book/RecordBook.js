@@ -421,7 +421,7 @@ export function render(root) {
 
         <!-- Mode Selector -->
         <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <button id="mode-auto" type="button" class="btn btn-secondary flex-1" style="border: 2px solid var(--accent-primary); background: var(--bg-surface-elevated)"><i data-lucide="zap" class="icon-inline"></i> Auto-Generate</button>
+          <button id="mode-auto" type="button" class="btn btn-primary flex-1"><i data-lucide="zap" class="icon-inline"></i> Auto-Generate</button>
           <button id="mode-manual" type="button" class="btn btn-ghost flex-1"><i data-lucide="pen" class="icon-inline"></i> Manual Entry</button>
         </div>
 
@@ -673,7 +673,7 @@ export function render(root) {
 
   function selectSubject(opt) {
     subjectSelect.value = opt.value;
-    displayInput.value = opt.value === 'custom' ? '🔍 My subject is not listed...' : opt.label;
+    displayInput.value = opt.value === 'custom' ? '<i data-lucide="search" class="icon-inline"></i> My subject is not listed...' : opt.label;
     searchWrap.classList.remove('open');
     filterInput.value = '';
     renderOptions();
@@ -787,9 +787,9 @@ export function render(root) {
 
   autoBtn.addEventListener('click', () => {
     currentMode = 'auto';
-    autoBtn.className = 'btn btn-secondary flex-1';
-    autoBtn.style.border = '2px solid var(--accent-primary)';
-    autoBtn.style.background = 'var(--bg-surface-elevated)';
+    autoBtn.className = 'btn btn-primary flex-1';
+    autoBtn.style.border = '';
+    autoBtn.style.background = '';
     manualBtn.className = 'btn btn-ghost flex-1';
     manualBtn.style.border = '';
     manualBtn.style.background = '';
@@ -809,9 +809,9 @@ export function render(root) {
 
   manualBtn.addEventListener('click', () => {
     currentMode = 'manual';
-    manualBtn.className = 'btn btn-secondary flex-1';
-    manualBtn.style.border = '2px solid var(--accent-primary)';
-    manualBtn.style.background = 'var(--bg-surface-elevated)';
+    manualBtn.className = 'btn btn-primary flex-1';
+    manualBtn.style.border = '';
+    manualBtn.style.background = '';
     autoBtn.className = 'btn btn-ghost flex-1';
     autoBtn.style.border = '';
     autoBtn.style.background = '';
@@ -1391,7 +1391,20 @@ function addEditorRow(main, exp, i) {
 
 // ── Build PDF doc ─────────────────────────────────────────────────────────────
 async function buildPDFDoc(main) {
-  const { generateRecordBookPDF } = await import('../../utils/pdf-generator.js');
+  let generateRecordBookPDF;
+  try {
+    const module = await import('../../utils/pdf-generator.js');
+    generateRecordBookPDF = module.generateRecordBookPDF;
+  } catch (error) {
+    if (error.message && error.message.includes('Failed to fetch dynamically imported module')) {
+      if (confirm('A new version of the app is available. Please reload the page to apply the update and try again.')) {
+        window.location.reload();
+      }
+      throw new Error('Update required. Please reload the page.');
+    }
+    throw error;
+  }
+
   const user = appState.userData;
   const subject = main.querySelector('#rec-subject')?.value || sessionStorage.getItem('rb_subject') || '';
   const code    = main.querySelector('#rec-code')?.value    || sessionStorage.getItem('rb_code')    || '';
@@ -1447,7 +1460,7 @@ async function loadPDFJS() {
 async function openPDFPreview(main) {
   const btn = main.querySelector('#preview-pdf-btn');
   btn.disabled = true;
-  btn.textContent = '⏳ Building...';
+  btn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Building...';
   try {
     const doc = await buildPDFDoc(main);
 
@@ -1463,7 +1476,7 @@ async function openPDFPreview(main) {
       if (fallback) fallback.style.display = 'none';
       if (canvasContainer) {
         canvasContainer.style.display = 'flex';
-        canvasContainer.innerHTML = '<div style="margin:auto; font-weight: 600; color: var(--color-on-surface-variant);">⏳ Rendering Preview...</div>';
+        canvasContainer.innerHTML = '<div style="margin:auto; font-weight: 600; color: var(--color-on-surface-variant);"><i data-lucide="hourglass" class="icon-inline"></i> Rendering Preview...</div>';
       }
 
       try {
@@ -1522,13 +1535,13 @@ async function triggerDownload(main) {
   const btn = main.querySelector('#download-pdf-btn');
   const origHTML = btn.innerHTML; // capture full HTML including SVG icon
   btn.disabled = true;
-  btn.innerHTML = '⏳ Generating...';
+  btn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Generating...';
   const username = main.querySelector('#gh-username')?.value || sessionStorage.getItem('rb_username') || 'student';
   const code     = main.querySelector('#rec-code')?.value    || sessionStorage.getItem('rb_code')    || 'code';
   try {
     const doc = await buildPDFDoc(main);
     doc.save(`RecordBook_${code}_${username}.pdf`);
-    showToast('PDF downloaded! ✅', 'success');
+    showToast('PDF downloaded! <i data-lucide="check-circle-2" class="icon-inline"></i>', 'success');
   } catch (err) {
     showToast('PDF failed: ' + err.message, 'error');
   } finally {

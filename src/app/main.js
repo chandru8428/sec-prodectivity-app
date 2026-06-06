@@ -4,8 +4,31 @@ import '../styles/theme-overrides.css';
 import '../styles/responsive-mobile.css';
 import { auth, db, onAuthStateChanged, doc, getDoc } from '../lib/firebase.js';
 import { supabase } from '../lib/supabase.js';
+import { createIcons, icons } from 'lucide';
 
 import { router } from './router.js';
+
+// ── Global Lucide Icon Auto-Renderer ──────────────────────────────────────────
+// Automatically converts <i data-lucide="..."> into SVG icons whenever the DOM updates
+const iconObserver = new MutationObserver((mutations) => {
+  let shouldUpdate = false;
+  for (const m of mutations) {
+    if (m.addedNodes.length > 0) {
+      shouldUpdate = true;
+      break;
+    }
+  }
+  if (shouldUpdate) {
+    // Disconnect temporarily to avoid infinite loops when createIcons mutates the DOM
+    iconObserver.disconnect();
+    createIcons({ icons });
+    iconObserver.observe(document.body, { childList: true, subtree: true });
+  }
+});
+iconObserver.observe(document.body, { childList: true, subtree: true });
+// Initial render
+createIcons({ icons });
+
 
 // ── Theme Toggle Logic ────────────────────────────────────────────────────────
 const savedTheme = localStorage.getItem('theme');
@@ -38,7 +61,7 @@ toastContainer.id = 'toast-container';
 document.body.appendChild(toastContainer);
 
 export function showToast(message, type = 'info', duration = 3500) {
-  const icons = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
+  const icons = { success: '<i data-lucide="check" class="icon-inline"></i>', error: '<i data-lucide="x" class="icon-inline"></i>', warning: '<i data-lucide="alert-triangle" class="icon-inline"></i>', info: 'ℹ' };
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `<span>${icons[type] || icons.info}</span><span>${message}</span>`;

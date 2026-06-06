@@ -37,9 +37,10 @@ export function render(root) {
       }
       .qa-chips { display:flex; gap:6px; flex-wrap:wrap; }
       .qa-chip {
+        display:inline-flex; align-items:center; gap:6px;
         padding:5px 13px; border-radius:var(--radius-full);
         border:1px solid var(--border-color); background:var(--color-surface);
-        font-size:12px; font-weight:600; cursor:pointer;
+        font-size:13px; font-weight:600; cursor:pointer;
         color:var(--color-on-surface-variant); transition:all 0.15s; white-space:nowrap;
       }
       .qa-chip.active {
@@ -260,7 +261,7 @@ export function render(root) {
     </style>
 
     <div class="page-header" style="margin-bottom:4px">
-      <h1 class="page-title">💬 Exam Q&A Board</h1>
+      <h1 class="page-title"><i data-lucide="message-square" class="icon-inline"></i> Exam Q&A Board</h1>
     </div>
 
     <!-- Filter bar — full width above the two-column grid -->
@@ -271,9 +272,9 @@ export function render(root) {
       </div>
       <div class="qa-chips" id="type-filters">
         <button class="qa-chip active" data-type="all">All</button>
-        <button class="qa-chip" data-type="question">❓ Questions</button>
-        <button class="qa-chip" data-type="tip">💡 Tips</button>
-        <button class="qa-chip" data-type="answer">✅ Answer Keys</button>
+        <button class="qa-chip" data-type="question"><i data-lucide="help-circle" class="icon-inline"></i> Questions</button>
+        <button class="qa-chip" data-type="tip"><i data-lucide="lightbulb" class="icon-inline"></i> Tips</button>
+        <button class="qa-chip" data-type="answer"><i data-lucide="check-circle-2" class="icon-inline"></i> Answer Keys</button>
       </div>
       <button class="btn btn-primary desktop-create-btn btn-glow" id="open-create-modal" style="margin-left:auto; border-radius:var(--radius-full); padding:8px 16px; font-weight:600;">
         <span style="font-size:16px; margin-right:4px;">+</span> Create Post
@@ -295,7 +296,7 @@ export function render(root) {
       <!-- Right: Trending -->
       <div class="flex flex-col gap-4" style="position:sticky;top:80px">
         <div class="glass-card">
-          <h3 class="text-title mb-4">🔥 Trending Topics</h3>
+          <h3 class="text-title mb-4"><i data-lucide="flame" class="icon-inline"></i> Trending Topics</h3>
           <div id="trending-list" class="flex flex-col gap-2">
             <div class="text-muted text-body-sm" style="text-align:center">Loading...</div>
           </div>
@@ -310,8 +311,8 @@ export function render(root) {
     <div class="modal-backdrop" id="create-post-modal">
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-          <h3 class="text-title" style="margin:0; font-size:1.25rem;">✏️ Create Post</h3>
-          <button class="modal-close" id="close-modal-btn">✕</button>
+          <h3 class="text-title" style="margin:0; font-size:1.25rem;"><i data-lucide="pencil" class="icon-inline"></i> Create Post</h3>
+          <button class="modal-close" id="close-modal-btn"><i data-lucide="x" class="icon-inline"></i></button>
         </div>
         
         <form id="post-form" class="flex flex-col gap-3">
@@ -335,7 +336,7 @@ export function render(root) {
               ${['question','tip','answer'].map(t => `
                 <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--font-body-sm);color:var(--color-on-surface-variant)">
                   <input type="radio" name="post-type" value="${t}" ${t==='question'?'checked':''} style="accent-color:var(--color-primary-container)">
-                  ${t==='question'?'❓ Question':t==='tip'?'💡 Tip':'✅ Answer Key'}
+                  ${t==='question'?'<i data-lucide="help-circle" class="icon-inline"></i> Question':t==='tip'?'<i data-lucide="lightbulb" class="icon-inline"></i> Tip':'<i data-lucide="check-circle-2" class="icon-inline"></i> Answer Key'}
                 </label>
               `).join('')}
             </div>
@@ -343,11 +344,11 @@ export function render(root) {
 
           <!-- ── Attach files ── -->
           <div class="form-group">
-            <label class="form-label">📎 Attachments <span style="font-weight:400;color:var(--color-on-surface-variant)">(images & PDFs, max 5)</span></label>
+            <label class="form-label"><i data-lucide="paperclip" class="icon-inline"></i> Attachments <span style="font-weight:400;color:var(--color-on-surface-variant)">(images & PDFs, max 5)</span></label>
             <div class="drop-zone" id="drop-zone">
               <input type="file" id="file-input" accept="image/*,.pdf" multiple />
               <div style="pointer-events:none">
-                <div style="font-size:28px;margin-bottom:4px">📂</div>
+                <div style="font-size:28px;margin-bottom:4px"><i data-lucide="folder-open" class="icon-inline"></i></div>
                 <p style="font-size:var(--font-body-sm);color:var(--color-on-surface-variant);margin:0">
                   Drag & drop or <strong>click to browse</strong>
                 </p>
@@ -363,7 +364,7 @@ export function render(root) {
             <p id="upload-status" style="font-size:11px;color:var(--color-on-surface-variant);margin-top:4px;display:none"></p>
           </div>
 
-          <button type="submit" class="btn btn-primary w-full btn-glow" id="post-submit-btn" style="margin-top:8px; padding:10px; font-weight:600;">🚀 Post</button>
+          <button type="submit" class="btn btn-primary w-full btn-glow" id="post-submit-btn" style="margin-top:8px; padding:10px; font-weight:600;"><i data-lucide="rocket" class="icon-inline"></i> Post</button>
         </form>
       </div>
     </div>
@@ -461,9 +462,9 @@ function renderAttachPreviews(container) {
     <div class="attach-thumb">
       ${item.type === 'image'
         ? `<img src="${item.previewUrl}" alt="preview" />`
-        : `<div class="pdf-icon">📄<span>${item.file.name}</span></div>`
+        : `<div class="pdf-icon"><i data-lucide="file-text" class="icon-inline"></i><span>${item.file.name}</span></div>`
       }
-      <button class="remove-attach" data-idx="${idx}" title="Remove">✕</button>
+      <button class="remove-attach" data-idx="${idx}" title="Remove"><i data-lucide="x" class="icon-inline"></i></button>
     </div>
   `).join('');
 
@@ -490,7 +491,7 @@ async function loadPosts(main) {
     renderPosts(container, allPosts, main);
     renderTrending(main.querySelector('#trending-list'), allPosts);
   } catch (err) {
-    container.innerHTML = `<div class="alert alert-danger"><span>⚠️</span><span>Failed to load posts: ${err.message}</span></div>`;
+    container.innerHTML = `<div class="alert alert-danger"><span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span>Failed to load posts: ${err.message}</span></div>`;
   }
 }
 
@@ -507,7 +508,7 @@ function renderPosts(container, posts, main) {
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="glass-card" style="text-align:center;padding:var(--space-10)">
-        <div style="font-size:48px;margin-bottom:var(--space-4)">📭</div>
+        <div style="font-size:48px;margin-bottom:var(--space-4)"><i data-lucide="inbox" class="icon-inline"></i></div>
         <h3 class="text-title">No posts found</h3>
         <p class="text-muted text-body-sm" style="margin-top:var(--space-2)">Be the first to post something!</p>
       </div>
@@ -517,7 +518,7 @@ function renderPosts(container, posts, main) {
 
   const isAdmin = appState.userRole === 'admin';
   const tpClass = { question:'tp-question', tip:'tp-tip', answer:'tp-answer' };
-  const tpLabel = { question:'❓ Question', tip:'💡 Tip', answer:'✅ Answer Key' };
+  const tpLabel = { question:'<i data-lucide="help-circle" class="icon-inline"></i> Question', tip:'<i data-lucide="lightbulb" class="icon-inline"></i> Tip', answer:'<i data-lucide="check-circle-2" class="icon-inline"></i> Answer Key' };
 
   container.innerHTML = filtered.map(post => {
     const pinned  = post.pinned;
@@ -532,7 +533,7 @@ function renderPosts(container, posts, main) {
           <div class="qa-author">
             <div class="qa-avatar">${(post.authorName||'a')[0].toUpperCase()}</div>
             <div>
-              <div class="qa-author-name">${post.authorName||'Aravind P'}${pinned ? ' <span title="Pinned">📌</span>' : ''}</div>
+              <div class="qa-author-name">${post.authorName||'Aravind P'}${pinned ? ' <span title="Pinned"><i data-lucide="pin" class="icon-inline"></i></span>' : ''}</div>
               <div class="qa-author-reg">${post.registerNumber||'212224240015'}</div>
             </div>
           </div>
@@ -542,15 +543,15 @@ function renderPosts(container, posts, main) {
         <p class="qa-body">${post.content}</p>
         ${attachHtml}
         <div class="qa-footer">
-          <span class="qa-tag qa-tag-subj">📚 ${post.subject}</span>
+          <span class="qa-tag qa-tag-subj"><i data-lucide="book-open" class="icon-inline"></i> ${post.subject}</span>
           ${post.semester ? `<span class="qa-tag qa-tag-sem">Sem ${post.semester}</span>` : ''}
           <span class="qa-time">${timeAgo}</span>
           <button class="qa-vote upvote-btn ${post.upvotedBy?.includes(appState.currentUser?.uid) ? 'active' : ''}" data-id="${post.id}">
             ▲ <span class="vote-count">${post.upvotedBy?.length ?? post.votes ?? 0}</span>
           </button>
           ${(isAdmin || post.authorId === appState.currentUser?.uid) ? `
-            ${isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin" style="padding:4px 8px">📌</button>` : ''}
-            ${post.authorId === appState.currentUser?.uid ? `<button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="editPost('${post.id}')" title="Edit">✏️</button>` : ''}
+            ${isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="moderatePost('${post.id}','pin')" title="Pin/Unpin" style="padding:4px 8px"><i data-lucide="pin" class="icon-inline"></i></button>` : ''}
+            ${post.authorId === appState.currentUser?.uid ? `<button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="editPost('${post.id}')" title="Edit"><i data-lucide="pencil" class="icon-inline"></i></button>` : ''}
             <button class="btn btn-sm" style="background-color:#ef4444;color:white;border:none;padding:4px 8px;display:flex;align-items:center;gap:4px;" onclick="moderatePost('${post.id}','delete')" title="Delete">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
@@ -607,7 +608,7 @@ function buildAttachmentHtml(attachments) {
     } else {
       const cleanUrl = a.url.replace('/fl_inline/', '/');
       return `<a class="post-pdf-chip" href="${cleanUrl}" target="_blank" rel="noopener">
-        📄 ${a.filename || 'PDF Document'}
+        <i data-lucide="file-text" class="icon-inline"></i> ${a.filename || 'PDF Document'}
       </a>`;
     }
   }).join('');
@@ -618,7 +619,7 @@ function openLightbox(src) {
   const box = document.createElement('div');
   box.className = 'qa-lightbox';
   box.innerHTML = `
-    <button class="qa-lightbox-close">✕</button>
+    <button class="qa-lightbox-close"><i data-lucide="x" class="icon-inline"></i></button>
     <img src="${src}" alt="full image" />
   `;
   box.addEventListener('click', (e) => {
@@ -683,7 +684,7 @@ function setupPostForm(main) {
     const type     = document.querySelector('input[name="post-type"]:checked').value;
 
     submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Posting…';
+    submitBtn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Posting…';
 
     try {
       // ── Upload attachments if any ──────────────────────────────────────────
@@ -730,7 +731,7 @@ function setupPostForm(main) {
         if (postToEdit) Object.assign(postToEdit, updatedFields);
         
         if (window.cancelEdit) window.cancelEdit();
-        showToast('Post updated! 📝', 'success');
+        showToast('Post updated! <i data-lucide="file-edit" class="icon-inline"></i>', 'success');
 
       } else {
         // ── Save new to Firestore ──────────────────────────────────────────────
@@ -753,7 +754,7 @@ function setupPostForm(main) {
         pendingFiles.forEach(f => { if (f.previewUrl) URL.revokeObjectURL(f.previewUrl); });
         pendingFiles = [];
         document.getElementById('attach-preview').innerHTML = '';
-        showToast('Post published! 🎉', 'success');
+        showToast('Post published! <i data-lucide="party-popper" class="icon-inline"></i>', 'success');
         if (window._closePostModal) window._closePostModal();
       }
 
@@ -763,8 +764,8 @@ function setupPostForm(main) {
     } catch (err) {
       showToast('Failed to post: ' + err.message, 'error');
     } finally {
-      submitBtn.disabled    = false;
-      submitBtn.textContent = '🚀 Post';
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i data-lucide="rocket" class="icon-inline"></i> Post';
     }
   });
 }
@@ -784,7 +785,7 @@ window.moderatePost = async function(id, action) {
       const newPinned = !post?.pinned;
       await updateDoc(doc(db, 'posts', id), { pinned: newPinned });
       if (post) post.pinned = newPinned;
-      showToast(newPinned ? 'Post pinned! 📌' : 'Post unpinned', 'success');
+      showToast(newPinned ? 'Post pinned! <i data-lucide="pin" class="icon-inline"></i>' : 'Post unpinned', 'success');
     }
   } catch (err) {
     showToast('Action failed: ' + err.message, 'error');
@@ -803,7 +804,7 @@ window.editPost = function(id) {
   if (typeRadio) typeRadio.checked = true;
 
   const submitBtn = document.getElementById('post-submit-btn');
-  submitBtn.innerHTML = '📝 Update Post';
+  submitBtn.innerHTML = '<i data-lucide="file-edit" class="icon-inline"></i> Update Post';
   
   if (window._openPostModal) window._openPostModal();
 };
@@ -814,7 +815,7 @@ window.cancelEdit = function() {
   if (form) form.reset();
   
   const submitBtn = document.getElementById('post-submit-btn');
-  if (submitBtn) submitBtn.innerHTML = '🚀 Post';
+  if (submitBtn) submitBtn.innerHTML = '<i data-lucide="rocket" class="icon-inline"></i> Post';
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

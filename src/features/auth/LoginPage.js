@@ -101,7 +101,7 @@ export function render(root) {
             <div class="form-group">
               <label class="form-label" for="student-identifier">Username</label>
               <div class="form-input-wrapper">
-                <span class="input-icon icon-left" aria-hidden="true">👤</span>
+                <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="user" class="icon-inline"></i></span>
                 <input class="form-input" id="student-identifier" type="text" placeholder="Register No. or Email" required autocomplete="username" />
               </div>
               <small style="color:var(--color-on-surface-variant);font-size:12px;line-height:1.4;margin-top:4px;">e.g. 212224240015 or aravind.p@email.com</small>
@@ -109,9 +109,9 @@ export function render(root) {
             <div class="form-group">
               <label class="form-label" for="student-password">Password</label>
               <div class="form-input-wrapper">
-                <span class="input-icon icon-left" aria-hidden="true">🔒</span>
+                <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="lock" class="icon-inline"></i></span>
                 <input class="form-input" id="student-password" type="password" placeholder="Enter your password" required autocomplete="current-password" />
-                <button type="button" class="input-icon" id="toggle-student-pass" aria-label="Show password">👁</button>
+                <button type="button" class="input-icon" id="toggle-student-pass" aria-label="Show password"><i data-lucide="eye" class="icon-inline"></i></button>
               </div>
             </div>
             
@@ -208,7 +208,7 @@ export function render(root) {
             throw err;
           }
         }
-        showToast('Welcome, Admin! ⚙️', 'success');
+        showToast('Welcome, Admin! <i data-lucide="settings" class="icon-inline"></i>', 'success');
         router.navigate('/admin/dashboard');
       } else {
         // ── Student login — must have a registered profile in 'users' table ──
@@ -246,12 +246,12 @@ export function render(root) {
           throw new Error('NOT_REGISTERED');
         }
 
-        showToast(`Welcome back, ${name || 'Aravind P'}! 👋`, 'success');
+        showToast(`Welcome back, ${name || 'Aravind P'}! `, 'success');
         router.navigate(role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
       }
     } catch (err) {
       if (err.message === 'NOT_REGISTERED') {
-        showToast('🚫 Access denied. You are not registered in EduSync. Please ask your admin to register you.', 'error', 6000);
+        showToast('<i data-lucide="ban" class="icon-inline"></i> Access denied. You are not registered in EduSync. Please ask your admin to register you.', 'error', 6000);
       } else {
         showToast(friendlyAuthError(err), 'error');
       }
@@ -300,7 +300,7 @@ export function render(root) {
         return;
       }
 
-      showToast(`Welcome, ${name || user.displayName || 'Aravind P'}! 🎉`, 'success');
+      showToast(`Welcome, ${name || user.displayName || 'Aravind P'}! <i data-lucide="party-popper" class="icon-inline"></i>`, 'success');
       router.navigate(role === 'admin' ? '/admin/dashboard' : '/student/dashboard');
     } catch (err) {
       showToast(friendlyAuthError(err), 'error');
@@ -330,10 +330,10 @@ function friendlyAuthError(err) {
   const msg  = err?.message || 'Unknown error';
 
   if (code === 'auth/configuration-not-found' || msg.includes('configuration-not-found'))
-    return '⚠️ Authentication not configured. Enable Email/Password in Firebase Console → Authentication → Sign-in providers.';
+    return '<i data-lucide="alert-triangle" class="icon-inline"></i>️ Authentication not configured. Enable Email/Password in Firebase Console → Authentication → Sign-in providers.';
 
   if (code === 'auth/operation-not-allowed')
-    return '⚠️ Email/Password sign-in is disabled. Go to Firebase Console → Authentication → Sign-in providers → Enable Email/Password.';
+    return '<i data-lucide="alert-triangle" class="icon-inline"></i>️ Email/Password sign-in is disabled. Go to Firebase Console → Authentication → Sign-in providers → Enable Email/Password.';
 
   if (code === 'auth/invalid-credential' || code === 'auth/wrong-password')
     return 'Incorrect password. Please try again.';

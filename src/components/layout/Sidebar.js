@@ -195,7 +195,7 @@ export function createLayout(title, content, breadcrumb = '') {
   main.innerHTML = `
     <header class="top-bar">
       <div class="flex items-center gap-4">
-        <button class="btn btn-ghost btn-sm" id="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" style="display:none;border-radius:12px">☰</button>
+        <button class="btn btn-ghost btn-sm" id="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" style="display:none;border-radius:12px"><i data-lucide="menu" class="icon-inline"></i></button>
         <div>
           ${breadcrumb ? `<div class="text-label-sm text-muted" style="margin-bottom:2px;color:var(--color-on-surface-variant)">${breadcrumb}</div>` : ''}
           <div style="font-size:26px;font-weight:800;color:var(--color-on-surface);letter-spacing:-0.5px;">${title}</div>

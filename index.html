@@ -12,6 +12,22 @@
   <meta name="theme-color" content="#d89a22">
   <link rel="canonical" href="https://edusync.app/" />
 
+  <!-- Global Error Handler -->
+  <script>
+    window.addEventListener('error', function(e) {
+      const errDiv = document.createElement('div');
+      errDiv.style = 'position:fixed;top:0;left:0;right:0;background:red;color:white;z-index:999999;padding:20px;font-family:monospace;white-space:pre-wrap;overflow:auto;max-height:50vh;';
+      errDiv.textContent = 'GLOBAL ERROR: ' + e.message + '\\n' + (e.error ? e.error.stack : '');
+      document.body.appendChild(errDiv);
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      const errDiv = document.createElement('div');
+      errDiv.style = 'position:fixed;top:50vh;left:0;right:0;background:orange;color:black;z-index:999999;padding:20px;font-family:monospace;white-space:pre-wrap;overflow:auto;max-height:50vh;';
+      errDiv.textContent = 'PROMISE REJECTION: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason);
+      document.body.appendChild(errDiv);
+    });
+  </script>
+
   <!-- Open Graph (Facebook/LinkedIn) -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://edusync.app/" />
@@ -43,7 +59,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d89a22' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 10v6M2 10l10-5 10 5-10 5z'/><path d='M6 12v5c3 3 9 3 12 0v-5'/></svg>" />
 </head>
 <body>
   <div id="app"></div>

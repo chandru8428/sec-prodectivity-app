@@ -37,7 +37,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🔗 Subject-Repo Mapping</h1>
+      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"><i data-lucide="link-2" class="icon-inline"></i> Subject-Repo Mapping</h1>
       <p class="page-subtitle">Map subjects to GitHub repository templates for the Record Book PDF generator.</p>
     </div>
 
@@ -45,7 +45,7 @@ export function render(root) {
 
       <!-- Add Form -->
       <div class="glass-card" style="position:sticky;top:80px">
-        <h2 class="text-title mb-4" id="mapping-form-title">➕ Add New Mapping</h2>
+        <h2 class="text-title mb-4" id="mapping-form-title"><i data-lucide="plus" class="icon-inline"></i> Add New Mapping</h2>
         <form id="mapping-form" class="flex flex-col gap-4">
           <input type="hidden" id="editing-id" />
           <div class="form-group">
@@ -67,7 +67,7 @@ export function render(root) {
           <div class="form-group">
             <label class="form-label">GitHub Repo URLs (comma separated)</label>
             <div class="form-input-wrapper">
-              <span class="input-icon icon-left" style="font-size:14px">🔗</span>
+              <span class="input-icon icon-left" style="font-size:14px"><i data-lucide="link-2" class="icon-inline"></i></span>
               <input class="form-input" id="m-repo" type="text" placeholder="user/repo1, user/repo2" required />
             </div>
           </div>
@@ -85,14 +85,14 @@ export function render(root) {
       <!-- Mapping Table -->
       <div class="glass-card">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-title">📋 All Mappings</h2>
+          <h2 class="text-title"><i data-lucide="clipboard-list" class="icon-inline"></i> All Mappings</h2>
           <div class="flex gap-3" style="flex-wrap:wrap">
             <div class="search-bar" style="max-width:200px">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon"><i data-lucide="search" class="icon-inline"></i></span>
               <input type="text" id="mapping-search" placeholder="Search..." />
             </div>
-            <button class="btn btn-ghost btn-sm" id="refresh-maps">🔄</button>
-            <button class="btn btn-secondary btn-sm" id="seed-sample-btn" style="font-size:12px;white-space:nowrap">🧪 Seed Sample Labs</button>
+            <button class="btn btn-ghost btn-sm" id="refresh-maps"><i data-lucide="refresh-cw" class="icon-inline"></i></button>
+            <button class="btn btn-secondary btn-sm" id="seed-sample-btn" style="font-size:12px;white-space:nowrap"><i data-lucide="flask-conical" class="icon-inline"></i> Seed Sample Labs</button>
           </div>
         </div>
         <div class="table-wrapper" style="overflow-x:auto">
@@ -135,7 +135,7 @@ export function render(root) {
       }
       form.reset();
       main.querySelector('#editing-id').value = '';
-      main.querySelector('#mapping-form-title').textContent = '➕ Add New Mapping';
+      main.querySelector('#mapping-form-title').innerHTML = '<i data-lucide="plus" class="icon-inline"></i> Add New Mapping';
       main.querySelector('#cancel-edit').style.display = 'none';
       loadMappings(main);
     } catch (err) {
@@ -146,7 +146,7 @@ export function render(root) {
   main.querySelector('#cancel-edit').addEventListener('click', () => {
     form.reset();
     main.querySelector('#editing-id').value = '';
-    main.querySelector('#mapping-form-title').textContent = '➕ Add New Mapping';
+    main.querySelector('#mapping-form-title').innerHTML = '<i data-lucide="plus" class="icon-inline"></i> Add New Mapping';
     main.querySelector('#cancel-edit').style.display = 'none';
   });
 
@@ -157,7 +157,7 @@ export function render(root) {
     const btn = main.querySelector('#seed-sample-btn');
     if (!confirm(`This will add ${SAMPLE_LABS.length} sample lab entries to the repo mapping. Continue?`)) return;
     btn.disabled = true;
-    btn.textContent = '⏳ Seeding...';
+    btn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Seeding...';
     let added = 0, skipped = 0;
     try {
       // Check existing to avoid duplicates
@@ -177,13 +177,13 @@ export function render(root) {
         });
         added++;
       }
-      showToast(`✅ Seeded ${added} labs! (${skipped} already existed)`, 'success', 4000);
+      showToast(`<i data-lucide="check-circle-2" class="icon-inline"></i> Seeded ${added} labs! (${skipped} already existed)`, 'success', 4000);
       loadMappings(main);
     } catch (err) {
       showToast('Seed failed: ' + err.message, 'error');
     }
     btn.disabled = false;
-    btn.textContent = '🧪 Seed Sample Labs';
+    btn.innerHTML = '<i data-lucide="flask-conical" class="icon-inline"></i> Seed Sample Labs';
   });
 
   let searchTimeout;
@@ -205,7 +205,7 @@ export function render(root) {
     main.querySelector('#m-title').value = entry.title || '';
     main.querySelector('#m-repo').value  = entry.repoUrl || '';
     main.querySelector('#m-date').value  = entry.date || '';
-    main.querySelector('#mapping-form-title').textContent = '✏️ Edit Mapping';
+    main.querySelector('#mapping-form-title').innerHTML = '<i data-lucide="pencil" class="icon-inline"></i> Edit Mapping';
     main.querySelector('#cancel-edit').style.display = '';
     main.querySelector('#m-code').focus();
     showToast('Editing mapping — update and save', 'info');
@@ -244,22 +244,22 @@ async function loadMappings(main, search = '') {
               const cleanUrl = url.trim();
               const shortUrl = cleanUrl.replace('https://github.com/','') || '—';
               return `<a href="${cleanUrl}" target="_blank" style="font-size:11px;color:var(--color-secondary);text-decoration:none;display:block" class="truncate" title="${cleanUrl}">
-                🔗 ${shortUrl}
+                <i data-lucide="link-2" class="icon-inline"></i> ${shortUrl}
               </a>`;
             }).join('') || '—'}
           </td>
-          <td><span class="badge badge-success">✓ Active</span></td>
+          <td><span class="badge badge-success"><i data-lucide="check" class="icon-inline"></i> Active</span></td>
           <td>
             <div class="flex gap-1">
-              <button class="btn btn-secondary btn-sm" onclick="_editMapping('${m.id}')">✏️</button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--color-danger)" onclick="deleteMapping('${m.id}')">🗑️</button>
+              <button class="btn btn-secondary btn-sm" onclick="_editMapping('${m.id}')"><i data-lucide="pencil" class="icon-inline"></i></button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--color-danger)" onclick="deleteMapping('${m.id}')"><i data-lucide="trash-2" class="icon-inline"></i></button>
             </div>
           </td>
         </tr>
       `;
     }).join('');
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="alert alert-danger"><span>⚠️</span><span>${err.message}</span></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="alert alert-danger"><span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span>${err.message}</span></div></td></tr>`;
   }
 }
 

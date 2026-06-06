@@ -46,7 +46,7 @@ export function render(root) {
           </form>
 
           <div id="attendance-validation" class="alert alert-danger hidden mt-4">
-            <span>⚠️</span>
+            <span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span>
             <span id="attendance-validation-text"></span>
           </div>
 
@@ -313,7 +313,7 @@ function renderResultPanel(main, state) {
   const panel = main.querySelector('#attendance-result-panel');
   panel.innerHTML = `
     <div class="alert ${meetsRequirement ? 'alert-success' : 'alert-warning'}">
-      <span>${meetsRequirement ? '✅' : '⚠️'}</span>
+      <span>${meetsRequirement ? '<i data-lucide="check-circle-2" class="icon-inline"></i>' : '<i data-lucide="alert-triangle" class="icon-inline"></i>️'}</span>
       <div>
         <div style="font-weight:700;margin-bottom:4px">${meetsRequirement ? 'Requirement satisfied' : 'Requirement not yet satisfied'}</div>
         <div>Your current attendance is <strong>${currentPercentage.toFixed(2)}%</strong> from <strong>${attendedClasses}</strong> attended classes out of <strong>${totalClasses}</strong> total classes.</div>

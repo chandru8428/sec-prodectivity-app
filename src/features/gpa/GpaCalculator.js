@@ -54,21 +54,21 @@ export function render(root) {
             <div>
               <div class="text-on-surface" style="font-weight:600;font-size:var(--font-body-sm)">Import Result PDF</div>
               <div class="text-muted text-label" style="margin-top:2px;">Auto-fill ALL subjects from Anna Univ / Autonomous results</div>
-              <div class="text-primary text-label" style="margin-top:4px; font-weight: 500;">💡 How to use: Go to Camu → Final Result → Previous Semester → Download PDF → Upload here</div>
+              <div class="text-primary text-label" style="margin-top:4px; font-weight: 500;"><i data-lucide="lightbulb" class="icon-inline"></i> How to use: Go to Camu → Final Result → Previous Semester → Download PDF → Upload here</div>
             </div>
             <div>
               <input type="file" id="gpa-pdf-upload" accept="application/pdf" style="display:none;" />
-              <button class="btn btn-secondary btn-sm" id="gpa-pdf-btn">📄 Upload PDF</button>
+              <button class="btn btn-secondary btn-sm" id="gpa-pdf-btn"><i data-lucide="file-text" class="icon-inline"></i> Upload PDF</button>
             </div>
           </div>
 
           <!-- Parsed Preview Panel (hidden until PDF parsed) -->
           <div id="pdf-preview-panel" style="display:none;margin-bottom:var(--space-4);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)">
-              <div style="font-weight:700;color:var(--color-primary)">📋 Parsed Subjects — Review &amp; Edit</div>
+              <div style="font-weight:700;color:var(--color-primary)"><i data-lucide="clipboard-list" class="icon-inline"></i> Parsed Subjects — Review &amp; Edit</div>
               <div style="display:flex;gap:8px">
                 <button class="btn btn-ghost btn-sm" id="preview-add-row-btn">+ Add Row</button>
-                <button class="btn btn-primary btn-sm" id="preview-save-btn">✅ Save to Semester <span id="preview-sem-label">1</span></button>
+                <button class="btn btn-primary btn-sm" id="preview-save-btn"><i data-lucide="check-circle-2" class="icon-inline"></i> Save to Semester <span id="preview-sem-label">1</span></button>
               </div>
             </div>
             <div class="table-wrapper">
@@ -79,13 +79,13 @@ export function render(root) {
             </div>
             <!-- Warning message -->
             <div style="margin-top:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);display:flex;gap:var(--space-3);align-items:flex-start">
-              <span style="font-size:1.25rem;line-height:1">⚠️</span>
+              <span style="font-size:1.25rem;line-height:1"><i data-lucide="alert-triangle" class="icon-inline"></i>️</span>
               <div>
                 <div style="font-weight:700;color:#f59e0b;font-size:var(--font-body-sm);margin-bottom:2px">Please double-check before saving!</div>
                 <div style="font-size:var(--font-label);color:var(--text-muted);line-height:1.5">
                   The auto-parser may make mistakes — especially with long subject names that wrap across lines or unusual PDF formats.
                   <strong style="color:var(--text-on-surface)">Verify each subject name, grade, and credit</strong> before clicking Save.
-                  You can edit any field directly in the table above, add missing subjects with <em>+ Add Row</em>, or delete incorrect ones with <em>✕</em>.
+                  You can edit any field directly in the table above, add missing subjects with <em>+ Add Row</em>, or delete incorrect ones with <em><i data-lucide="x" class="icon-inline"></i></em>.
                 </div>
               </div>
             </div>
@@ -138,7 +138,7 @@ export function render(root) {
 
         <!-- Target GPA Calculator -->
         <div class="glass-card">
-          <h2 class="text-title mb-4">🎯 Target Grade Calculator</h2>
+          <h2 class="text-title mb-4"><i data-lucide="target" class="icon-inline"></i> Target Grade Calculator</h2>
           <p class="text-muted text-body-sm mb-4">What grade do you need? Enter your target GPA for a subject:</p>
           <div class="flex gap-3 items-center">
             <input class="form-input" id="target-gpa" type="number" min="0" max="10" step="0.1" placeholder="e.g. 8.5" style="max-width:140px" />
@@ -180,11 +180,11 @@ export function render(root) {
         </div>
 
         <div class="glass-card">
-          <h3 class="text-title mb-4 text-center">📈 Semester History</h3>
+          <h3 class="text-title mb-4 text-center"><i data-lucide="trending-up" class="icon-inline"></i> Semester History</h3>
           <div id="sem-history" class="flex flex-col gap-2">
             <div class="text-muted text-body-sm" style="text-align:center">Add subjects to see history</div>
           </div>
-          <button class="btn btn-secondary btn-sm w-full mt-4" id="export-gpa-btn">📥 Export PDF</button>
+          <button class="btn btn-secondary btn-sm w-full mt-4" id="export-gpa-btn"><i data-lucide="download" class="icon-inline"></i> Export PDF</button>
         </div>
       </div>
     </div>
@@ -276,7 +276,7 @@ export function render(root) {
 
     const btn = main.querySelector('#gpa-pdf-btn');
     const orig = btn.innerHTML;
-    btn.innerHTML = '⏳ Parsing...'; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Parsing...'; btn.disabled = true;
 
     try {
       const { pdfToText } = await import('../../services/timetable-ai.js');
@@ -328,7 +328,7 @@ export function render(root) {
 
       if (toAdd.length === 0) {
         showToast('All subjects already exist in this semester', 'warning');
-        saveBtn.disabled = false; saveBtn.textContent = `✅ Save to Semester ${currentSem}`;
+        saveBtn.disabled = false; saveBtn.innerHTML = `<i data-lucide="check-circle-2" class="icon-inline"></i> Save to Semester ${currentSem}`;
         return;
       }
 
@@ -339,14 +339,14 @@ export function render(root) {
       main.querySelector('#pdf-preview-panel').style.display = 'none';
       renderSemesterTable(main, currentSem);
       updateCGPA(main);
-      showToast(`${toAdd.length} subjects saved to Semester ${currentSem} ✅`, 'success');
+      showToast(`${toAdd.length} subjects saved to Semester ${currentSem} <i data-lucide="check-circle-2" class="icon-inline"></i>`, 'success');
       logToolUsage('GPA Calculator', 'calculated from pdf');
     } catch (err) {
       console.error(err);
       showToast('Error saving to database', 'error');
     } finally {
       saveBtn.disabled = false;
-      saveBtn.innerHTML = `✅ Save to Semester <span id="preview-sem-label">${currentSem}</span>`;
+      saveBtn.innerHTML = `<i data-lucide="check-circle-2" class="icon-inline"></i> Save to Semester <span id="preview-sem-label">${currentSem}</span>`;
     }
   });
 
@@ -362,7 +362,7 @@ export function render(root) {
       result.innerHTML = '<span class="text-danger">GPA ≥10 is not achievable</span>'; return;
     }
     result.innerHTML = `
-      <div class="alert alert-info"><span>🎯</span>
+      <div class="alert alert-info"><span><i data-lucide="target" class="icon-inline"></i></span>
         <div>
           <div style="font-weight:700">For GPA ≥ ${target}</div>
           <div>You need at least grade <strong>${minGrade.grade}</strong> (${minGrade.points} points) — minimum marks: <strong>${minGrade.minMarks}/100</strong></div>
@@ -484,7 +484,7 @@ function addPreviewRow(main, { code='', name='', grade='O', credits=3 } = {}) {
       </select>
     </td>
     <td><input class="form-input preview-credits" type="number" min="1" max="6" value="${credits}" style="width:60px" /></td>
-    <td><button class="btn btn-ghost btn-sm preview-del-btn" style="color:var(--color-danger)">✕</button></td>
+    <td><button class="btn btn-ghost btn-sm preview-del-btn" style="color:var(--color-danger)"><i data-lucide="x" class="icon-inline"></i></button></td>
   `;
   tr.querySelector('.preview-del-btn').addEventListener('click', () => {
     tr.remove();
@@ -562,10 +562,10 @@ function renderSemesterTable(main, semNum) {
           <td><span class="gpa-points-cell">${s.points}</span></td>
           <td style="color:var(--color-secondary);font-weight:600"><span class="gpa-weighted-cell">${weighted.toFixed(1)}</span></td>
           <td style="display:flex;gap:4px;align-items:center">
-            <button class="btn btn-ghost btn-sm gpa-view-mode" onclick="editGPASubject('${s.id}',${semNum})" title="Edit">✏️</button>
-            <button class="btn btn-ghost btn-sm gpa-view-mode" onclick="removeGPASubject(${semNum},'${s.id}')" title="Delete">🗑️</button>
-            <button class="btn btn-primary btn-sm gpa-edit-mode" style="display:none" onclick="saveGPASubject('${s.id}',${semNum})">✅</button>
-            <button class="btn btn-ghost btn-sm gpa-edit-mode" style="display:none" onclick="cancelGPAEdit('${s.id}',${semNum})">✕</button>
+            <button class="btn btn-ghost btn-sm gpa-view-mode" onclick="editGPASubject('${s.id}',${semNum})" title="Edit"><i data-lucide="pencil" class="icon-inline"></i></button>
+            <button class="btn btn-ghost btn-sm gpa-view-mode" onclick="removeGPASubject(${semNum},'${s.id}')" title="Delete"><i data-lucide="trash-2" class="icon-inline"></i></button>
+            <button class="btn btn-primary btn-sm gpa-edit-mode" style="display:none" onclick="saveGPASubject('${s.id}',${semNum})"><i data-lucide="check-circle-2" class="icon-inline"></i></button>
+            <button class="btn btn-ghost btn-sm gpa-edit-mode" style="display:none" onclick="cancelGPAEdit('${s.id}',${semNum})"><i data-lucide="x" class="icon-inline"></i></button>
           </td>
         </tr>`;
     }).join('');
@@ -689,7 +689,7 @@ window.saveGPASubject = async function(id, semNum) {
   } catch (e) {
     console.error(e);
     showToast('Error updating subject', 'error');
-    saveBtn.disabled = false; saveBtn.textContent = '✅';
+    saveBtn.disabled = false; saveBtn.innerHTML = '<i data-lucide="check-circle-2" class="icon-inline"></i>';
+    showToast('Saved!', 'success');
   }
 };
-

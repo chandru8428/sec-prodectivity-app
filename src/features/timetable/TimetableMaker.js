@@ -66,27 +66,27 @@ function wireStep1(wiz) {
   $('s1b').onclick = async () => {
     const isPdf = !$('a-pdf').classList.contains('hidden');
     const btn = $('s1b'); const status = $('parse-status');
-    btn.disabled = true; btn.textContent = '⏳ Parsing...';
+    btn.disabled = true; btn.innerHTML = '<i data-lucide="hourglass" class="icon-inline"></i> Parsing...';
     status.style.display = 'block';
     try {
       let rawText = '';
       if (isPdf) {
         const f = $('pdf-inp').files[0];
         if (!f) throw new Error('Please select a PDF file.');
-        status.innerHTML = '<div class="alert" style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.3);padding:12px">📄 Extracting text from PDF...</div>';
+        status.innerHTML = '<div class="alert" style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.3);padding:12px"><i data-lucide="file-text" class="icon-inline"></i> Extracting text from PDF...</div>';
         rawText = await pdfToText(f);
       } else {
         rawText = $('inp')?.value?.trim() || '';
         if (!rawText) throw new Error('Please paste some timetable text.');
       }
       S.rawText = rawText;
-      status.innerHTML = '<div class="alert" style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.3);padding:12px">🔍 Running parser...</div>';
+      status.innerHTML = '<div class="alert" style="background:rgba(67,97,238,0.1);border:1px solid rgba(67,97,238,0.3);padding:12px"><i data-lucide="search" class="icon-inline"></i> Running parser...</div>';
       const cleaned = preprocess(rawText);
       const { subjects, confidence } = parseText(cleaned);
       S.confidence = confidence;
 
       if (confidence < 85) {
-        status.innerHTML = `<div style="background:rgba(247,37,133,0.1);border:1px solid rgba(247,37,133,0.3);padding:12px;border-radius:8px">⚡ Regex confidence: ${confidence}% — calling AI repair...</div>`;
+        status.innerHTML = `<div style="background:rgba(247,37,133,0.1);border:1px solid rgba(247,37,133,0.3);padding:12px;border-radius:8px"><i data-lucide="zap" class="icon-inline"></i> Regex confidence: ${confidence}% — calling AI repair...</div>`;
         try {
           S.subjects = await aiRepairParse(rawText, subjects);
           showToast(`AI repaired ${S.subjects.length} subjects`,'info');
@@ -96,15 +96,15 @@ function wireStep1(wiz) {
         }
       } else {
         S.subjects = subjects;
-        showToast(`✅ Parsed ${subjects.length} subjects (${confidence}% confidence)`,'success');
+        showToast(`<i data-lucide="check-circle-2" class="icon-inline"></i> Parsed ${subjects.length} subjects (${confidence}% confidence)`,'success');
       }
       if (!S.subjects.length) throw new Error('No subjects found. Check your input format.');
       S.subjects = S.subjects.map(s => ({ ...s, confidence: s.confidence || confidence }));
       S.selected = []; S.staffPrefs = {}; S.slotPrefs = {};
       saveS(); nav(2);
     } catch (err) {
-      status.innerHTML = `<div class="alert alert-danger" style="padding:12px">❌ ${err.message}</div>`;
-      btn.disabled = false; btn.textContent = '⚡ Extract & Parse →';
+      status.innerHTML = `<div class="alert alert-danger" style="padding:12px"><i data-lucide="x-circle" class="icon-inline"></i> ${err.message}</div>`;
+      btn.disabled = false; btn.innerHTML = '<i data-lucide="zap" class="icon-inline"></i> Extract & Parse →';
     }
   };
 }
@@ -118,7 +118,7 @@ function wireStep2(wiz) {
       const el = $('chk-'+i); const card = el?.closest('.subj-card');
       if (!el||!card) return;
       const on = S.selected.includes(i);
-      el.textContent = on ? '✓' : ''; el.style.background = on ? 'var(--color-primary)' : 'var(--bg-secondary)';
+      el.innerHTML = on ? '<i data-lucide="check" class="icon-inline"></i>' : ''; el.style.background = on ? 'var(--color-primary)' : 'var(--bg-secondary)';
       el.style.color = on ? '#fff' : ''; el.style.borderColor = on ? 'var(--color-primary)' : 'var(--border-color)';
       card.style.borderColor = on ? 'var(--color-primary)' : 'var(--border-color)';
       card.style.background = on ? 'var(--primary-container)' : 'transparent';
@@ -174,10 +174,10 @@ function wireStep3(wiz) {
       btn.style.borderColor = !on ? 'var(--color-danger)' : 'var(--border-color)';
       btn.style.background  = !on ? 'rgba(220,38,38,0.12)' : 'transparent';
       btn.style.color       = !on ? 'var(--color-danger)' : 'inherit';
-      btn.textContent       = !on ? `${btn.dataset.t} ✕` : btn.dataset.t.replace(' ✕','');
+      btn.innerHTML         = !on ? `${btn.dataset.t} <i data-lucide="x" class="icon-inline"></i>` : btn.dataset.t.replace(' <i data-lucide="x" class="icon-inline"></i>','');
       // Re-check actual text from TIME_LABELS
       const TL = {'8-10':'8–10 AM','10-12':'10–12 PM','1-3':'1–3 PM','3-5':'3–5 PM'};
-      btn.textContent = S.avoidSlots.includes(t) ? `${TL[t]||t} ✕` : (TL[t]||t);
+      btn.innerHTML = S.avoidSlots.includes(t) ? `${TL[t]||t} <i data-lucide="x" class="icon-inline"></i>` : (TL[t]||t);
     };
   });
 
@@ -268,16 +268,16 @@ function wireStep3(wiz) {
               results = dropResult.results;
               const droppedName = dropResult.droppedSubject.subject_name || dropResult.droppedSubject.subject_code;
               const overlapLines = (dropResult.overlapPairs || []).map(p =>
-                `<div style="font-size:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)">⚡ <b>${p.a}</b> ↔ <b>${p.b}</b> overlap at: ${p.slots.join(', ')}</div>`
+                `<div style="font-size:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)"><i data-lucide="zap" class="icon-inline"></i> <b>${p.a}</b> ↔ <b>${p.b}</b> overlap at: ${p.slots.join(', ')}</div>`
               ).join('');
-              clashWarning = `<strong>⚠️ Conflict Detected — Auto-Resolved</strong><br>
+              clashWarning = `<strong><i data-lucide="alert-triangle" class="icon-inline"></i>️ Conflict Detected — Auto-Resolved</strong><br>
                 <div style="margin:8px 0 4px;font-size:13px">The following subjects have overlapping time slots:</div>
                 ${overlapLines}
                 <div style="margin-top:10px;padding:10px 14px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-size:13px">
-                  🗑️ <b>${droppedName}</b> was automatically removed to create a conflict-free schedule.
+                  <i data-lucide="trash-2" class="icon-inline"></i> <b>${droppedName}</b> was automatically removed to create a conflict-free schedule.
                 </div>
                 <div style="margin-top:8px;font-size:12px;color:var(--color-on-surface-variant)">
-                  💡 <b>Suggestion:</b> Go back and deselect one of the overlapping subjects, or pick a different slot/teacher combination for them.
+                  <i data-lucide="lightbulb" class="icon-inline"></i> <b>Suggestion:</b> Go back and deselect one of the overlapping subjects, or pick a different slot/teacher combination for them.
                 </div>`;
               S.droppedSubject = { name: droppedName, code: dropResult.droppedSubject.subject_code };
               relaxed = true;
@@ -359,7 +359,7 @@ function wireStep5(wiz) {
         createdBy: appState.userData?.uid || appState.userData?.email || 'unknown',
         createdAt: new Date().toISOString()
       });
-      showToast('✅ Timetable saved!','success');
+      showToast('<i data-lucide="check-circle-2" class="icon-inline"></i> Timetable saved!','success');
     } catch (e) { showToast(e.message,'error'); }
   });
 

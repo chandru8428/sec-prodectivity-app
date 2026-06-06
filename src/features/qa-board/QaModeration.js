@@ -9,18 +9,18 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🛡️ Q&A Board Moderation</h1>
+      <h1 class="page-title" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"><i data-lucide="shield" class="icon-inline"></i> Q&A Board Moderation</h1>
       <p class="page-subtitle">Review, approve, pin, or remove community posts. Maintain a safe and helpful knowledge base.</p>
     </div>
 
     <div class="flex gap-3 mb-6 flex-wrap">
       <button class="chip active" data-filter="all">All Posts</button>
-      <button class="chip" data-filter="pinned">📌 Pinned</button>
-      <button class="chip" data-filter="question">❓ Questions</button>
-      <button class="chip" data-filter="tip">💡 Tips</button>
-      <button class="chip" data-filter="answer">✅ Answer Keys</button>
+      <button class="chip" data-filter="pinned"><i data-lucide="pin" class="icon-inline"></i> Pinned</button>
+      <button class="chip" data-filter="question"><i data-lucide="help-circle" class="icon-inline"></i> Questions</button>
+      <button class="chip" data-filter="tip"><i data-lucide="lightbulb" class="icon-inline"></i> Tips</button>
+      <button class="chip" data-filter="answer"><i data-lucide="check-circle-2" class="icon-inline"></i> Answer Keys</button>
       <div class="search-bar" style="margin-left:auto">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><i data-lucide="search" class="icon-inline"></i></span>
         <input type="text" id="mod-search" placeholder="Search posts..." />
       </div>
     </div>
@@ -44,7 +44,7 @@ export function render(root) {
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       renderPosts();
     } catch (err) {
-      main.querySelector('#posts-container').innerHTML = `<div class="alert alert-danger"><span>⚠️</span><span>${err.message}</span></div>`;
+      main.querySelector('#posts-container').innerHTML = `<div class="alert alert-danger"><span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span>${err.message}</span></div>`;
     }
   }
 
@@ -63,11 +63,11 @@ export function render(root) {
     }
 
     if (filtered.length === 0) {
-      container.innerHTML = `<div class="glass-card" style="text-align:center;padding:var(--space-10)"><div style="font-size:48px;margin-bottom:16px">📭</div><h3 class="text-title">No posts found</h3></div>`;
+      container.innerHTML = `<div class="glass-card" style="text-align:center;padding:var(--space-10)"><div style="font-size:48px;margin-bottom:16px"><i data-lucide="inbox" class="icon-inline"></i></div><h3 class="text-title">No posts found</h3></div>`;
       return;
     }
 
-    const badges = { question: ['badge-primary', '❓ Question'], tip: ['badge-secondary', '💡 Tip'], answer: ['badge-success', '✅ Answer Key'] };
+    const badges = { question: ['badge-primary', '<i data-lucide="help-circle" class="icon-inline"></i> Question'], tip: ['badge-secondary', '<i data-lucide="lightbulb" class="icon-inline"></i> Tip'], answer: ['badge-success', '<i data-lucide="check-circle-2" class="icon-inline"></i> Answer Key'] };
     container.innerHTML = filtered.map(post => {
       const [badgeClass, badgeLabel] = badges[post.type] || ['badge-primary', 'Post'];
       const timeAgo = getTimeAgo(post.createdAt?.toDate?.() || new Date(post.createdAt));
@@ -82,13 +82,13 @@ export function render(root) {
                 <span style="font-weight:700;font-size:var(--font-body)">${post.authorName||'Anonymous'}</span>
                 ${post.registerNumber?`<span class="badge badge-primary" style="font-size:10px">${post.registerNumber}</span>`:''}
                 <span class="badge ${badgeClass}">${badgeLabel}</span>
-                ${post.pinned?'<span class="badge badge-secondary">📌 Pinned</span>':''}
+                ${post.pinned?'<span class="badge badge-secondary"><i data-lucide="pin" class="icon-inline"></i> Pinned</span>':''}
                 <span style="font-size:11px;color:var(--color-on-surface-variant);margin-left:auto">${timeAgo}</span>
               </div>
               <h4 style="font-size:var(--font-body);font-weight:700;margin-bottom:var(--space-2)">${post.title}</h4>
               <p class="text-muted text-body-sm" style="line-height:1.6;margin-bottom:var(--space-3)">${post.content}</p>
               <div class="flex items-center gap-3 flex-wrap">
-                <span class="badge badge-purple">📚 ${post.subject}</span>
+                <span class="badge badge-purple"><i data-lucide="book-open" class="icon-inline"></i> ${post.subject}</span>
                 <span class="badge" style="background:var(--primary-container);color:var(--accent-primary)">Sem ${post.semester}</span>
                 <span style="font-size:11px;color:var(--color-on-surface-variant)">▲ ${post.votes||0} votes</span>
               </div>
@@ -98,9 +98,9 @@ export function render(root) {
           <!-- Moderation Actions -->
           <div class="flex gap-2 mt-4 pt-4" style="border-top:1px solid var(--border-color)">
             <button class="btn btn-success btn-sm" onclick="pinPost('${post.id}', ${!post.pinned})">
-              ${post.pinned ? '📌 Unpin' : '📌 Pin'}
+              ${post.pinned ? '<i data-lucide="pin" class="icon-inline"></i> Unpin' : '<i data-lucide="pin" class="icon-inline"></i> Pin'}
             </button>
-            <button class="btn btn-danger btn-sm" onclick="deletePost('${post.id}')">🗑️ Remove</button>
+            <button class="btn btn-danger btn-sm" onclick="deletePost('${post.id}')"><i data-lucide="trash-2" class="icon-inline"></i> Remove</button>
             <span style="margin-left:auto;font-size:11px;color:var(--color-on-surface-variant);align-self:center">
               ID: ${post.id.slice(0,8)}
             </span>
@@ -133,7 +133,7 @@ export function render(root) {
       const post = allPosts.find(p => p.id === id);
       if (post) post.pinned = pinned;
       renderPosts();
-      showToast(pinned ? 'Post pinned! 📌' : 'Post unpinned', 'success');
+      showToast(pinned ? 'Post pinned! <i data-lucide="pin" class="icon-inline"></i>' : 'Post unpinned', 'success');
     } catch (err) { showToast('Failed: ' + err.message, 'error'); }
   };
 

@@ -9,7 +9,7 @@ export function render(root) {
 
   main.innerHTML = `
     <div class="page-header">
-      <h1 class="page-title">📢 Broadcast Announcements</h1>
+      <h1 class="page-title"><i data-lucide="megaphone" class="icon-inline"></i> Broadcast Announcements</h1>
       <p class="page-subtitle">Send important updates, alerts, and news directly to all student dashboards.</p>
     </div>
 
@@ -33,9 +33,9 @@ export function render(root) {
             <label class="form-label">Urgency Type</label>
             <select id="ann-type" class="form-input">
               <option value="info">ℹ️ Information (Blue)</option>
-              <option value="warning">⚠️ Warning (Yellow)</option>
-              <option value="success">✅ Success (Green)</option>
-              <option value="danger">🚨 Urgent / Danger (Red)</option>
+              <option value="warning"><i data-lucide="alert-triangle" class="icon-inline"></i>️ Warning (Yellow)</option>
+              <option value="success"><i data-lucide="check-circle-2" class="icon-inline"></i> Success (Green)</option>
+              <option value="danger"><i data-lucide="siren" class="icon-inline"></i> Urgent / Danger (Red)</option>
             </select>
           </div>
           
@@ -112,9 +112,9 @@ async function loadAnnouncements(main) {
 
     const typeIcons = {
       info: 'ℹ️',
-      warning: '⚠️',
-      success: '✅',
-      danger: '🚨'
+      warning: '<i data-lucide="alert-triangle" class="icon-inline"></i>️',
+      success: '<i data-lucide="check-circle-2" class="icon-inline"></i>',
+      danger: '<i data-lucide="siren" class="icon-inline"></i>'
     };
 
     listContainer.innerHTML = snap.docs.map(docSnap => {

@@ -39,7 +39,7 @@ export function render(root) {
     <!-- 1. Greeting -->
     <div style="margin-bottom:var(--space-4)">
       <h1 class="text-display" id="greeting" style="color:var(--accent-primary);font-size:1.5rem;font-weight:800;margin-bottom:var(--space-2)">
-        ${greeting}, ${firstName} 👋
+        ${greeting}, ${firstName} 
       </h1>
       <div class="flex items-center gap-2">
         <span class="badge badge-secondary" style="padding:4px 8px">[${user?.department || 'CSE'}]</span>
@@ -50,10 +50,10 @@ export function render(root) {
     <!-- 2. Next Exam Hero Card -->
     <div class="hero-exam-card compact-hero" id="hero-exam" style="margin-bottom:var(--space-6); padding:var(--space-4);">
       <div style="margin-bottom:var(--space-3)">
-        <span class="badge-next-exam" id="hero-badge" style="margin-bottom:var(--space-2); padding:4px 8px;">⏰ NEXT EXAM</span>
+        <span class="badge-next-exam" id="hero-badge" style="margin-bottom:var(--space-2); padding:4px 8px;"><i data-lucide="alarm-clock" class="icon-inline"></i> NEXT EXAM</span>
         <h2 style="font-size:1.2rem;font-weight:800;color:#A86E11;margin-bottom:var(--space-1)" id="hero-subject">Loading...</h2>
         <div class="flex items-center gap-3" style="color:#A86E11;font-size:var(--font-body-sm)" id="hero-meta">
-          <span>📅 —</span><span>🕐 —</span><span>🏛️ —</span>
+          <span><i data-lucide="calendar" class="icon-inline"></i> —</span><span><i data-lucide="clock" class="icon-inline"></i> —</span><span><i data-lucide="building-2" class="icon-inline"></i> —</span>
         </div>
       </div>
       <div class="countdown" id="hero-countdown" style="gap:var(--space-2)">
@@ -82,25 +82,25 @@ export function render(root) {
     <!-- 3. Dashboard Stats Section -->
     <div class="dashboard-stats-grid" style="margin-bottom:var(--space-6)" id="stat-cards">
       <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/gpa'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div class="stat-icon" style="background:rgba(91,213,252,0.1)">📊</div>
+        <div class="stat-icon" style="background:rgba(91,213,252,0.1)"><i data-lucide="bar-chart-3" class="icon-inline"></i></div>
         <div class="stat-value" id="stat-gpa" style="font-size:1.2rem">—</div>
         <div class="stat-label">Current GPA</div>
         <div class="stat-change text-success" style="font-size:0.7rem">Anna University Scale</div>
       </div>
       <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/attendance'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div class="stat-icon" style="background:rgba(74,222,128,0.1)">✅</div>
+        <div class="stat-icon" style="background:rgba(74,222,128,0.1)"><i data-lucide="check-circle-2" class="icon-inline"></i></div>
         <div class="stat-value" id="stat-attendance" style="font-size:1.2rem">—</div>
         <div class="stat-label">Attendance</div>
         <div class="stat-change" id="stat-attendance-msg" style="font-size:0.7rem">Loading...</div>
       </div>
       <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/timetable'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div class="stat-icon" style="background:rgba(67,97,238,0.1)">📅</div>
+        <div class="stat-icon" style="background:rgba(67,97,238,0.1)"><i data-lucide="calendar" class="icon-inline"></i></div>
         <div class="stat-value" id="stat-exams" style="font-size:1.2rem">—</div>
         <div class="stat-label">Upcoming Exams</div>
         <div class="stat-change text-primary" style="font-size:0.7rem">Next in <span id="stat-next-days">—</span> days</div>
       </div>
       <div class="stat-card" style="padding:var(--space-4); cursor:pointer; transition:transform 0.2s;" onclick="window.location.hash='#/student/qa-board'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div class="stat-icon" style="background:rgba(255,182,146,0.1)">💬</div>
+        <div class="stat-icon" style="background:rgba(255,182,146,0.1)"><i data-lucide="message-square" class="icon-inline"></i></div>
         <div class="stat-value" id="stat-posts" style="font-size:1.2rem">—</div>
         <div class="stat-label">Q&A Posts</div>
         <div class="stat-change text-secondary" style="font-size:0.7rem">Your contributions</div>
@@ -109,7 +109,7 @@ export function render(root) {
 
     <!-- 4. Announcements Section -->
     <div style="margin-bottom:var(--space-6)">
-      <h2 class="text-title" style="margin-bottom:var(--space-3)">📢 Announcements</h2>
+      <h2 class="text-title" style="margin-bottom:var(--space-3)"><i data-lucide="megaphone" class="icon-inline"></i> Announcements</h2>
       <div id="announcements-container" class="flex flex-col gap-3 announcements-list"></div>
     </div>
 
@@ -119,7 +119,7 @@ export function render(root) {
       <div class="flex flex-col gap-4">
         <div class="glass-card" style="padding:var(--space-4)">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-title">📋 Upcoming Exams / Events</h2>
+            <h2 class="text-title"><i data-lucide="clipboard-list" class="icon-inline"></i> Upcoming Exams / Events</h2>
             <button class="btn btn-secondary btn-sm" onclick="window.location.hash='#/student/timetable'">View All</button>
           </div>
           <div id="exam-list" class="flex flex-col gap-3">
@@ -131,13 +131,13 @@ export function render(root) {
       </div>
       <!-- Right: Quick Actions + Attendance warning -->
       <div class="flex flex-col gap-4">
-        <h2 class="text-title">⚡ Quick Actions</h2>
+        <h2 class="text-title"><i data-lucide="zap" class="icon-inline"></i> Quick Actions</h2>
         ${[
-          { icon:'🗓️', label:'AI Schedule Crafter', desc:'Auto-generate conflict-free schedule', path:'/student/timetable-maker' },
-          { icon:'📄', label:'Record Book Forge', desc:'Generate with GitHub + QR codes', path:'/student/record-book' },
-          { icon:'✅', label:'Attendance Calculator', desc:'Track your 80% mandate', path:'/student/attendance' },
-          { icon:'📊', label:'CGPA / GPA', desc:'Anna University grading system', path:'/student/gpa' },
-          { icon:'💬', label:'Knowledge Exchange', desc:'Post questions and tips', path:'/student/qa-board' },
+          { icon:'<i data-lucide="calendar" class="icon-inline"></i>', label:'AI Schedule Crafter', desc:'Auto-generate conflict-free schedule', path:'/student/timetable-maker' },
+          { icon:'<i data-lucide="file-text" class="icon-inline"></i>', label:'Record Book Forge', desc:'Generate with GitHub + QR codes', path:'/student/record-book' },
+          { icon:'<i data-lucide="check-circle-2" class="icon-inline"></i>', label:'Attendance Calculator', desc:'Track your 80% mandate', path:'/student/attendance' },
+          { icon:'<i data-lucide="bar-chart-3" class="icon-inline"></i>', label:'CGPA / GPA', desc:'Anna University grading system', path:'/student/gpa' },
+          { icon:'<i data-lucide="message-square" class="icon-inline"></i>', label:'Knowledge Exchange', desc:'Post questions and tips', path:'/student/qa-board' },
         ].map(a => `
           <button class="flex items-center gap-4 w-full text-left quick-action-card" style="background:var(--surface-container-highest);border:1px solid rgba(216,155,41,0.1);border-radius:var(--radius-lg);padding:var(--space-3);cursor:pointer;transition:all 0.2s ease;outline:none" data-path="${a.path}" onclick="window.location.hash='#${a.path}'">
             <div style="font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface-container);border-radius:8px;">${a.icon}</div>
@@ -149,7 +149,7 @@ export function render(root) {
           </button>
         `).join('')}
         <div id="attendance-warning" class="alert alert-warning hidden" style="margin-top:var(--space-2)">
-          <span>⚠️</span>
+          <span><i data-lucide="alert-triangle" class="icon-inline"></i>️</span>
           <div>
             <div style="font-weight:700;margin-bottom:2px">Attendance Alert</div>
             <div id="attendance-warning-msg" style="font-size:var(--font-body-sm)">Loading...</div>
@@ -234,7 +234,7 @@ async function loadAnnouncements(main) {
         blob: 'rgba(67,97,238,0.4)',
         iconBg: 'linear-gradient(135deg, rgba(67,97,238,0.2), rgba(67,97,238,0.05))',
         titleColor: '#8ca8ff',
-        icon: '💡' 
+        icon: '<i data-lucide="lightbulb" class="icon-inline"></i>' 
       },
       warning: { 
         bg: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.03) 100%)', 
@@ -243,7 +243,7 @@ async function loadAnnouncements(main) {
         blob: 'rgba(245,158,11,0.4)',
         iconBg: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05))',
         titleColor: '#fcd34d',
-        icon: '⚡' 
+        icon: '<i data-lucide="zap" class="icon-inline"></i>' 
       },
       success: { 
         bg: 'linear-gradient(135deg, rgba(34,197,94,0.12) 0%, rgba(16,185,129,0.03) 100%)', 
@@ -252,7 +252,7 @@ async function loadAnnouncements(main) {
         blob: 'rgba(34,197,94,0.4)',
         iconBg: 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.05))',
         titleColor: '#86efac',
-        icon: '🚀' 
+        icon: '<i data-lucide="rocket" class="icon-inline"></i>' 
       },
       danger: { 
         bg: 'linear-gradient(135deg, rgba(239,68,104,0.12) 0%, rgba(239,68,104,0.03) 100%)', 
@@ -261,7 +261,7 @@ async function loadAnnouncements(main) {
         blob: 'rgba(239,68,104,0.4)',
         iconBg: 'linear-gradient(135deg, rgba(239,68,104,0.2), rgba(239,68,104,0.05))',
         titleColor: '#fda4af',
-        icon: '🔥' 
+        icon: '<i data-lucide="flame" class="icon-inline"></i>' 
       }
     };
 
@@ -381,9 +381,9 @@ async function loadDashboardData(main) {
     } else {
       main.querySelector('#hero-exam').innerHTML = `
         <div style="text-align:center;padding:var(--space-8)">
-          <div style="font-size:48px;margin-bottom:var(--space-3)">🎉</div>
+          <div style="font-size:48px;margin-bottom:var(--space-3)"><i data-lucide="party-popper" class="icon-inline"></i></div>
           <h2 class="text-title" style="color:var(--color-secondary)">No upcoming exams!</h2>
-          <p class="text-muted text-body-sm" style="margin-top:var(--space-2)">Enjoy your time — or study ahead 📚</p>
+          <p class="text-muted text-body-sm" style="margin-top:var(--space-2)">Enjoy your time — or study ahead <i data-lucide="book-open" class="icon-inline"></i></p>
         </div>
       `;
       main.querySelector('#stat-next-days').textContent = '∞';
@@ -395,6 +395,8 @@ async function loadDashboardData(main) {
     console.warn('Exam load error:', err);
     renderNoExams(main);
   }
+
+  if (window.lucide) window.lucide.createIcons();
 
   // Load GPA
   try {
@@ -416,39 +418,39 @@ async function loadDashboardData(main) {
       where('studentId', '==', appState.currentUser?.uid)
     ));
     const records = attSnap.docs.map(d => d.data());
+
     if (records.length > 0) {
       const totalAttended = records.reduce((s, r) => s + (r.attended || 0), 0);
       const totalClasses  = records.reduce((s, r) => s + (r.total || 0), 0);
       const pct = totalClasses > 0 ? Math.round((totalAttended / totalClasses) * 100) : 0;
-      main.querySelector('#stat-attendance').textContent = pct + '%';
+      main.querySelector('#stat-attendance').innerHTML = pct + '%';
       const attMsg = main.querySelector('#stat-attendance-msg');
       if (pct < 75) {
         attMsg.className = 'stat-change text-danger';
-        attMsg.textContent = '⚠️ Critical — below 75%';
+        attMsg.innerHTML = '<i data-lucide="alert-triangle" class="icon-inline"></i>️ Critical — below 75%';
         main.querySelector('#attendance-warning').classList.remove('hidden');
         main.querySelector('#attendance-warning-msg').textContent = `Your attendance is ${pct}%. Attend all remaining classes immediately.`;
       } else if (pct < 80) {
         attMsg.className = 'stat-change text-warning';
-        attMsg.textContent = '⚠️ Below 80% mandate';
+        attMsg.innerHTML = '<i data-lucide="alert-triangle" class="icon-inline"></i>️ Below 80% mandate';
         main.querySelector('#attendance-warning').classList.remove('hidden');
         main.querySelector('#attendance-warning-msg').textContent = `Your attendance is ${pct}% — below the 80% mandate. Please attend classes.`;
       } else {
         attMsg.className = 'stat-change text-success';
-        attMsg.textContent = '✓ Above 80% mandate';
+        attMsg.innerHTML = '<i data-lucide="check" class="icon-inline"></i> Above 80% mandate';
       }
     } else {
       main.querySelector('#stat-attendance').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`;
-      main.querySelector('#stat-attendance-msg').textContent = 'No records yet';
+      main.querySelector('#stat-attendance-msg').innerHTML = 'No records yet';
     }
   } catch { main.querySelector('#stat-attendance').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`; }
-
-  // Posts count
   try {
     const postsSnap = await getDocs(query(collection(db, 'posts'),
       where('userId', '==', appState.currentUser?.uid)
     ));
     main.querySelector('#stat-posts').textContent = postsSnap.size;
   } catch { main.querySelector('#stat-posts').textContent = '0'; }
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function formatTime12(timeStr) {
@@ -461,20 +463,20 @@ function formatTime12(timeStr) {
 }
 
 function renderHeroExam(main, exam) {
-  let badgeText = '⏰ NEXT EXAM';
+  let badgeText = '<i data-lucide="alarm-clock" class="icon-inline"></i> NEXT EXAM';
   let subjectColor = '#A86E11';
 
   if (exam.examType === 'holiday') {
-    badgeText = '🔴 UPCOMING HOLIDAY';
+    badgeText = '<i data-lucide="circle" class="icon-inline"></i> UPCOMING HOLIDAY';
     subjectColor = 'var(--color-danger)';
   } else if (exam.examType === 'event') {
-    badgeText = '🔵 UPCOMING EVENT';
+    badgeText = '<i data-lucide="circle" class="icon-inline"></i> UPCOMING EVENT';
     subjectColor = 'var(--color-secondary)';
   }
 
   const badge = main.querySelector('#hero-badge');
   if (badge) {
-    badge.textContent = badgeText;
+    badge.innerHTML = badgeText;
   }
 
   const subjectEl = main.querySelector('#hero-subject');
@@ -487,11 +489,12 @@ function renderHeroExam(main, exam) {
   if (metaEl) {
     metaEl.style.color = subjectColor;
     metaEl.innerHTML = `
-      <span>📅 ${formatDate(exam.examDate)}</span>
-      ${exam.startTime ? `<span>🕐 ${formatTime12(exam.startTime)}</span>` : ''}
-      ${exam.hall ? `<span>🏛️ Hall ${exam.hall}</span>` : ''}
+      <span><i data-lucide="calendar" class="icon-inline"></i> ${formatDate(exam.examDate)}</span>
+      ${exam.startTime ? `<span><i data-lucide="clock" class="icon-inline"></i> ${formatTime12(exam.startTime)}</span>` : ''}
+      ${exam.hall ? `<span><i data-lucide="building-2" class="icon-inline"></i> Hall ${exam.hall}</span>` : ''}
     `;
   }
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function startCountdown(main, exam) {
@@ -550,18 +553,19 @@ function renderExamList(container, exams) {
         <div>
           <div class="exam-subject">${exam.subject}</div>
           <div class="exam-meta">
-            <div class="exam-meta-item">📅 ${formatDate(exam.examDate)}</div>
-            <div class="exam-meta-item">🕐 ${exam.startTime ? formatTime12(exam.startTime) : 'TBA'} – ${exam.endTime ? formatTime12(exam.endTime) : 'TBA'}</div>
-            ${exam.hall ? `<div class="exam-meta-item">🏛️ Hall ${exam.hall}</div>` : ''}
+            <div class="exam-meta-item"><i data-lucide="calendar" class="icon-inline"></i> ${formatDate(exam.examDate)}</div>
+            <div class="exam-meta-item"><i data-lucide="clock" class="icon-inline"></i> ${exam.startTime ? formatTime12(exam.startTime) : 'TBA'} – ${exam.endTime ? formatTime12(exam.endTime) : 'TBA'}</div>
+            ${exam.hall ? `<div class="exam-meta-item"><i data-lucide="building-2" class="icon-inline"></i> Hall ${exam.hall}</div>` : ''}
           </div>
         </div>
         <div class="text-right flex flex-col items-end gap-2">
           ${getDaysChip(exam.examDate)}
-          ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm text-danger" style="color:var(--color-danger);padding:4px 8px;font-size:12px" onclick="deletePersonalEvent('${exam.id}')">🗑️ Delete</button>` : ''}
+          ${exam.uploadedBy === 'student' ? `<button class="btn btn-ghost btn-sm text-danger" style="color:var(--color-danger);padding:4px 8px;font-size:12px" onclick="deletePersonalEvent('${exam.id}')"><i data-lucide="trash-2" class="icon-inline"></i> Delete</button>` : ''}
         </div>
       </div>
     </div>
   `).join('');
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function getDaysChip(dateStr) {
@@ -579,7 +583,7 @@ function renderNoExams(main) {
   if (heroExam) {
     heroExam.innerHTML = `
       <div style="text-align:center;padding:var(--space-8)">
-        <div style="font-size:48px;margin-bottom:var(--space-3)">📚</div>
+        <div style="font-size:48px;margin-bottom:var(--space-3)"><i data-lucide="book-open" class="icon-inline"></i></div>
         <h2 class="text-title">No Exams Uploaded Yet</h2>
         <p class="text-muted" style="margin-top:var(--space-2)">Ask your admin to upload the exam timetable.</p>
       </div>
@@ -589,8 +593,9 @@ function renderNoExams(main) {
   if (examList) {
     examList.innerHTML = '<div class="text-muted text-body-sm" style="text-align:center;padding:var(--space-6)">No exam data available.</div>';
   }
+  if (window.lucide) window.lucide.createIcons();
 }
-function formatDate(dateStr) {
+function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }

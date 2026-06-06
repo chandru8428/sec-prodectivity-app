@@ -21,7 +21,7 @@ export function render(root) {
   main.innerHTML = `
     <div class="page-header">
       <div class="flex items-center gap-3 mb-3">
-        <h1 class="page-title" style="-webkit-text-fill-color:initial;background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">⚙️ Admin Control Center</h1>
+        <h1 class="page-title" style="-webkit-text-fill-color:initial;background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"><i data-lucide="settings" class="icon-inline"></i> Admin Control Center</h1>
         <span class="badge badge-admin">Administrator</span>
       </div>
       <p class="page-subtitle">Manage the EduSync platform — upload data, moderate content, and oversee student activity.</p>
@@ -30,12 +30,12 @@ export function render(root) {
     <!-- Stat Cards -->
     <div class="grid grid-4 gap-4 mb-8" id="admin-stats">
       <div class="stat-card" style="border-top:2px solid transparent" id="as-students">
-        <div class="stat-icon" style="background:rgba(114,9,183,0.15)">👥</div>
+        <div class="stat-icon" style="background:rgba(114,9,183,0.15)"><i data-lucide="users" class="icon-inline"></i></div>
         <div class="stat-value" style="background:var(--gradient-purple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="stat-label">Total Students</div>
       </div>
       <div class="stat-card" id="as-schedules">
-        <div class="stat-icon" style="background:rgba(67,97,238,0.15)">📅</div>
+        <div class="stat-icon" style="background:rgba(67,97,238,0.15)"><i data-lucide="calendar" class="icon-inline"></i></div>
         <div class="stat-value" id="as-schedules-total">—</div>
         <div class="stat-label">Total Exam Records (Database)</div>
         <div class="stat-change" style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
@@ -55,13 +55,13 @@ export function render(root) {
         </div>
       </div>
       <div class="stat-card" id="as-posts">
-        <div class="stat-icon" style="background:rgba(251,146,60,0.15)">💬</div>
+        <div class="stat-icon" style="background:rgba(251,146,60,0.15)"><i data-lucide="message-square" class="icon-inline"></i></div>
         <div class="stat-value" style="background:var(--gradient-warning);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="stat-label">Q&A Posts</div>
         <div class="stat-change text-warning">Pending review</div>
       </div>
       <div class="stat-card" id="as-mappings">
-        <div class="stat-icon" style="background:rgba(74,222,128,0.15)">🔗</div>
+        <div class="stat-icon" style="background:rgba(74,222,128,0.15)"><i data-lucide="link-2" class="icon-inline"></i></div>
         <div class="stat-value" style="background:var(--gradient-success);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="stat-label">Repo Mappings</div>
       </div>
@@ -70,7 +70,7 @@ export function render(root) {
     <!-- Tool Analytics -->
     <div class="glass-card mb-8">
       <div class="flex items-center gap-3 mb-4">
-        <span style="font-size:24px">📊</span>
+        <span style="font-size:24px"><i data-lucide="bar-chart-3" class="icon-inline"></i></span>
         <h2 class="text-title">Tool Usage Analytics</h2>
       </div>
       <div class="grid grid-4 gap-4">
@@ -111,7 +111,7 @@ export function render(root) {
       <!-- Upload Timetable -->
       <div class="glass-card">
         <div class="flex items-center gap-3 mb-4">
-          <span style="font-size:28px">📤</span>
+          <span style="font-size:28px"><i data-lucide="upload-cloud" class="icon-inline"></i></span>
           <div>
             <h2 class="text-title">Upload Exam Timetable</h2>
             <p class="text-muted text-body-sm">Upload Excel/CSV exam schedule</p>
@@ -124,7 +124,7 @@ export function render(root) {
       <!-- Repo Mapping -->
       <div class="glass-card">
         <div class="flex items-center gap-3 mb-4">
-          <span style="font-size:28px">🔗</span>
+          <span style="font-size:28px"><i data-lucide="link-2" class="icon-inline"></i></span>
           <div>
             <h2 class="text-title">Subject-Repo Mapping</h2>
             <p class="text-muted text-body-sm">Manage GitHub repository links</p>
@@ -141,7 +141,7 @@ export function render(root) {
       <div class="glass-card" style="display:flex;flex-direction:column;">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
-            <span style="font-size:24px">🛡️</span>
+            <span style="font-size:24px"><i data-lucide="shield" class="icon-inline"></i></span>
             <h2 class="text-title">Q&A Moderation</h2>
           </div>
           <a href="#/admin/moderation" class="btn btn-secondary btn-sm">View All</a>
@@ -150,7 +150,7 @@ export function render(root) {
 
         <!-- Danger Zone -->
         <div class="mt-auto pt-4" style="border-top:1px solid rgba(239,68,68,0.2);">
-          <h2 class="text-title mb-3" style="color:var(--color-danger)">⚠️ Danger Zone</h2>
+          <h2 class="text-title mb-3" style="color:var(--color-danger)"><i data-lucide="alert-triangle" class="icon-inline"></i>️ Danger Zone</h2>
           <button id="btn-reset-db" class="btn btn-danger w-full flex items-center justify-center gap-2" style="background:#ef4444;color:white;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;border:none;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             Clear Database Storage
@@ -161,14 +161,14 @@ export function render(root) {
 
       <!-- Admin Quick Links -->
       <div class="glass-card">
-        <h2 class="text-title mb-4">⚡ Quick Admin Actions</h2>
+        <h2 class="text-title mb-4"><i data-lucide="zap" class="icon-inline"></i> Quick Admin Actions</h2>
         <div class="flex flex-col gap-3">
           ${[
-            { icon:'📤', label:'Upload Exam Timetable', desc:'Add/update student exam schedules', path:'/admin/upload-timetable' },
-            { icon:'🔗', label:'Manage Repo Mappings', desc:'Map subjects to GitHub repositories', path:'/admin/repo-mapping' },
-            { icon:'🛡️', label:'Moderate Q&A Board', desc:'Review and approve community posts', path:'/admin/moderation' },
-            { icon:'📆', label:'Academic Calendar', desc:'Upload holidays and exam dates', path:'/admin/calendar' },
-            { icon:'👥', label:'View All Students', desc:'Browse student profiles and records', path:'/admin/students' },
+            { icon:'<i data-lucide="upload-cloud" class="icon-inline"></i>', label:'Upload Exam Timetable', desc:'Add/update student exam schedules', path:'/admin/upload-timetable' },
+            { icon:'<i data-lucide="link-2" class="icon-inline"></i>', label:'Manage Repo Mappings', desc:'Map subjects to GitHub repositories', path:'/admin/repo-mapping' },
+            { icon:'<i data-lucide="shield" class="icon-inline"></i>', label:'Moderate Q&A Board', desc:'Review and approve community posts', path:'/admin/moderation' },
+            { icon:'<i data-lucide="calendar-days" class="icon-inline"></i>', label:'Academic Calendar', desc:'Upload holidays and exam dates', path:'/admin/calendar' },
+            { icon:'<i data-lucide="users" class="icon-inline"></i>', label:'View All Students', desc:'Browse student profiles and records', path:'/admin/students' },
           ].map(a => `
             <a href="#${a.path}" style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-container-high);text-decoration:none;transition:var(--transition-fast)" class="admin-quick-link">
               <span style="font-size:20px">${a.icon}</span>
@@ -193,7 +193,7 @@ export function render(root) {
   // Handle Reset DB button
   main.querySelector('#btn-reset-db').addEventListener('click', async (e) => {
     const btn = e.currentTarget;
-    if (!confirm('🚨 WARNING: This will permanently delete all Exam Schedules, Timetables, and Attendance data. Are you absolutely sure?')) return;
+    if (!confirm('[Warning] WARNING: This will permanently delete all Exam Schedules, Timetables, and Attendance data. Are you absolutely sure?')) return;
     if (prompt('Type "DELETE" to confirm resetting the database:') !== 'DELETE') return;
 
     const originalText = btn.innerHTML;
@@ -220,7 +220,7 @@ export function render(root) {
         }
       }
 
-      showToast('Database successfully cleared! ✅', 'success', 4000);
+      showToast('Database successfully cleared! <i data-lucide="check-circle-2" class="icon-inline"></i>', 'success', 4000);
       loadAdminStats(main); // Refresh the UI counts
     } catch (err) {
       console.error('Reset error:', err);
@@ -332,7 +332,7 @@ async function loadAdminStats(main) {
     const recentEl = main.querySelector('#recent-uploads');
     recentEl.innerHTML = subjects.length > 0 ? subjects.map(s => `
       <div class="flex items-center gap-2" style="padding:var(--space-2) 0">
-        <span style="color:var(--color-success);font-size:14px">✓</span>
+        <span style="color:var(--color-success);font-size:14px"><i data-lucide="check" class="icon-inline"></i></span>
         <span class="text-body-sm">${s}</span>
       </div>
     `).join('') : '<div class="text-muted text-body-sm">No schedules uploaded yet</div>';

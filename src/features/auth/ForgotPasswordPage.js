@@ -9,7 +9,7 @@ export function render(root) {
       <div style="width:100%;max-width:420px">
 
         <div style="text-align:center;margin-bottom:var(--space-8)">
-          <div style="width:72px;height:72px;border-radius:var(--radius-xl);background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto var(--space-4);box-shadow:var(--shadow-glow-primary)">🔑</div>
+          <div style="width:72px;height:72px;border-radius:var(--radius-xl);background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto var(--space-4);box-shadow:var(--shadow-glow-primary)"><i data-lucide="key" class="icon-inline"></i></div>
           <h1 style="font-size:var(--font-display);font-weight:900;letter-spacing:-0.03em;background:var(--gradient-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">Reset Password</h1>
           <p style="color:var(--color-on-surface-variant);margin-top:var(--space-2);font-size:var(--font-body-sm)">We'll send a secure reset link to your email</p>
         </div>
@@ -17,7 +17,7 @@ export function render(root) {
         <div class="glass-card" style="border:1px solid rgba(68,70,85,0.25)">
 
           <div id="fp-success" class="hidden" style="text-align:center;padding:var(--space-6)">
-            <div style="font-size:56px;margin-bottom:var(--space-4)">📬</div>
+            <div style="font-size:56px;margin-bottom:var(--space-4)"><i data-lucide="mail" class="icon-inline"></i></div>
             <h2 class="text-title" style="margin-bottom:var(--space-3)">Check Your Inbox</h2>
             <p class="text-muted" style="margin-bottom:var(--space-6)">
               A password reset link has been sent to <strong id="fp-sent-email"></strong>.
@@ -28,13 +28,13 @@ export function render(root) {
 
           <form id="fp-form" class="flex flex-col gap-4">
             <div id="fp-error" class="alert alert-danger hidden" style="margin-bottom:var(--space-2)">
-              <span aria-hidden="true">⚠️</span><span id="fp-error-msg"></span>
+              <span aria-hidden="true"><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span id="fp-error-msg"></span>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="fp-email">College Email</label>
               <div class="form-input-wrapper">
-                <span class="input-icon icon-left" aria-hidden="true">📧</span>
+                <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="mail" class="icon-inline"></i></span>
                 <input class="form-input" id="fp-email" type="email"
                   placeholder="yourname@example.com" required autocomplete="email" />
               </div>
@@ -86,7 +86,7 @@ export function render(root) {
       root.querySelector('#fp-sent-email').textContent = email;
       form.classList.add('hidden');
       success.classList.remove('hidden');
-      showToast('Reset link sent! Check your inbox 📬', 'success');
+      showToast('Reset link sent! Check your inbox <i data-lucide="mail" class="icon-inline"></i>', 'success');
     } catch (err) {
       const code = err?.code || '';
       if (code === 'auth/user-not-found' || code === 'auth/invalid-email') {

@@ -166,7 +166,7 @@ export function render(root) {
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:32px;">
             <div class="testimonial-card">
               <div class="quote-icon">"</div>
-              <div style="display:flex;gap:4px;color:#facc15;margin-bottom:16px;">★★★★★</div>
+              <div style="display:flex;gap:4px;color:#facc15;margin-bottom:16px;"><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i></div>
               <p style="font-size:17px;color:#cbd5e1;line-height:1.6;margin-bottom:24px;">"The offline timetable access saved me when the college Wi-Fi was down. Notifications for exams are perfectly timed, adding to calendar directly is a lifesaver!"</p>
               <div style="display:flex;align-items:center;gap:16px;">
                 <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg, #3b82f6, #2563eb);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;">A</div>
@@ -178,7 +178,7 @@ export function render(root) {
             </div>
             <div class="testimonial-card">
               <div class="quote-icon">"</div>
-              <div style="display:flex;gap:4px;color:#facc15;margin-bottom:16px;">★★★★★</div>
+              <div style="display:flex;gap:4px;color:#facc15;margin-bottom:16px;"><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i><i data-lucide="star" class="icon-inline"></i></div>
               <p style="font-size:17px;color:#cbd5e1;line-height:1.6;margin-bottom:24px;">"Native speed is incredible. Much faster than logging in through the browser every time. It just feels premium and keeps me incredibly organized."</p>
               <div style="display:flex;align-items:center;gap:16px;">
                 <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg, #facc15, #eab308);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;color:#000;">S</div>
@@ -196,17 +196,17 @@ export function render(root) {
           <h3 style="text-align:center;font-size:32px;font-weight:800;margin-bottom:56px;letter-spacing:-0.02em;">Why Install the App?</h3>
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:32px;">
             <div class="glass-panel feature-card" style="padding:40px;text-align:left;">
-              <div style="width:64px;height:64px;border-radius:20px;background:rgba(59, 130, 246, 0.15);color:#60a5fa;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;border:1px solid rgba(59,130,246,0.2);">🚀</div>
+              <div style="width:64px;height:64px;border-radius:20px;background:rgba(59, 130, 246, 0.15);color:#60a5fa;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;border:1px solid rgba(59,130,246,0.2);"><i data-lucide="rocket" class="icon-inline"></i></div>
               <h4 style="font-size:22px;font-weight:700;margin-bottom:12px;color:#fff;">Lightning Fast</h4>
               <p style="font-size:16px;color:#94a3b8;line-height:1.6;">Native rendering provides a buttery smooth and instantaneous experience compared to web interfaces.</p>
             </div>
             <div class="glass-panel feature-card" style="padding:40px;text-align:left;">
-              <div style="width:64px;height:64px;border-radius:20px;background:rgba(234, 179, 8, 0.15);color:#facc15;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;border:1px solid rgba(234,179,8,0.2);">🔔</div>
+              <div style="width:64px;height:64px;border-radius:20px;background:rgba(234, 179, 8, 0.15);color:#facc15;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;border:1px solid rgba(234,179,8,0.2);"><i data-lucide="bell" class="icon-inline"></i></div>
               <h4 style="font-size:22px;font-weight:700;margin-bottom:12px;color:#fff;">Smart Alerts</h4>
               <p style="font-size:16px;color:#94a3b8;line-height:1.6;">Get reliable native push notifications for timetable changes, announcements, and GPA updates instantly.</p>
             </div>
             <div class="glass-panel feature-card" style="padding:40px;text-align:left;">
-              <div style="width:64px;height:64px;border-radius:20px;background:rgba(16, 185, 129, 0.15);color:#34d399;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;border:1px solid rgba(16,185,129,0.2);">📱</div>
+              <div style="width:64px;height:64px;border-radius:20px;background:rgba(16, 185, 129, 0.15);color:#34d399;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;border:1px solid rgba(16,185,129,0.2);"><i data-lucide="smartphone" class="icon-inline"></i></div>
               <h4 style="font-size:22px;font-weight:700;margin-bottom:12px;color:#fff;">Offline Mode</h4>
               <p style="font-size:16px;color:#94a3b8;line-height:1.6;">View your cached timetable and attendance data anywhere, even when you have no signal or Wi-Fi.</p>
             </div>
@@ -251,7 +251,7 @@ export function render(root) {
         <div style="margin-top:120px;max-width:860px;width:100%;position:relative;z-index:1;margin-bottom:40px;">
           <div class="glass-panel" style="padding:48px;display:flex;flex-direction:column;align-items:center;background:rgba(59, 130, 246, 0.05);border-color:rgba(59, 130, 246, 0.2);">
             <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg, #3b82f6, #2563eb);color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:24px;box-shadow:0 12px 24px rgba(59, 130, 246, 0.3);">
-              💬
+              <i data-lucide="message-square" class="icon-inline"></i>
             </div>
             <h3 style="font-size:28px;font-weight:800;margin-bottom:16px;text-align:center;letter-spacing:-0.02em;">We Value Your Feedback!</h3>
             <p style="font-size:16px;color:#cbd5e1;line-height:1.6;text-align:center;max-width:500px;margin-bottom:32px;">

@@ -34,9 +34,9 @@ export function render(root) {
 
       <!-- Edit Profile -->
       <div class="glass-card">
-        <h2 class="text-title" style="margin-bottom:var(--space-5)">✏️ Edit Profile</h2>
+        <h2 class="text-title" style="margin-bottom:var(--space-5)"><i data-lucide="pencil" class="icon-inline"></i> Edit Profile</h2>
         <div id="profile-edit-error" class="alert alert-danger hidden" style="margin-bottom:var(--space-4)">
-          <span aria-hidden="true">⚠️</span><span id="profile-edit-error-msg"></span>
+          <span aria-hidden="true"><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span id="profile-edit-error-msg"></span>
         </div>
         <form id="profile-edit-form" class="flex flex-col gap-4">
           <div class="grid grid-2 gap-4">
@@ -78,25 +78,25 @@ export function render(root) {
 
       <!-- Change Password -->
       <div class="glass-card">
-        <h2 class="text-title" style="margin-bottom:var(--space-5)">🔐 Change Password</h2>
+        <h2 class="text-title" style="margin-bottom:var(--space-5)"><i data-lucide="lock-keyhole" class="icon-inline"></i> Change Password</h2>
         <div id="pw-error" class="alert alert-danger hidden" style="margin-bottom:var(--space-4)">
-          <span aria-hidden="true">⚠️</span><span id="pw-error-msg"></span>
+          <span aria-hidden="true"><i data-lucide="alert-triangle" class="icon-inline"></i>️</span><span id="pw-error-msg"></span>
         </div>
         <div id="pw-success" class="alert alert-success hidden" style="margin-bottom:var(--space-4)">
-          <span>✅</span><span>Password updated successfully!</span>
+          <span><i data-lucide="check-circle-2" class="icon-inline"></i></span><span>Password updated successfully!</span>
         </div>
         <form id="pw-change-form" class="flex flex-col gap-4">
           <div class="form-group">
             <label class="form-label" for="pw-current">Current Password</label>
             <div class="form-input-wrapper">
-              <span class="input-icon icon-left" aria-hidden="true">🔒</span>
+              <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="lock" class="icon-inline"></i></span>
               <input class="form-input" id="pw-current" type="password" placeholder="Your current password" autocomplete="current-password" required />
             </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="pw-new">New Password</label>
             <div class="form-input-wrapper">
-              <span class="input-icon icon-left" aria-hidden="true">🔑</span>
+              <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="key" class="icon-inline"></i></span>
               <input class="form-input" id="pw-new" type="password" placeholder="Min. 8 chars, 1 uppercase, 1 number" autocomplete="new-password" required minlength="8" />
             </div>
             <div id="pw-new-bar-wrap" style="margin-top:6px;height:4px;border-radius:4px;background:rgba(0,0,0,0.08);overflow:hidden">
@@ -107,7 +107,7 @@ export function render(root) {
           <div class="form-group">
             <label class="form-label" for="pw-confirm">Confirm New Password</label>
             <div class="form-input-wrapper">
-              <span class="input-icon icon-left" aria-hidden="true">🔑</span>
+              <span class="input-icon icon-left" aria-hidden="true"><i data-lucide="key" class="icon-inline"></i></span>
               <input class="form-input" id="pw-confirm" type="password" placeholder="Re-enter new password" autocomplete="new-password" required />
             </div>
           </div>
@@ -175,7 +175,7 @@ export function render(root) {
       main.querySelector('#profile-avatar').textContent = newInitials;
       main.querySelector('#profile-name-display').textContent = newName;
       main.querySelector('#profile-regnum-display').textContent = `${user.registerNumber || ''} · ${department}`;
-      showToast('Profile updated successfully! ✅', 'success');
+      showToast('Profile updated successfully! <i data-lucide="check-circle-2" class="icon-inline"></i>', 'success');
     } catch (err) {
       editErrMsg.textContent = err.message || 'Failed to update profile.';
       editError.classList.remove('hidden');
@@ -199,7 +199,7 @@ export function render(root) {
       { w: '20%', color: '#ef4444', text: 'Too weak' },
       { w: '45%', color: '#f97316', text: 'Weak' },
       { w: '70%', color: '#eab308', text: 'Fair' },
-      { w: '100%', color: '#22c55e', text: 'Strong ✓' },
+      { w: '100%', color: '#22c55e', text: 'Strong <i data-lucide="check" class="icon-inline"></i>' },
     ];
     const lvl = levels[Math.max(0, score - 1)];
     bar.style.width = lvl.w; bar.style.background = lvl.color;
@@ -240,7 +240,7 @@ export function render(root) {
       pwForm.reset();
       main.querySelector('#pw-new-bar').style.width = '0%';
       main.querySelector('#pw-new-label').textContent = '';
-      showToast('Password changed successfully! 🔐', 'success');
+      showToast('Password changed successfully! <i data-lucide="lock-keyhole" class="icon-inline"></i>', 'success');
     } catch (err) {
       const code = err?.code || '';
       if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
