@@ -1,5 +1,5 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
-import { db, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from '../../lib/firebase.js';
+import { db, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from '../../lib/firebase.js';
 import { showToast, appState } from '../../app/main.js';
 
 export function render(root) {
@@ -39,7 +39,9 @@ export function render(root) {
             </select>
           </div>
           
-          <button type="submit" class="btn btn-primary mt-2" id="btn-submit">Broadcast Announcement</button>
+          <button type="submit" class="btn btn-primary mt-2" id="btn-submit">
+            <i data-lucide="send" class="icon-inline"></i> Broadcast Announcement
+          </button>
         </form>
       </div>
 
@@ -67,25 +69,26 @@ export function render(root) {
     if (!title || !message) return;
 
     btnSubmit.disabled = true;
-    btnSubmit.textContent = 'Broadcasting...';
+    btnSubmit.innerHTML = '<i data-lucide="loader-2" class="icon-inline"></i> Broadcasting...';
 
     try {
       await addDoc(collection(db, 'announcements'), {
         title,
         message,
         type,
+        createdBy: appState.userData?.name || 'Admin',
         createdAt: new Date().toISOString(),
-        createdBy: appState.userData?.name || 'Admin'
       });
-      showToast('Announcement broadcasted successfully!', 'success');
+
+      showToast('<i data-lucide="check-circle-2" class="icon-inline"></i> Announcement broadcasted successfully!', 'success');
       form.reset();
       loadAnnouncements(main);
     } catch (err) {
       console.error('Error adding announcement:', err);
-      showToast('Failed to broadcast announcement.', 'error');
+      showToast('Failed to broadcast: ' + (err.message || 'Unknown error'), 'error');
     } finally {
       btnSubmit.disabled = false;
-      btnSubmit.textContent = 'Broadcast Announcement';
+      btnSubmit.innerHTML = '<i data-lucide="send" class="icon-inline"></i> Broadcast Announcement';
     }
   });
 
@@ -94,11 +97,15 @@ export function render(root) {
 
 async function loadAnnouncements(main) {
   const listContainer = main.querySelector('#announcement-list');
+  listContainer.innerHTML = '<div class="text-muted text-body-sm text-center py-4">Loading...</div>';
+
   try {
     const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
+    const snapshot = await getDocs(q);
     
-    if (snap.empty) {
+    const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    if (!data || data.length === 0) {
       listContainer.innerHTML = '<div class="text-muted text-body-sm text-center py-4">No active announcements.</div>';
       return;
     }
@@ -117,26 +124,25 @@ async function loadAnnouncements(main) {
       danger: '<i data-lucide="siren" class="icon-inline"></i>'
     };
 
-    listContainer.innerHTML = snap.docs.map(docSnap => {
-      const data = docSnap.data();
-      const color = typeColors[data.type] || typeColors.info;
-      const icon = typeIcons[data.type] || typeIcons.info;
-      const date = new Date(data.createdAt).toLocaleString('en-IN', {
-        day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'
+    listContainer.innerHTML = data.map(item => {
+      const color = typeColors[item.type] || typeColors.info;
+      const icon = typeIcons[item.type] || typeIcons.info;
+      const date = new Date(item.createdAt).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
       });
 
       return `
         <div class="announcement-item" style="border-left: 4px solid ${color}; background: var(--color-surface-container-high); padding: 12px 16px; border-radius: 8px;">
           <div class="flex justify-between items-start mb-1">
             <h3 style="font-weight: 700; color: var(--color-on-surface); font-size: 15px; display:flex; align-items:center; gap:6px;">
-              <span>${icon}</span> ${data.title}
+              <span>${icon}</span> ${item.title}
             </h3>
-            <button class="btn btn-ghost btn-sm text-danger delete-ann-btn" data-id="${docSnap.id}" style="padding: 4px; border-radius: 4px;">
+            <button class="btn btn-ghost btn-sm text-danger delete-ann-btn" data-id="${item.id}" style="padding: 4px; border-radius: 4px;" title="Delete announcement">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
           </div>
-          <p style="font-size: 13px; color: var(--color-on-surface-variant); margin-bottom: 8px; line-height: 1.4;">${data.message}</p>
-          <div style="font-size: 11px; color: var(--color-outline);">Broadcasted on ${date} by ${data.createdBy || 'Admin'}</div>
+          <p style="font-size: 13px; color: var(--color-on-surface-variant); margin-bottom: 8px; line-height: 1.4;">${item.message}</p>
+          <div style="font-size: 11px; color: var(--color-outline);">Broadcasted on ${date} by ${item.createdBy || 'Admin'}</div>
         </div>
       `;
     }).join('');
@@ -149,17 +155,18 @@ async function loadAnnouncements(main) {
         
         try {
           await deleteDoc(doc(db, 'announcements', id));
+          
           showToast('Announcement deleted', 'success');
           loadAnnouncements(main);
         } catch (err) {
           console.error('Delete error:', err);
-          showToast('Failed to delete', 'error');
+          showToast('Failed to delete: ' + (err.message || ''), 'error');
         }
       });
     });
 
   } catch (err) {
     console.error('Load announcements error:', err);
-    listContainer.innerHTML = '<div class="text-danger text-body-sm text-center py-4">Failed to load announcements.</div>';
+    listContainer.innerHTML = `<div class="text-danger text-body-sm text-center py-4">Failed to load announcements: ${err.message}</div>`;
   }
 }

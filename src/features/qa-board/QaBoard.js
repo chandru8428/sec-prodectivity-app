@@ -2,9 +2,8 @@ import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
 import {
   db, collection, getDocs, addDoc,
-  updateDoc, deleteDoc, doc, increment, serverTimestamp,
-  arrayUnion, arrayRemove
-} from '../../lib/firebase.js';
+  updateDoc, deleteDoc, doc, serverTimestamp
+} from '../../lib/supabase-adapter.js';
 import { uploadToCloudinary, compressImage, formatBytes } from '../../services/cloudinary-service.js';
 
 let currentFilter = { type: 'all', subject: '' };
@@ -577,14 +576,15 @@ function renderPosts(container, posts, main) {
 
       try {
         if (isUpvoted) {
-          await updateDoc(doc(db, 'posts', id), { upvotedBy: arrayRemove(uid) });
-          post.upvotedBy = post.upvotedBy.filter(u => u !== uid);
+          const newUpvotedBy = post.upvotedBy.filter(u => u !== uid);
+          await updateDoc(doc(db, 'posts', id), { upvotedBy: newUpvotedBy });
+          post.upvotedBy = newUpvotedBy;
           btn.classList.remove('active');
           countSpan.textContent = currentCount - 1;
         } else {
-          if (!post.upvotedBy) post.upvotedBy = [];
-          await updateDoc(doc(db, 'posts', id), { upvotedBy: arrayUnion(uid) });
-          post.upvotedBy.push(uid);
+          const newUpvotedBy = [...(post.upvotedBy || []), uid];
+          await updateDoc(doc(db, 'posts', id), { upvotedBy: newUpvotedBy });
+          post.upvotedBy = newUpvotedBy;
           btn.classList.add('active');
           countSpan.textContent = currentCount + 1;
         }

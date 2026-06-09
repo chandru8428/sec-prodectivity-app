@@ -17,7 +17,7 @@
     window.addEventListener('error', function(e) {
       const errDiv = document.createElement('div');
       errDiv.style = 'position:fixed;top:0;left:0;right:0;background:red;color:white;z-index:999999;padding:20px;font-family:monospace;white-space:pre-wrap;overflow:auto;max-height:50vh;';
-      errDiv.textContent = 'GLOBAL ERROR: ' + e.message + '\\n' + (e.error ? e.error.stack : '');
+      errDiv.textContent = 'GLOBAL ERROR: ' + e.message + '\n' + (e.error ? e.error.stack : '');
       document.body.appendChild(errDiv);
     });
     window.addEventListener('unhandledrejection', function(e) {
@@ -63,8 +63,6 @@
 </head>
 <body>
   <div id="app"></div>
-
-
 
   <script type="module" src="/src/app/main.js"></script>
 </body>

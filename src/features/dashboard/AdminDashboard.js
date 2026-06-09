@@ -296,8 +296,12 @@ async function loadAdminStats(main) {
     main.querySelector('#as-unique-exams').textContent = uniqueSubjects.size;
 
     // Posts
-    const postsSnap = await getDocs(collection(db, 'posts'));
-    main.querySelector('#as-posts .stat-value').textContent = postsSnap.size;
+    try {
+      const postsSnap = await getDocs(collection(db, 'posts'));
+      main.querySelector('#as-posts .stat-value').textContent = postsSnap.size;
+    } catch {
+      main.querySelector('#as-posts .stat-value').textContent = '0';
+    }
 
     // Mappings
     const mapSnap = await sbGetDocs(sbCollection(supabaseDb, 'repoMappings'));

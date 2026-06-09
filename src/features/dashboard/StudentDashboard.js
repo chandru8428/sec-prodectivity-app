@@ -9,6 +9,7 @@ import {
   getDocs as sbGetDocs,
   addDoc as sbAddDoc,
 } from '../../lib/supabase-adapter.js';
+import { supabase } from '../../lib/supabase.js';
 import { router } from '../../app/router.js';
 import { EmptyState } from '../../components/shared/EmptyState.js';
 
@@ -217,7 +218,9 @@ async function loadAnnouncements(main) {
   const container = main.querySelector('#announcements-container');
   try {
     const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
+    const snapshot = await getDocs(q);
+
+    const snap = { empty: snapshot.empty, docs: snapshot.docs.map(d => ({ id: d.id, data: () => ({ ...d.data() }) })) };
     
     if (snap.empty) {
       container.style.display = 'none';
@@ -339,16 +342,20 @@ async function loadDashboardData(main) {
     const q = sbQuery(examsRef, sbWhere('registerNumber', '==', user.registerNumber));
     const snap = await sbGetDocs(q);
     
-    // Fetch academic calendar events
-    const acSnap = await getDocs(collection(db, 'academicCalendar'));
-    const acEvents = acSnap.docs.map(d => ({
-      id: d.id,
-      subject: d.data().name,
-      examDate: d.id,
-      examType: d.data().type,
-      uploadedBy: 'admin',
-      isGlobal: true
-    }));
+    let acEvents = [];
+    try {
+      const acSnap = await getDocs(collection(db, 'academicCalendar'));
+      acEvents = acSnap.docs.map(d => ({
+        id: d.id,
+        subject: d.data().name,
+        examDate: d.id,
+        examType: d.data().type,
+        uploadedBy: 'admin',
+        isGlobal: true
+      }));
+    } catch (err) {
+      console.warn('Failed to load academicCalendar', err);
+    }
 
     const rawExams = [...snap.docs.map(d => ({ id: d.id, ...d.data() })), ...acEvents].map(e => ({
       ...e,
@@ -400,17 +407,28 @@ async function loadDashboardData(main) {
 
   // Load GPA
   try {
-    const gpaSnap = await getDocs(query(collection(db, 'gpaRecords'),
-      where('studentId', '==', appState.currentUser?.uid)
-    ));
+    const gpaSnap = await getDocs(collection(db, 'users', appState.currentUser.uid, 'gpa'));
     if (!gpaSnap.empty) {
-      // Sort client-side by semester desc
-      const sorted = gpaSnap.docs.map(d => d.data()).sort((a,b) => (b.semester||0) - (a.semester||0));
-      main.querySelector('#stat-gpa').textContent = sorted[0]?.gpa?.toFixed(2) || '—';
+      let totalCredits = 0;
+      let totalWeighted = 0;
+      gpaSnap.docs.forEach(d => {
+        const r = d.data();
+        totalCredits += (r.credits || 0);
+        totalWeighted += (r.credits || 0) * (r.points || 0);
+      });
+      if (totalCredits > 0) {
+        const cgpa = totalWeighted / totalCredits;
+        main.querySelector('#stat-gpa').textContent = cgpa.toFixed(2);
+      } else {
+        main.querySelector('#stat-gpa').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`;
+      }
     } else {
       main.querySelector('#stat-gpa').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`;
     }
-  } catch { main.querySelector('#stat-gpa').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`; }
+  } catch (err) {
+    console.warn('Failed to load GPA', err);
+    main.querySelector('#stat-gpa').innerHTML = `<span style="font-size:1rem;opacity:0.5">—</span>`;
+  }
 
   // Load attendance
   try {
@@ -492,6 +510,7 @@ function renderHeroExam(main, exam) {
       <span><i data-lucide="calendar" class="icon-inline"></i> ${formatDate(exam.examDate)}</span>
       ${exam.startTime ? `<span><i data-lucide="clock" class="icon-inline"></i> ${formatTime12(exam.startTime)}</span>` : ''}
       ${exam.hall ? `<span><i data-lucide="building-2" class="icon-inline"></i> Hall ${exam.hall}</span>` : ''}
+      ${exam.staffName ? `<span><i data-lucide="user-check" class="icon-inline"></i> ${exam.staffName}</span>` : ''}
     `;
   }
   if (window.lucide) window.lucide.createIcons();
@@ -556,6 +575,7 @@ function renderExamList(container, exams) {
             <div class="exam-meta-item"><i data-lucide="calendar" class="icon-inline"></i> ${formatDate(exam.examDate)}</div>
             <div class="exam-meta-item"><i data-lucide="clock" class="icon-inline"></i> ${exam.startTime ? formatTime12(exam.startTime) : 'TBA'} – ${exam.endTime ? formatTime12(exam.endTime) : 'TBA'}</div>
             ${exam.hall ? `<div class="exam-meta-item"><i data-lucide="building-2" class="icon-inline"></i> Hall ${exam.hall}</div>` : ''}
+            ${exam.staffName ? `<div class="exam-meta-item"><i data-lucide="user-check" class="icon-inline"></i> Staff: ${exam.staffName}</div>` : ''}
           </div>
         </div>
         <div class="text-right flex flex-col items-end gap-2">

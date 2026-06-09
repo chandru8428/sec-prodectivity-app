@@ -82,15 +82,20 @@ async function loadExams(container) {
 
     if (qErr) throw qErr;
 
-    const acSnap = await getDocs(collection(db, 'academicCalendar'));
-    const acEvents = acSnap.docs.map(d => ({
-      id: d.id,
-      subject: d.data().name,
-      examDate: d.id,
-      examType: d.data().type,
-      uploadedBy: 'admin',
-      isGlobal: true
-    }));
+    let acEvents = [];
+    try {
+      const acSnap = await getDocs(collection(db, 'academicCalendar'));
+      acEvents = acSnap.docs.map(d => ({
+        id: d.id,
+        subject: d.data().name,
+        examDate: d.id,
+        examType: d.data().type,
+        uploadedBy: 'admin',
+        isGlobal: true
+      }));
+    } catch (err) {
+      console.warn('Could not load academicCalendar', err);
+    }
 
     const rawExams = [...(sbExams || []), ...acEvents].map(e => ({
       ...e,

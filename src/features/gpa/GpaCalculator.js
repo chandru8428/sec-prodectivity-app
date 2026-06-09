@@ -1,6 +1,7 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
 import { appState, showToast } from '../../app/main.js';
-import { db, collection, getDocs, addDoc, doc, deleteDoc, writeBatch, setDoc } from '../../lib/firebase.js';
+import { db, collection, getDocs, doc, deleteDoc } from '../../lib/firebase.js';
+import { supabase } from '../../lib/supabase.js';
 import { logToolUsage } from '../../services/analytics-service.js';
 
 // ── Grade System ──────────────────────────────────────────────────────────────
@@ -211,18 +212,34 @@ export function render(root) {
     if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">Loading your subjects...</td></tr>';
     try {
       const snap = await getDocs(collection(db, 'users', appState.currentUser.uid, 'gpa'));
+      const { data: sbData, error: sbErr } = await supabase.from('gpa_subjects').select('*').eq('user_id', appState.currentUser.uid);
+
       semesters = {};
+      
+      // Load Firebase records
       snap.docs.forEach(d => {
         const data = d.data();
         const sem = data.semester || 1;
         if (!semesters[sem]) semesters[sem] = [];
         semesters[sem].push({ id: d.id, ...data });
       });
+
+      // Load Supabase records
+      if (!sbErr && sbData) {
+        sbData.forEach(data => {
+          const sem = data.semester || 1;
+          if (!semesters[sem]) semesters[sem] = [];
+          // Avoid duplicates if same subject name
+          if (!semesters[sem].some(s => s.subject === data.subject)) {
+            semesters[sem].push({ id: data.id, isSupabase: true, ...data });
+          }
+        });
+      }
+
       renderSemesterTable(main, currentSem);
       updateCGPA(main);
       
-      // Log CGPA usage on successful load (if they have data)
-      if (snap.size > 0) {
+      if (snap.size > 0 || (sbData && sbData.length > 0)) {
         logToolUsage('CGPA Calculator', 'viewed');
       }
     } catch (e) {
@@ -247,9 +264,14 @@ export function render(root) {
     btn.disabled = true; btn.textContent = '...';
     try {
       const subjectData = { subject, credits, grade, points, semester: currentSem };
-      const ref = await addDoc(collection(db, 'users', appState.currentUser.uid, 'gpa'), subjectData);
+      const { data: sbRes, error: sbErr } = await supabase.from('gpa_subjects')
+        .insert({ ...subjectData, user_id: appState.currentUser.uid })
+        .select()
+        .single();
+      if (sbErr) throw sbErr;
+
       if (!semesters[currentSem]) semesters[currentSem] = [];
-      semesters[currentSem].push({ id: ref.id, ...subjectData });
+      semesters[currentSem].push({ id: sbRes.id, isSupabase: true, ...subjectData });
       e.target.reset();
       main.querySelector('#gpa-credits').value = '3';
       renderSemesterTable(main, currentSem);
@@ -313,33 +335,35 @@ export function render(root) {
     saveBtn.disabled = true; saveBtn.textContent = 'Saving...';
 
     try {
-      const batch = writeBatch(db);
-      const toAdd = [];
+      const toAddSupabase = [];
       rows.forEach(r => {
         const gradeInfo = GRADE_SYSTEM.find(g => g.grade === r.grade) || { points: 0 };
         const subject   = `${r.code} - ${r.name}`.trim().replace(/^-\s*|-\s*$/g,'').trim();
         const already   = (semesters[currentSem] || []).some(s => s.subject === subject);
         if (already) return;
-        const ref  = doc(collection(db, 'users', appState.currentUser.uid, 'gpa'));
-        const data = { subject, credits: r.credits, grade: r.grade, points: gradeInfo.points, semester: currentSem };
-        batch.set(ref, data);
-        toAdd.push({ id: ref.id, ...data });
+        toAddSupabase.push({ 
+          subject, credits: r.credits, grade: r.grade, points: gradeInfo.points, semester: currentSem, user_id: appState.currentUser.uid 
+        });
       });
 
-      if (toAdd.length === 0) {
+      if (toAddSupabase.length === 0) {
         showToast('All subjects already exist in this semester', 'warning');
         saveBtn.disabled = false; saveBtn.innerHTML = `<i data-lucide="check-circle-2" class="icon-inline"></i> Save to Semester ${currentSem}`;
         return;
       }
 
-      await batch.commit();
+      const { data: inserted, error: insertErr } = await supabase.from('gpa_subjects').insert(toAddSupabase).select();
+      if (insertErr) throw insertErr;
+
       if (!semesters[currentSem]) semesters[currentSem] = [];
-      semesters[currentSem].push(...toAdd);
+      inserted.forEach(item => {
+        semesters[currentSem].push({ id: item.id, isSupabase: true, subject: item.subject, credits: item.credits, grade: item.grade, points: item.points, semester: currentSem });
+      });
 
       main.querySelector('#pdf-preview-panel').style.display = 'none';
       renderSemesterTable(main, currentSem);
       updateCGPA(main);
-      showToast(`${toAdd.length} subjects saved to Semester ${currentSem} <i data-lucide="check-circle-2" class="icon-inline"></i>`, 'success');
+      showToast(`${inserted.length} subjects saved to Semester ${currentSem} <i data-lucide="check-circle-2" class="icon-inline"></i>`, 'success');
       logToolUsage('GPA Calculator', 'calculated from pdf');
     } catch (err) {
       console.error(err);
@@ -622,7 +646,16 @@ function updateCGPA(main) {
 window.removeGPASubject = async function(semNum, id) {
   if (!semesters[semNum] || !appState.currentUser) return;
   try {
-    await deleteDoc(doc(db, 'users', appState.currentUser.uid, 'gpa', id));
+    const s = semesters[semNum].find(x => x.id === id);
+    if (s && s.isSupabase) {
+      await supabase.from('gpa_subjects').delete().eq('id', id);
+    } else {
+      try {
+        await deleteDoc(doc(db, 'users', appState.currentUser.uid, 'gpa', id));
+      } catch (e) {
+        console.warn('Firebase delete blocked, removing from UI only');
+      }
+    }
     semesters[semNum] = semesters[semNum].filter(s => s.id !== id);
     const main = document.querySelector('#page-main');
     renderSemesterTable(main, semNum);
@@ -670,16 +703,28 @@ window.saveGPASubject = async function(id, semNum) {
   saveBtn.disabled = true; saveBtn.textContent = '...';
 
   try {
-    await setDoc(
-      doc(db, 'users', appState.currentUser.uid, 'gpa', id),
-      { subject, credits, grade, points, semester: semNum },
-      { merge: true }
-    );
+    const s = (semesters[semNum] || []).find(x => x.id === id);
+    let newId = id;
+    let isSb = s ? s.isSupabase : false;
+
+    if (isSb) {
+      await supabase.from('gpa_subjects').update({ subject, credits, grade, points, semester: semNum }).eq('id', id);
+    } else {
+      // It's a Firebase record. Try to save to Supabase as a new record instead of overwriting Firebase (due to permissions).
+      const { data: newRec, error: sbErr } = await supabase.from('gpa_subjects')
+        .insert({ subject, credits, grade, points, semester: semNum, user_id: appState.currentUser.uid })
+        .select().single();
+      if (sbErr) throw sbErr;
+      newId = newRec.id;
+      isSb = true;
+      // Try deleting the old Firebase record if possible
+      try { await deleteDoc(doc(db, 'users', appState.currentUser.uid, 'gpa', id)); } catch(e){}
+    }
 
     // Update local state
     if (semesters[semNum]) {
-      const idx = semesters[semNum].findIndex(s => s.id === id);
-      if (idx !== -1) semesters[semNum][idx] = { id, subject, credits, grade, points, semester: semNum };
+      const idx = semesters[semNum].findIndex(x => x.id === id);
+      if (idx !== -1) semesters[semNum][idx] = { id: newId, isSupabase: isSb, subject, credits, grade, points, semester: semNum };
     }
 
     const main = document.querySelector('#page-main');

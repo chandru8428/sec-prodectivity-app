@@ -305,9 +305,12 @@ export function render(root) {
       const attSnap = await getDocs(collection(db, 'users', pendingRemoveId, 'attendance'));
       for (const d of attSnap.docs) await deleteDoc(d.ref);
 
-      // GPA
+      // GPA (Firebase)
       const gpaSnap = await getDocs(collection(db, 'users', pendingRemoveId, 'gpa'));
       for (const d of gpaSnap.docs) await deleteDoc(d.ref);
+
+      // GPA (Supabase)
+      await supabase.from('gpa_subjects').delete().eq('user_id', pendingRemoveId);
 
       // Exam Schedules
       if (student && student.registerNumber) {
@@ -373,12 +376,51 @@ export function render(root) {
       const attSnap = await getDocs(collection(db, 'users', userId, 'attendance'));
       const gpaSnap = await getDocs(collection(db, 'users', userId, 'gpa'));
       const ttSnap = await getDocs(query(collection(db, 'timetables'), where('createdBy', '==', userId)));
-      const postsSnap = await getDocs(query(collection(db, 'posts'), where('authorId', '==', userId)));
+      let postsCount = 0;
+      try {
+        const postsSnap = await getDocs(query(collection(db, 'posts'), where('authorId', '==', userId)));
+        postsCount = postsSnap.docs.length;
+      } catch { /* ignore */ }
+
+      let cgpaDisplay = '—';
+      let totalGpaSubjects = 0;
+      
+      const { data: sbGpa } = await supabase.from('gpa_subjects').select('*').eq('user_id', student.id);
+      
+      if (!gpaSnap.empty || (sbGpa && sbGpa.length > 0)) {
+        let tCredits = 0, tWeighted = 0;
+        let seenSubjects = new Set();
+        
+        const processSubject = (subj, cred, pts) => {
+          if (seenSubjects.has(subj)) return;
+          seenSubjects.add(subj);
+          tCredits += (cred || 0);
+          tWeighted += (cred || 0) * (pts || 0);
+          totalGpaSubjects++;
+        };
+
+        if (!gpaSnap.empty) {
+          gpaSnap.docs.forEach(d => {
+            const r = d.data();
+            processSubject(r.subject, r.credits, r.points);
+          });
+        }
+        
+        if (sbGpa) {
+          sbGpa.forEach(r => {
+            processSubject(r.subject, r.credits, r.points);
+          });
+        }
+        
+        if (tCredits > 0) cgpaDisplay = (tWeighted / tCredits).toFixed(2);
+      }
 
       let examCount = 0;
       if (student.registerNumber) {
-        const esSnap = await getDocs(query(collection(db, 'examSchedules'), where('registerNumber', '==', student.registerNumber)));
-        examCount = esSnap.docs.length;
+        try {
+          const esSnap = await getDocs(query(collection(db, 'examSchedules'), where('registerNumber', '==', student.registerNumber)));
+          examCount = esSnap.docs.length;
+        } catch { /* ignore if blocked */ }
       }
 
       container.innerHTML = `
@@ -387,8 +429,8 @@ export function render(root) {
           <strong style="color:var(--on-surface);">${attSnap.docs.length}</strong>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-          <span style="color:var(--on-surface-variant);">GPA Records</span>
-          <strong style="color:var(--on-surface);">${gpaSnap.docs.length}</strong>
+          <span style="color:var(--on-surface-variant);">CGPA</span>
+          <strong style="color:var(--primary);">${cgpaDisplay}</strong> <span style="font-size:11px;opacity:0.7">(${totalGpaSubjects} subjects)</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
           <span style="color:var(--on-surface-variant);">Generated Timetables</span>
@@ -396,7 +438,7 @@ export function render(root) {
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
           <span style="color:var(--on-surface-variant);">Q&A Posts</span>
-          <strong style="color:var(--on-surface);">${postsSnap.docs.length}</strong>
+          <strong style="color:var(--on-surface);">${postsCount}</strong>
         </div>
         <div style="display:flex;justify-content:space-between;">
           <span style="color:var(--on-surface-variant);">Scheduled Exams</span>

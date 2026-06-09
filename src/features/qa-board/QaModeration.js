@@ -1,5 +1,5 @@
 import { createLayout } from '../../components/layout/Sidebar.js';
-import { db, collection, getDocs, updateDoc, deleteDoc, doc, query } from '../../lib/firebase.js';
+import { db, collection, getDocs, updateDoc, deleteDoc, doc, query } from '../../lib/supabase-adapter.js';
 import { showToast } from '../../app/main.js';
 
 export function render(root) {
