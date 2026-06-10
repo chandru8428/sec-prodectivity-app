@@ -3,7 +3,8 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   doc, setDoc, getDoc,
-  auth, googleProvider, db
+  auth, googleProvider, db,
+  collection, getDocs, query, where
 } from '../../lib/firebase.js';
 import { supabase } from '../../lib/supabase.js';
 import { showToast } from '../../app/main.js';
@@ -175,7 +176,7 @@ export function render(root) {
     try {
       let email = identifier;
 
-      // If not an email, look up by register number via Supabase (source of truth)
+      // If not an email, look up by register number via Supabase first, then Firestore fallback
       if (!identifier.includes('@')) {
         const regNo = identifier.trim().toUpperCase();
         const { data: matched, error: lookupErr } = await supabase
@@ -183,10 +184,19 @@ export function render(root) {
           .select('email')
           .eq('registerNumber', regNo)
           .single();
-        if (lookupErr || !matched?.email) {
-          throw new Error('No account found for register number ' + identifier + '. Please register first.');
+        if (!lookupErr && matched?.email) {
+          email = matched.email;
+        } else {
+          // Fallback: check Firestore for register number
+          const regQuery = query(collection(db, 'users'), where('registerNumber', '==', regNo));
+          const regSnap = await getDocs(regQuery);
+          if (!regSnap.empty) {
+            const regData = regSnap.docs[0].data();
+            email = regData.email;
+          } else {
+            throw new Error('No account found for register number ' + identifier + '. Please register first.');
+          }
         }
-        email = matched.email;
       }
 
       // Admin first-time account creation
@@ -267,6 +277,7 @@ export function render(root) {
       const result = await signInWithPopup(auth, googleProvider);
       const user   = result.user;
       const uid    = user?.uid || user?.id;
+      const userEmail = user?.email;
 
       // Check if this Google user is registered in our 'users' table
       let profile = null;
@@ -284,12 +295,33 @@ export function render(root) {
         role = sbProfile.role;
         name = sbProfile.name;
       } else {
-        // Fallback to Firebase Firestore for older users
+        // Fallback to Firebase Firestore — first try by UID
         const userDoc = await getDoc(doc(db, 'users', uid));
         if (userDoc.exists()) {
           profile = userDoc.data();
           role = profile.role || 'student';
           name = profile.name || profile.firstName;
+        }
+        // If UID profile is student, also check if email has an admin profile
+        if (userEmail && (!profile || role !== 'admin')) {
+          const emailQuery = query(collection(db, 'users'), where('email', '==', userEmail));
+          const emailSnap = await getDocs(emailQuery);
+          for (const d of emailSnap.docs) {
+            const data = d.data();
+            if (data.role === 'admin') {
+              profile = data;
+              role = 'admin';
+              name = data.name || data.firstName;
+              break;
+            }
+          }
+          // If still no profile found, use any Firestore match by email
+          if (!profile && !emailSnap.empty) {
+            const data = emailSnap.docs[0].data();
+            profile = data;
+            role = data.role || 'student';
+            name = data.name || data.firstName;
+          }
         }
       }
 

@@ -2,7 +2,7 @@ import '../styles/design-system.css';
 import '../styles/pages.css';
 import '../styles/theme-overrides.css';
 import '../styles/responsive-mobile.css';
-import { auth, db, onAuthStateChanged, doc, getDoc } from '../lib/firebase.js';
+import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs, query, where } from '../lib/firebase.js';
 import { supabase } from '../lib/supabase.js';
 import { createIcons, icons } from 'lucide';
 
@@ -100,13 +100,32 @@ onAuthStateChanged(auth, async (user) => {
       } else {
         // ── Fallback: try Firebase Firestore ──
         try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          let userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             appState.userData = userDoc.data();
             appState.userRole = userDoc.data().role;
           } else {
             appState.userRole = null;
             appState.userData = { name: user.displayName || user.email, email: user.email, role: null };
+          }
+          // If role is student or not found, also check by email for admin profile
+          if (user.email && appState.userRole !== 'admin') {
+            const emailQuery = query(collection(db, 'users'), where('email', '==', user.email));
+            const emailSnap = await getDocs(emailQuery);
+            for (const d of emailSnap.docs) {
+              const data = d.data();
+              if (data.role === 'admin') {
+                appState.userData = data;
+                appState.userRole = 'admin';
+                break;
+              }
+            }
+            // If still no role, use any Firestore match by email
+            if (appState.userRole === null && !emailSnap.empty) {
+              const data = emailSnap.docs[0].data();
+              appState.userData = data;
+              appState.userRole = data.role || 'student';
+            }
           }
         } catch {
           appState.userRole = null;
